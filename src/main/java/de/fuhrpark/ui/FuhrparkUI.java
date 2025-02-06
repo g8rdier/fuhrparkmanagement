@@ -93,7 +93,7 @@ public class FuhrparkUI extends JFrame {
                     Integer.parseInt(baujahrField.getText()),
                     Double.parseDouble(wertField.getText())
                 );
-                fahrzeugService.saveFahrzeug(newFahrzeug);
+                handleAddFahrzeug(newFahrzeug);
                 refreshTable();
                 dialog.dispose();
             } catch (NumberFormatException ex) {
@@ -257,5 +257,9 @@ public class FuhrparkUI extends JFrame {
         dialog.setSize(600, 400);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
+    }
+
+    private void handleAddFahrzeug(Fahrzeug fahrzeug) {
+        fahrzeugService.addFahrzeug(fahrzeug);
     }
 } 
