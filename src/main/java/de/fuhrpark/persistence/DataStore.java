@@ -11,7 +11,7 @@ public interface DataStore {
     void addFahrzeug(Fahrzeug fahrzeug);
     void updateFahrzeug(Fahrzeug fahrzeug);
     void deleteFahrzeug(String kennzeichen);
-    List<Fahrzeug> getAlleFahrzeuge();
+    List<Fahrzeug> getFahrzeuge();
     Fahrzeug getFahrzeug(String kennzeichen);
 
     // Fahrtenbuch operations
@@ -21,10 +21,11 @@ public interface DataStore {
 
     // Reparaturbuch operations
     void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag);
+    void addReparatur(ReparaturBuchEintrag eintrag);
     List<ReparaturBuchEintrag> getReparaturBuchEintraege();
     List<ReparaturBuchEintrag> getReparaturen(String kennzeichen);
 
     // Persistence operations
-    void save(String path, Object obj) throws Exception;
-    Object load(String path) throws Exception;
+    void save(String path, Object obj);
+    Object load(String path);
 } 

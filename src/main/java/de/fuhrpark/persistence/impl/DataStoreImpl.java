@@ -28,7 +28,7 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
+    public List<Fahrzeug> getFahrzeuge() {
         return new ArrayList<>(fahrzeuge);
     }
 
@@ -63,6 +63,11 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
+    public void addReparatur(ReparaturBuchEintrag eintrag) {
+        addReparaturBuchEintrag(eintrag);
+    }
+
+    @Override
     public List<ReparaturBuchEintrag> getReparaturBuchEintraege() {
         return new ArrayList<>(reparaturBuchEintraege);
     }
@@ -75,16 +80,20 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public void save(String path, Object obj) throws Exception {
+    public void save(String path, Object obj) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path))) {
             oos.writeObject(obj);
+        } catch (IOException e) {
+            throw new RuntimeException("Error saving data: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public Object load(String path) throws Exception {
+    public Object load(String path) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
             return ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Error loading data: " + e.getMessage(), e);
         }
     }
 }
