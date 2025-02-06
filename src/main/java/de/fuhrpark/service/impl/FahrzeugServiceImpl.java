@@ -13,7 +13,7 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     }
 
     @Override
-    public void saveFahrzeug(Fahrzeug fahrzeug) {
+    public void addFahrzeug(Fahrzeug fahrzeug) {
         dataStore.addFahrzeug(fahrzeug);
     }
 
