@@ -1,12 +1,19 @@
-// src/test/java/de/fuhrpark/FuhrparkManagerTest.java
 package de.fuhrpark;
 
 import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.model.Fahrzeug;
+
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class FuhrparkManagerTest {
+/**
+ * Testklasse für den FuhrparkManager.
+ */
+class FuhrParkManagerTest {
+
     @Test
     void testAddFahrzeug() {
         FuhrparkManager manager = new FuhrparkManager();
@@ -20,8 +27,9 @@ class FuhrparkManagerTest {
         Fahrzeug f1 = new Fahrzeug("K-DEF456", "Mercedes C-Class", 2021);
         f1.setStatus("in Wartung");
         manager.addFahrzeug(f1);
-        
-        List<Fahrzeug> verfuegbare = manager.filterFahrzeuge(f -> f.getStatus().equals("verfügbar"));
+
+        // Use method reference instead of lambda
+        List<Fahrzeug> verfuegbare = manager.filterFahrzeuge(Fahrzeug::isVerfuegbar);
         assertTrue(verfuegbare.isEmpty());
     }
 }
