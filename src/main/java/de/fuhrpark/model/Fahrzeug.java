@@ -11,6 +11,7 @@ public class Fahrzeug {
     private String modell;
     private FahrzeugTyp typ;
     private int baujahr;
+    private double grundpreis;
     private String status;
     private double aktuellerWert;
 
@@ -21,6 +22,19 @@ public class Fahrzeug {
         this.modell = modell;
         this.typ = typ;
         this.baujahr = 0; // Default baujahr
+        this.aktuellerWert = 0.0; // Default aktuellerWert
+        this.status = "verfügbar";
+    }
+
+    // Additional constructor with all parameters
+    public Fahrzeug(String kennzeichen, String marke, String modell, FahrzeugTyp typ, 
+                   int baujahr, double grundpreis) {
+        this.kennzeichen = kennzeichen;
+        this.marke = marke;
+        this.modell = modell;
+        this.typ = typ;
+        this.baujahr = baujahr;
+        this.grundpreis = grundpreis;
         this.aktuellerWert = 0.0; // Default aktuellerWert
         this.status = "verfügbar";
     }
@@ -76,6 +90,18 @@ public class Fahrzeug {
 
     public void setTyp(FahrzeugTyp typ) {
         this.typ = typ;
+    }
+
+    public double getGrundpreis() {
+        return grundpreis;
+    }
+
+    public void setBaujahr(int baujahr) {
+        this.baujahr = baujahr;
+    }
+
+    public void setGrundpreis(double grundpreis) {
+        this.grundpreis = grundpreis;
     }
 
     /**
