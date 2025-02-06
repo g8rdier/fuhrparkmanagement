@@ -28,5 +28,6 @@ public class ReparaturBuchEintrag {
     public String getBeschreibung() { return beschreibung; }
     public double getKosten() { return kosten; }
     public String getKennzeichen() { return kennzeichen; }
+    public String getFahrzeugKennzeichen() { return kennzeichen; }
     public String getWerkstatt() { return werkstatt; }
 } 
