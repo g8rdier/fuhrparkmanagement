@@ -38,8 +38,17 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
+    public void updateFahrzeug(Fahrzeug fahrzeug) {
+        if (fahrzeuge.containsKey(fahrzeug.getKennzeichen())) {
+            fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+        }
+    }
+
+    @Override
     public void deleteFahrzeug(String kennzeichen) {
         fahrzeuge.remove(kennzeichen);
+        fahrtenbuch.remove(kennzeichen);
+        reparaturen.remove(kennzeichen);
     }
 
     @Override
@@ -49,8 +58,7 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        String kennzeichen = eintrag.getKennzeichen();
-        fahrtenbuch.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
+        fahrtenbuch.computeIfAbsent(eintrag.getKennzeichen(), _ -> new ArrayList<>()).add(eintrag);
     }
 
     @Override
@@ -60,9 +68,7 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public void addReparatur(ReparaturBuchEintrag reparatur) {
-        reparaturen.computeIfAbsent(reparatur.getFahrzeugKennzeichen(), 
-            _ -> new ArrayList<>())
-                  .add(reparatur);
+        reparaturen.computeIfAbsent(reparatur.getKennzeichen(), _ -> new ArrayList<>()).add(reparatur);
     }
 
     @Override
