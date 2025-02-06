@@ -11,17 +11,23 @@ public class DataStoreImpl implements DataStore {
     private final List<ReparaturBuchEintrag> reparaturBuchEintraege = new ArrayList<>();
 
     @Override
-    public void delete(String kennzeichen) {
+    public void addFahrzeug(Fahrzeug fahrzeug) {
+        fahrzeuge.add(fahrzeug);
+    }
+
+    @Override
+    public void updateFahrzeug(Fahrzeug fahrzeug) {
+        deleteFahrzeug(fahrzeug.getKennzeichen());
+        addFahrzeug(fahrzeug);
+    }
+
+    @Override
+    public void deleteFahrzeug(String kennzeichen) {
         fahrzeuge.removeIf(f -> f.getKennzeichen().equals(kennzeichen));
     }
 
     @Override
     public List<Fahrzeug> getFahrzeuge() {
-        return new ArrayList<>(fahrzeuge);
-    }
-
-    @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
         return new ArrayList<>(fahrzeuge);
     }
 
@@ -36,24 +42,13 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public void addReparatur(ReparaturBuchEintrag eintrag) {
-        reparaturBuchEintraege.add(eintrag);
+    public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
+        fahrtenbuchEintraege.add(eintrag);
     }
 
     @Override
     public List<FahrtenbuchEintrag> getFahrtenbuchEintraege() {
         return new ArrayList<>(fahrtenbuchEintraege);
-    }
-
-    @Override
-    public List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen) {
-        List<FahrtenbuchEintrag> result = new ArrayList<>();
-        for (FahrtenbuchEintrag e : fahrtenbuchEintraege) {
-            if (e.getFahrzeugKennzeichen().equals(kennzeichen)) {
-                result.add(e);
-            }
-        }
-        return result;
     }
 
     @Override
@@ -70,7 +65,7 @@ public class DataStoreImpl implements DataStore {
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
         List<ReparaturBuchEintrag> result = new ArrayList<>();
         for (ReparaturBuchEintrag e : reparaturBuchEintraege) {
-            if (e.getFahrzeugKennzeichen().equals(kennzeichen)) {
+            if (e.getKennzeichen().equals(kennzeichen)) {
                 result.add(e);
             }
         }
@@ -78,16 +73,22 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public void save(String path, Object obj) throws IOException {
+    public String save(String path, Object obj) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path))) {
             oos.writeObject(obj);
+            return path;
+        } catch (IOException e) {
+            throw new RuntimeException("Error saving data: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public Object load(String path) throws IOException, ClassNotFoundException {
+    public String load(String path) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
-            return ois.readObject();
+            ois.readObject();
+            return path;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Error loading data: " + e.getMessage(), e);
         }
     }
 }
