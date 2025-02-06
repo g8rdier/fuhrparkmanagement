@@ -23,10 +23,10 @@ public class ReparaturBuchEintrag {
     }
 
     // Getters
-    public String getKennzeichen() { return kennzeichen; }
     public LocalDate getDatum() { return datum; }
+    public ReparaturTyp getTyp() { return typ; }
     public String getBeschreibung() { return beschreibung; }
     public double getKosten() { return kosten; }
+    public String getKennzeichen() { return kennzeichen; }
     public String getWerkstatt() { return werkstatt; }
-    public ReparaturTyp getTyp() { return typ; }
 } 
