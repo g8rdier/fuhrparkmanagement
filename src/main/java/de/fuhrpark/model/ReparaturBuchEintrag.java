@@ -21,9 +21,8 @@ public class ReparaturBuchEintrag {
     }
 
     // Getters
+    public String getFahrzeugKennzeichen() { return fahrzeugKennzeichen; }
     public LocalDate getDatum() { return datum; }
-    public ReparaturTyp getTyp() { return typ; }
     public String getBeschreibung() { return beschreibung; }
     public double getKosten() { return kosten; }
-    public String getFahrzeugKennzeichen() { return fahrzeugKennzeichen; }
-} 
+    public String getWerkstatt() { return werkstatt; }
