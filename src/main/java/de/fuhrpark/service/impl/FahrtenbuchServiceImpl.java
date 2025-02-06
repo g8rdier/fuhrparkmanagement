@@ -13,7 +13,7 @@ public class FahrtenbuchServiceImpl implements FahrtenbuchService {
     }
 
     @Override
-    public void addEintrag(FahrtenbuchEintrag eintrag) {
+    public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
         dataStore.addFahrtenbuchEintrag(eintrag);
     }
 
