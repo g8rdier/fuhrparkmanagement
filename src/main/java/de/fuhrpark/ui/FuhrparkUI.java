@@ -84,7 +84,7 @@ public class FuhrparkUI extends JFrame {
         dialog.add(wertField);
 
         JButton saveButton = new JButton("Speichern");
-        saveButton.addActionListener(e -> {
+        saveButton.addActionListener(event -> {
             try {
                 Fahrzeug newFahrzeug = new Fahrzeug(
                     kennzeichenField.getText(),
@@ -106,7 +106,9 @@ public class FuhrparkUI extends JFrame {
         });
 
         dialog.add(saveButton);
-        dialog.add(new JButton("Abbrechen") {{ addActionListener(e -> dialog.dispose()); }});
+        dialog.add(new JButton("Abbrechen") {{ 
+            addActionListener(event -> dialog.dispose()); 
+        }});
 
         dialog.pack();
         dialog.setLocationRelativeTo(this);
@@ -114,13 +116,32 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void showEditDialog() {
-        // Will implement edit functionality
-        JOptionPane.showMessageDialog(this, "Edit functionality coming soon!");
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this, "Bitte wählen Sie ein Fahrzeug aus.");
+            return;
+        }
+
+        Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
+        // ... rest of edit dialog implementation
     }
 
     private void deleteSelectedFahrzeug() {
-        // Will implement delete functionality
-        JOptionPane.showMessageDialog(this, "Delete functionality coming soon!");
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this, "Bitte wählen Sie ein Fahrzeug aus.");
+            return;
+        }
+
+        Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
+        if (JOptionPane.showConfirmDialog(this, 
+            "Möchten Sie das Fahrzeug " + fahrzeug.getKennzeichen() + " wirklich löschen?",
+            "Fahrzeug löschen",
+            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            
+            fahrzeugService.deleteFahrzeug(fahrzeug.getKennzeichen());
+            refreshTable();
+        }
     }
 
     private void showLogbookView() {
@@ -153,7 +174,13 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void showRepairView() {
-        // Will implement repair view
-        JOptionPane.showMessageDialog(this, "Repair view coming soon!");
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this, "Bitte wählen Sie ein Fahrzeug aus.");
+            return;
+        }
+
+        Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
+        // ... implement repair view
     }
 } 
