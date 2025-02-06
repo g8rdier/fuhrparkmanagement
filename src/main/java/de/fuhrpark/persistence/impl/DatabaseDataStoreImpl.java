@@ -84,20 +84,48 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void addFahrzeug(Fahrzeug fahrzeug) {
-        String sql = "INSERT INTO fahrzeuge (kennzeichen, marke, modell, typ) VALUES (?, ?, ?, ?)";
-        // Execute SQL with fahrzeug properties
+        try (Connection conn = getConnection()) {
+            String sql = "INSERT INTO fahrzeuge (kennzeichen, marke, modell, typ) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, fahrzeug.getKennzeichen());
+                stmt.setString(2, fahrzeug.getMarke());
+                stmt.setString(3, fahrzeug.getModell());
+                stmt.setString(4, fahrzeug.getTyp().toString());
+                stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error adding Fahrzeug", e);
+        }
     }
 
     @Override
     public void deleteFahrzeug(String kennzeichen) {
-        String sql = "DELETE FROM fahrzeuge WHERE kennzeichen = ?";
-        // Execute SQL
+        try (Connection conn = getConnection()) {
+            String sql = "DELETE FROM fahrzeuge WHERE kennzeichen = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, kennzeichen);
+                stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error deleting Fahrzeug", e);
+        }
     }
 
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
-        String sql = "SELECT * FROM fahrzeuge";
-        return new ArrayList<>(); // TODO: Implement actual database query
+        List<Fahrzeug> fahrzeuge = new ArrayList<>();
+        try (Connection conn = getConnection()) {
+            String sql = "SELECT * FROM fahrzeuge";
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                while (rs.next()) {
+                    fahrzeuge.add(createFahrzeugFromResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching Fahrzeuge", e);
+        }
+        return fahrzeuge;
     }
 
     @Override
@@ -187,11 +215,35 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void updateFahrzeug(Fahrzeug fahrzeug) {
-        String sql = "UPDATE fahrzeuge SET marke = ?, modell = ?, typ = ? WHERE kennzeichen = ?";
-        // Execute SQL with fahrzeug properties
+        try (Connection conn = getConnection()) {
+            String sql = "UPDATE fahrzeuge SET marke = ?, modell = ?, typ = ? WHERE kennzeichen = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, fahrzeug.getMarke());
+                stmt.setString(2, fahrzeug.getModell());
+                stmt.setString(3, fahrzeug.getTyp().toString());
+                stmt.setString(4, fahrzeug.getKennzeichen());
+                stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating Fahrzeug", e);
+        }
     }
 
     private java.sql.Date toSqlDate(LocalDate date) {
         return java.sql.Date.valueOf(date);
+    }
+
+    private Connection getConnection() throws SQLException {
+        // TODO: Implement actual database connection
+        throw new UnsupportedOperationException("Database connection not implemented");
+    }
+
+    private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
+        return new Fahrzeug(
+            rs.getString("kennzeichen"),
+            rs.getString("marke"),
+            rs.getString("modell"),
+            FahrzeugTyp.valueOf(rs.getString("typ"))
+        );
     }
 } 
