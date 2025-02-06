@@ -8,11 +8,17 @@ import java.awt.*;
 import java.time.LocalDate;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.geometry.Insets;
 
 public class ReparaturDialog extends Dialog<ReparaturBuchEintrag> {
     private final JTable table;
     private final String kennzeichen;
     private final ReparaturService service;
+    private final TextField kennzeichenField = new TextField();
+    private final TextField werkstattField = new TextField();
+    private final TextField kostenField = new TextField();
+    private final TextField beschreibungField = new TextField();
+    private final ComboBox<ReparaturTyp> typComboBox = new ComboBox<>();
 
     public ReparaturDialog(Frame owner, String kennzeichen, ReparaturService service) {
         super(owner, "Reparaturen: " + kennzeichen, true);
@@ -95,5 +101,63 @@ public class ReparaturDialog extends Dialog<ReparaturBuchEintrag> {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
+    }
+
+    public ReparaturDialog() {
+        setTitle("Neue Reparatur");
+        setHeaderText("Bitte geben Sie die Reparatur-Details ein");
+
+        // Create the grid pane
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        // Add fields to grid
+        grid.add(new Label("Kennzeichen:"), 0, 0);
+        grid.add(kennzeichenField, 1, 0);
+        grid.add(new Label("Werkstatt:"), 0, 1);
+        grid.add(werkstattField, 1, 1);
+        grid.add(new Label("Kosten:"), 0, 2);
+        grid.add(kostenField, 1, 2);
+        grid.add(new Label("Beschreibung:"), 0, 3);
+        grid.add(beschreibungField, 1, 3);
+        grid.add(new Label("Typ:"), 0, 4);
+        grid.add(typComboBox, 1, 4);
+
+        // Initialize ComboBox
+        typComboBox.getItems().addAll(ReparaturTyp.values());
+
+        getDialogPane().setContent(grid);
+        getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // Add validation
+        getDialogPane().lookupButton(ButtonType.OK).addEventFilter(javafx.event.ActionEvent.ACTION, _ -> {
+            if (!isInputValid()) {
+                throw new IllegalArgumentException("Ungültige Eingabe");
+            }
+        });
+
+        // Set result converter
+        setResultConverter(_ -> {
+            if (getResult() == ButtonType.OK) {
+                return new ReparaturBuchEintrag(
+                    LocalDate.now(),
+                    typComboBox.getValue(),
+                    beschreibungField.getText(),
+                    Double.parseDouble(kostenField.getText()),
+                    kennzeichenField.getText(),
+                    werkstattField.getText()
+                );
+            }
+            return null;
+        });
+    }
+
+    private boolean isInputValid() {
+        return !kennzeichenField.getText().isEmpty() &&
+               !werkstattField.getText().isEmpty() &&
+               !kostenField.getText().isEmpty() &&
+               typComboBox.getValue() != null;
     }
 } 
