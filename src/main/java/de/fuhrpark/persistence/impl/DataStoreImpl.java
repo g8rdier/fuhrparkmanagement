@@ -33,7 +33,17 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
+    public List<Fahrzeug> getAlleFahrzeuge() {
+        return new ArrayList<>(fahrzeuge);
+    }
+
+    @Override
     public Fahrzeug getFahrzeug(String kennzeichen) {
+        return getFahrzeugByKennzeichen(kennzeichen);
+    }
+
+    @Override
+    public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
         return fahrzeuge.stream()
                 .filter(f -> f.getKennzeichen().equals(kennzeichen))
                 .findFirst()

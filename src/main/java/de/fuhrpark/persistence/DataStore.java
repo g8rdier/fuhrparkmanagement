@@ -12,7 +12,9 @@ public interface DataStore {
     void updateFahrzeug(Fahrzeug fahrzeug);
     void deleteFahrzeug(String kennzeichen);
     List<Fahrzeug> getFahrzeuge();
+    List<Fahrzeug> getAlleFahrzeuge();
     Fahrzeug getFahrzeug(String kennzeichen);
+    Fahrzeug getFahrzeugByKennzeichen(String kennzeichen);
 
     // Fahrtenbuch operations
     void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag);
