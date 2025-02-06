@@ -31,4 +31,12 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     public void deleteFahrzeug(String kennzeichen) {
         dataStore.deleteFahrzeug(kennzeichen);
     }
+
+    @Override
+    public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
+        return dataStore.getAlleFahrzeuge().stream()
+            .filter(f -> f.getKennzeichen().equals(kennzeichen))
+            .findFirst()
+            .orElse(null);
+    }
 } 

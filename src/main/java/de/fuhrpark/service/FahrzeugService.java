@@ -8,4 +8,5 @@ public interface FahrzeugService {
     void addFahrzeug(Fahrzeug fahrzeug);
     void updateFahrzeug(Fahrzeug fahrzeug);
     void deleteFahrzeug(String kennzeichen);
+    Fahrzeug getFahrzeugByKennzeichen(String kennzeichen);
 }
