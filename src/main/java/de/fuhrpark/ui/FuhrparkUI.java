@@ -122,8 +122,62 @@ public class FuhrparkUI extends JFrame {
             return;
         }
 
-        Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
-        // ... rest of edit dialog implementation
+        Fahrzeug selectedFahrzeug = tableModel.getFahrzeugAt(selectedRow);
+        JDialog dialog = new JDialog(this, "Fahrzeug bearbeiten", true);
+        dialog.setLayout(new GridLayout(7, 2, 5, 5));
+
+        JTextField kennzeichenField = new JTextField(selectedFahrzeug.getKennzeichen());
+        JTextField markeField = new JTextField(selectedFahrzeug.getMarke());
+        JTextField modellField = new JTextField(selectedFahrzeug.getModell());
+        JComboBox<FahrzeugTyp> typCombo = new JComboBox<>(FahrzeugTyp.values());
+        typCombo.setSelectedItem(selectedFahrzeug.getTyp());
+        JTextField baujahrField = new JTextField(String.valueOf(selectedFahrzeug.getBaujahr()));
+        JTextField wertField = new JTextField(String.valueOf(selectedFahrzeug.getAktuellerWert()));
+
+        // Add components to dialog
+        dialog.add(new JLabel("Kennzeichen:"));
+        dialog.add(kennzeichenField);
+        dialog.add(new JLabel("Marke:"));
+        dialog.add(markeField);
+        dialog.add(new JLabel("Modell:"));
+        dialog.add(modellField);
+        dialog.add(new JLabel("Typ:"));
+        dialog.add(typCombo);
+        dialog.add(new JLabel("Baujahr:"));
+        dialog.add(baujahrField);
+        dialog.add(new JLabel("Wert (€):"));
+        dialog.add(wertField);
+
+        dialog.add(new JButton("Speichern") {{
+            addActionListener(e -> {
+                try {
+                    Fahrzeug updatedFahrzeug = new Fahrzeug(
+                        kennzeichenField.getText(),
+                        markeField.getText(),
+                        modellField.getText(),
+                        (FahrzeugTyp) typCombo.getSelectedItem(),
+                        Integer.parseInt(baujahrField.getText()),
+                        Double.parseDouble(wertField.getText())
+                    );
+                    fahrzeugService.updateFahrzeug(updatedFahrzeug);
+                    refreshTable();
+                    dialog.dispose();
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(dialog,
+                        "Bitte gültige Zahlen für Baujahr und Wert eingeben.",
+                        "Eingabefehler",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            });
+        }});
+
+        dialog.add(new JButton("Abbrechen") {{
+            addActionListener(e -> dialog.dispose());
+        }});
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private void deleteSelectedFahrzeug() {
@@ -180,7 +234,24 @@ public class FuhrparkUI extends JFrame {
             return;
         }
 
-        Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
-        // ... implement repair view
+        Fahrzeug selectedFahrzeug = tableModel.getFahrzeugAt(selectedRow);
+        List<ReparaturBuchEintrag> reparaturen = 
+            reparaturService.getReparaturenForFahrzeug(selectedFahrzeug.getKennzeichen());
+
+        JDialog dialog = new JDialog(this, "Reparaturen: " + selectedFahrzeug.getKennzeichen(), true);
+        dialog.setLayout(new BorderLayout());
+        
+        String[] columns = {"Datum", "Beschreibung", "Kosten", "Werkstatt"};
+        Object[][] data = reparaturen.stream()
+            .map(r -> new Object[]{r.getDatum(), r.getBeschreibung(), 
+                                 String.format("%.2f €", r.getKosten()), r.getWerkstatt()})
+            .toArray(Object[][]::new);
+
+        JTable repairTable = new JTable(data, columns);
+        dialog.add(new JScrollPane(repairTable), BorderLayout.CENTER);
+        
+        dialog.setSize(600, 400);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 } 

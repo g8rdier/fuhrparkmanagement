@@ -35,4 +35,9 @@ public class FahrzeugServiceImpl implements FahrzeugService {
         }
         fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
     }
+
+    @Override
+    public void deleteFahrzeug(String kennzeichen) {
+        fahrzeuge.remove(kennzeichen);
+    }
 } 
