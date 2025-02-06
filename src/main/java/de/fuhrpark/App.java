@@ -1,7 +1,7 @@
 package de.fuhrpark;
 
 import de.fuhrpark.persistence.DataStore;
-import de.fuhrpark.persistence.impl.DataStoreImpl;
+import de.fuhrpark.persistence.impl.DatabaseDataStoreImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
 import de.fuhrpark.service.impl.ReparaturServiceImpl;
@@ -15,7 +15,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        DataStore dataStore = new DataStoreImpl();
+        DataStore dataStore = new DatabaseDataStoreImpl();
         
         FuhrparkUI ui = new FuhrparkUI(
             new FahrzeugServiceImpl(dataStore),
