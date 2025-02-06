@@ -24,7 +24,7 @@ public class FahrtenbuchDialog extends JDialog {
         // Create toolbar with New button
         JToolBar toolBar = new JToolBar();
         JButton newButton = new JButton("Neu");
-        newButton.addActionListener(_ -> showNewEntryDialog());
+        newButton.addActionListener(event -> showNewEntryDialog());
         toolBar.add(newButton);
 
         // Table setup
@@ -41,19 +41,23 @@ public class FahrtenbuchDialog extends JDialog {
 
     private void showNewEntryDialog() {
         JDialog dialog = new JDialog(this, "Neue Fahrt", true);
-        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
 
-        addComponent(panel, new JLabel("Start:"), startOrtField, 0);
-        addComponent(panel, new JLabel("Ziel:"), zielOrtField, 1);
-        addComponent(panel, new JLabel("Kilometer:"), kilometerField, 2);
-        addComponent(panel, new JLabel("Kennzeichen:"), kennzeichenField, 3);
+        // Add components
+        addComponent(mainPanel, new JLabel("Start:"), startOrtField, gbc, 0);
+        addComponent(mainPanel, new JLabel("Ziel:"), zielOrtField, gbc, 1);
+        addComponent(mainPanel, new JLabel("Kilometer:"), kilometerField, gbc, 2);
+        addComponent(mainPanel, new JLabel("Kennzeichen:"), kennzeichenField, gbc, 3);
 
-        // Button panel with fixed lambda parameters
+        // Button panel
         JPanel buttonPanel = new JPanel();
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
 
-        okButton.addActionListener(_ -> {  // Use underscore for unused parameter
+        okButton.addActionListener(event -> {
             if (isInputValid()) {
                 result = createFahrtenbuchEintrag();
                 service.addEintrag(result);
@@ -69,21 +73,28 @@ public class FahrtenbuchDialog extends JDialog {
             }
         });
 
-        cancelButton.addActionListener(_ -> dialog.dispose());  // Use underscore for unused parameter
+        cancelButton.addActionListener(event -> dialog.dispose());
 
-        panel.add(buttonPanel);
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        dialog.add(panel);
+        add(mainPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
 
-    private void addComponent(JPanel panel, JLabel label, JComponent field, int row) {
-        panel.add(label, new GridBagConstraints(0, row, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-        panel.add(field, new GridBagConstraints(1, row, 1, 1, 1, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+    private void addComponent(JPanel panel, JLabel label, JComponent field, 
+                            GridBagConstraints gbc, int row) {
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        panel.add(label, gbc);
+
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(field, gbc);
     }
 
     private boolean isInputValid() {
