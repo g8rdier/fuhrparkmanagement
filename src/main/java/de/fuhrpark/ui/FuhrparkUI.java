@@ -1,25 +1,21 @@
 package de.fuhrpark.ui;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 import de.fuhrpark.service.FahrzeugService;
 import de.fuhrpark.service.FahrtenbuchService;
 import de.fuhrpark.service.ReparaturService;
 import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.enums.FahrzeugTyp;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+
 public class FuhrparkUI extends JFrame {
     private final FahrzeugService fahrzeugService;
     private final FahrtenbuchService fahrtenbuchService;
     private final ReparaturService reparaturService;
-    private JTable fahrzeugTable;
-    private JButton addButton;
-    private JButton editButton;
-    private JButton deleteButton;
-    private JButton fahrtenbuchButton;
-    private JButton reparaturButton;
-    private FahrzeugTableModel tableModel;
+    private final JTable fahrzeugTable;
+    private final FahrzeugTableModel tableModel;
 
     public FuhrparkUI(FahrzeugService fahrzeugService, 
                      FahrtenbuchService fahrtenbuchService,
@@ -27,77 +23,61 @@ public class FuhrparkUI extends JFrame {
         this.fahrzeugService = fahrzeugService;
         this.fahrtenbuchService = fahrtenbuchService;
         this.reparaturService = reparaturService;
-        initializeUI();
-        updateFahrzeugTable();
-    }
-
-    private void updateFahrzeugTable() {
-        tableModel.updateData(fahrzeugService.getAlleFahrzeuge());
-    }
-
-    private void initializeUI() {
-        setTitle("Fuhrparkverwaltung");
+        
+        setTitle("Fuhrpark Management System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
-        setLocationRelativeTo(null);
-
-        // Create main panel
-        JPanel mainPanel = new JPanel(new BorderLayout());
-
-        // Create table
-        String[] columns = {"Kennzeichen", "Marke", "Modell", "Typ", "Baujahr", "Status", "Wert"};
-        fahrzeugTable = new JTable(new FahrzeugTableModel(columns));
-        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-
-        // Create button panel
-        JPanel buttonPanel = new JPanel();
-        addButton = new JButton("Fahrzeug hinzufügen");
-        editButton = new JButton("Bearbeiten");
-        deleteButton = new JButton("Löschen");
-        fahrtenbuchButton = new JButton("Fahrtenbuch");
-        reparaturButton = new JButton("Reparaturen");
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(fahrtenbuchButton);
-        buttonPanel.add(reparaturButton);
-
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        // Add action listeners
-        addButton.addActionListener(e -> showAddFahrzeugDialog());
-        editButton.addActionListener(e -> editSelectedFahrzeug());
-        deleteButton.addActionListener(e -> deleteSelectedFahrzeug());
-        fahrtenbuchButton.addActionListener(e -> showFahrtenbuch());
-        reparaturButton.addActionListener(e -> showReparaturen());
-
-        add(mainPanel);
+        
+        // Initialize table
+        tableModel = new FahrzeugTableModel();
+        fahrzeugTable = new JTable(tableModel);
+        add(new JScrollPane(fahrzeugTable), BorderLayout.CENTER);
+        
+        // Add toolbar with buttons
+        JToolBar toolbar = new JToolBar();
+        toolbar.add(createButton("Hinzufügen", this::showAddDialog));
+        toolbar.add(createButton("Bearbeiten", this::showEditDialog));
+        toolbar.add(createButton("Löschen", this::deleteSelectedFahrzeug));
+        toolbar.add(createButton("Fahrtenbuch", this::showLogbookView));
+        toolbar.add(createButton("Reparaturen", this::showRepairView));
+        add(toolbar, BorderLayout.NORTH);
+        
+        refreshTable();
     }
 
-    private void showAddFahrzeugDialog() {
-        // TODO: Implement add dialog
-        JOptionPane.showMessageDialog(this, "Fahrzeug hinzufügen Dialog wird implementiert");
+    private JButton createButton(String text, Runnable action) {
+        JButton button = new JButton(text);
+        button.addActionListener(e -> action.run());
+        return button;
     }
 
-    private void editSelectedFahrzeug() {
-        // TODO: Implement edit functionality
-        JOptionPane.showMessageDialog(this, "Bearbeiten wird implementiert");
+    private void refreshTable() {
+        List<Fahrzeug> fahrzeuge = fahrzeugService.getAlleFahrzeuge();
+        tableModel.setFahrzeuge(fahrzeuge);
+    }
+
+    private void showAddDialog() {
+        // Will implement dialog functionality
+        JOptionPane.showMessageDialog(this, "Add functionality coming soon!");
+    }
+
+    private void showEditDialog() {
+        // Will implement edit functionality
+        JOptionPane.showMessageDialog(this, "Edit functionality coming soon!");
     }
 
     private void deleteSelectedFahrzeug() {
-        // TODO: Implement delete functionality
-        JOptionPane.showMessageDialog(this, "Löschen wird implementiert");
+        // Will implement delete functionality
+        JOptionPane.showMessageDialog(this, "Delete functionality coming soon!");
     }
 
-    private void showFahrtenbuch() {
-        // TODO: Implement logbook view
-        JOptionPane.showMessageDialog(this, "Fahrtenbuch wird implementiert");
+    private void showLogbookView() {
+        // Will implement logbook view
+        JOptionPane.showMessageDialog(this, "Logbook view coming soon!");
     }
 
-    private void showReparaturen() {
-        // TODO: Implement repair view
-        JOptionPane.showMessageDialog(this, "Reparaturen wird implementiert");
+    private void showRepairView() {
+        // Will implement repair view
+        JOptionPane.showMessageDialog(this, "Repair view coming soon!");
     }
 } 
