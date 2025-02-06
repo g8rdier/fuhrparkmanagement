@@ -49,7 +49,7 @@ public class FuhrparkUI extends JFrame {
 
     private JButton createButton(String text, Runnable action) {
         JButton button = new JButton(text);
-        button.addActionListener(actionEvent -> action.run());
+        button.addActionListener(_ -> action.run());
         return button;
     }
 
@@ -83,7 +83,7 @@ public class FuhrparkUI extends JFrame {
         dialog.add(wertField);
 
         JButton saveButton = new JButton("Speichern");
-        saveButton.addActionListener(event -> {
+        saveButton.addActionListener(_ -> {
             try {
                 Fahrzeug newFahrzeug = new Fahrzeug(
                     kennzeichenField.getText(),
@@ -106,7 +106,7 @@ public class FuhrparkUI extends JFrame {
 
         dialog.add(saveButton);
         dialog.add(new JButton("Abbrechen") {{ 
-            addActionListener(actionEvent -> dialog.dispose()); 
+            addActionListener(_ -> dialog.dispose()); 
         }});
 
         dialog.pack();
@@ -148,7 +148,7 @@ public class FuhrparkUI extends JFrame {
         dialog.add(wertField);
 
         dialog.add(new JButton("Speichern") {{
-            addActionListener(e -> {
+            addActionListener(_ -> {
                 try {
                     Fahrzeug updatedFahrzeug = new Fahrzeug(
                         kennzeichenField.getText(),
@@ -171,7 +171,7 @@ public class FuhrparkUI extends JFrame {
         }});
 
         dialog.add(new JButton("Abbrechen") {{ 
-            addActionListener(actionEvent -> dialog.dispose()); 
+            addActionListener(_ -> dialog.dispose()); 
         }});
 
         dialog.pack();
