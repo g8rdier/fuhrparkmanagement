@@ -3,25 +3,28 @@ package de.fuhrpark.model;
 import java.time.LocalDate;
 
 public class FahrtenbuchEintrag {
-    private LocalDate datum;
-    private String fahrer;
-    private String grund;
-    private double kilometer;
-    private String fahrzeugKennzeichen;
+    private final String fahrzeugKennzeichen;
+    private final LocalDate datum;
+    private final String start;
+    private final String ziel;
+    private final int kilometer;
+    private final String fahrer;
 
-    public FahrtenbuchEintrag(LocalDate datum, String fahrer, String grund, 
-                             double kilometer, String fahrzeugKennzeichen) {
-        this.datum = datum;
-        this.fahrer = fahrer;
-        this.grund = grund;
-        this.kilometer = kilometer;
+    public FahrtenbuchEintrag(String fahrzeugKennzeichen, LocalDate datum, 
+                             String start, String ziel, int kilometer, String fahrer) {
         this.fahrzeugKennzeichen = fahrzeugKennzeichen;
+        this.datum = datum;
+        this.start = start;
+        this.ziel = ziel;
+        this.kilometer = kilometer;
+        this.fahrer = fahrer;
     }
 
     // Getters
-    public LocalDate getDatum() { return datum; }
-    public String getFahrer() { return fahrer; }
-    public String getGrund() { return grund; }
-    public double getKilometer() { return kilometer; }
     public String getFahrzeugKennzeichen() { return fahrzeugKennzeichen; }
+    public LocalDate getDatum() { return datum; }
+    public String getStart() { return start; }
+    public String getZiel() { return ziel; }
+    public int getKilometer() { return kilometer; }
+    public String getFahrer() { return fahrer; }
 } 
