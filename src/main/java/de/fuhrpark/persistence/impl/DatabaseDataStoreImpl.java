@@ -84,20 +84,7 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void saveFahrzeug(Fahrzeug fahrzeug) {
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             PreparedStatement stmt = conn.prepareStatement(
-                 "MERGE INTO fahrzeuge (kennzeichen, marke, modell, typ, baujahr, wert) VALUES (?, ?, ?, ?, ?, ?)"
-             )) {
-            stmt.setString(1, fahrzeug.getKennzeichen());
-            stmt.setString(2, fahrzeug.getMarke());
-            stmt.setString(3, fahrzeug.getModell());
-            stmt.setString(4, fahrzeug.getTyp().toString());
-            stmt.setInt(5, fahrzeug.getBaujahr());
-            stmt.setDouble(6, fahrzeug.getAktuellerWert());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // Implementation
     }
 
     @Override
