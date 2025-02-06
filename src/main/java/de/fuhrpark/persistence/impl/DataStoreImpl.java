@@ -11,8 +11,8 @@ public class DataStoreImpl implements DataStore {
     private final List<ReparaturBuchEintrag> reparaturBuchEintraege = new ArrayList<>();
 
     @Override
-    public void addFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.add(fahrzeug);
+    public void delete(String kennzeichen) {
+        fahrzeuge.removeIf(f -> f.getKennzeichen().equals(kennzeichen));
     }
 
     @Override
@@ -36,19 +36,8 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public void updateFahrzeug(Fahrzeug fahrzeug) {
-        delete(fahrzeug.getKennzeichen());
-        addFahrzeug(fahrzeug);
-    }
-
-    @Override
-    public void delete(String kennzeichen) {
-        fahrzeuge.removeIf(f -> f.getKennzeichen().equals(kennzeichen));
-    }
-
-    @Override
-    public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        fahrtenbuchEintraege.add(eintrag);
+    public void addReparatur(ReparaturBuchEintrag eintrag) {
+        reparaturBuchEintraege.add(eintrag);
     }
 
     @Override
@@ -65,11 +54,6 @@ public class DataStoreImpl implements DataStore {
             }
         }
         return result;
-    }
-
-    @Override
-    public void addReparatur(ReparaturBuchEintrag eintrag) {
-        reparaturBuchEintraege.add(eintrag);
     }
 
     @Override
@@ -106,4 +90,4 @@ public class DataStoreImpl implements DataStore {
             return ois.readObject();
         }
     }
-} 
+}
