@@ -9,15 +9,12 @@ import java.util.*;
 
 public class DataStoreImpl implements DataStore {
     private final Map<String, Object> storage;
-    private final Map<String, Fahrzeug> fahrzeuge;
-    private final Map<String, List<FahrtenbuchEintrag>> fahrtenbuch;
-    private final Map<String, List<ReparaturBuchEintrag>> reparaturen;
+    private final Map<String, Fahrzeug> fahrzeuge = new HashMap<>();
+    private final Map<String, List<FahrtenbuchEintrag>> fahrtenbuch = new HashMap<>();
+    private final Map<String, List<ReparaturBuchEintrag>> reparaturen = new HashMap<>();
 
     public DataStoreImpl() {
         this.storage = new HashMap<>();
-        this.fahrzeuge = new HashMap<>();
-        this.fahrtenbuch = new HashMap<>();
-        this.reparaturen = new HashMap<>();
     }
 
     @Override
@@ -36,7 +33,7 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public void saveFahrzeug(Fahrzeug fahrzeug) {
+    public void addFahrzeug(Fahrzeug fahrzeug) {
         fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
     }
 
@@ -52,9 +49,8 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        fahrtenbuch.computeIfAbsent(eintrag.getFahrzeugKennzeichen(), 
-            _ -> new ArrayList<>())
-                  .add(eintrag);
+        String kennzeichen = eintrag.getKennzeichen();
+        fahrtenbuch.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
     }
 
     @Override
