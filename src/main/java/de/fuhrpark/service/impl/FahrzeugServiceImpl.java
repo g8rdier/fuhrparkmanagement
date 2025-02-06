@@ -39,4 +39,4 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     public List<Fahrzeug> getAlleFahrzeuge() {
         return dataStore.getAlleFahrzeuge();
     }
-} 
+}
