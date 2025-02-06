@@ -6,16 +6,40 @@ import de.fuhrpark.persistence.DataStore;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class DatabaseDataStoreImpl implements DataStore {
-    private final String dbUrl = "jdbc:h2:./fuhrparkdb";
-    
+    private static final String CONFIG_FILE = "database.properties";
+    private static final String DB_URL;
+    private static final String DB_USER;
+    private static final String DB_PASSWORD;
+
+    static {
+        Properties props = new Properties();
+        try (FileInputStream fis = new FileInputStream(CONFIG_FILE)) {
+            props.load(fis);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load database configuration", e);
+        }
+        DB_URL = props.getProperty("db.url", "jdbc:mysql://localhost:3306/fuhrpark");
+        DB_USER = props.getProperty("db.user", "root");
+        DB_PASSWORD = props.getProperty("db.password", "");
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+    }
+
     public DatabaseDataStoreImpl() {
         initializeDatabase();
     }
 
     private void initializeDatabase() {
-        try (Connection conn = DriverManager.getConnection(dbUrl)) {
+        try (Connection conn = getConnection()) {
             createTables(conn);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -130,17 +154,17 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             PreparedStatement stmt = conn.prepareStatement(
-                 "INSERT INTO fahrtenbuch (datum, start_ort, ziel_ort, kilometer, fahrzeug_kennzeichen, fahrer) VALUES (?, ?, ?, ?, ?, ?)"
-             )) {
-            stmt.setDate(1, toSqlDate(eintrag.getDatum()));
-            stmt.setString(2, eintrag.getStartOrt());
-            stmt.setString(3, eintrag.getZielOrt());
-            stmt.setDouble(4, eintrag.getKilometer());
-            stmt.setString(5, eintrag.getFahrzeugKennzeichen());
-            stmt.setString(6, eintrag.getFahrer());
-            stmt.executeUpdate();
+        try (Connection conn = getConnection()) {
+            String sql = "INSERT INTO fahrtenbuch (datum, start_ort, ziel_ort, kilometer, fahrzeug_kennzeichen, fahrer) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setDate(1, toSqlDate(eintrag.getDatum()));
+                stmt.setString(2, eintrag.getStartOrt());
+                stmt.setString(3, eintrag.getZielOrt());
+                stmt.setDouble(4, eintrag.getKilometer());
+                stmt.setString(5, eintrag.getFahrzeugKennzeichen());
+                stmt.setString(6, eintrag.getFahrer());
+                stmt.executeUpdate();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -149,21 +173,23 @@ public class DatabaseDataStoreImpl implements DataStore {
     @Override
     public List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen) {
         List<FahrtenbuchEintrag> eintraege = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM fahrtenbuch WHERE fahrzeug_kennzeichen = ?")) {
-            stmt.setString(1, kennzeichen);
-            ResultSet rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                FahrtenbuchEintrag eintrag = new FahrtenbuchEintrag(
-                    rs.getDate("datum").toLocalDate(),
-                    rs.getString("start_ort"),
-                    rs.getString("ziel_ort"),
-                    rs.getDouble("kilometer"),
-                    rs.getString("fahrzeug_kennzeichen")
-                );
-                eintrag.setFahrer(rs.getString("fahrer"));
-                eintraege.add(eintrag);
+        try (Connection conn = getConnection()) {
+            String sql = "SELECT * FROM fahrtenbuch WHERE fahrzeug_kennzeichen = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, kennzeichen);
+                ResultSet rs = stmt.executeQuery();
+                
+                while (rs.next()) {
+                    FahrtenbuchEintrag eintrag = new FahrtenbuchEintrag(
+                        rs.getDate("datum").toLocalDate(),
+                        rs.getString("start_ort"),
+                        rs.getString("ziel_ort"),
+                        rs.getDouble("kilometer"),
+                        rs.getString("fahrzeug_kennzeichen")
+                    );
+                    eintrag.setFahrer(rs.getString("fahrer"));
+                    eintraege.add(eintrag);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -173,17 +199,17 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void addReparatur(ReparaturBuchEintrag reparatur) {
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             PreparedStatement stmt = conn.prepareStatement(
-                 "INSERT INTO reparaturen (datum, typ, beschreibung, kosten, fahrzeug_kennzeichen, werkstatt) VALUES (?, ?, ?, ?, ?, ?)"
-             )) {
-            stmt.setDate(1, toSqlDate(reparatur.getDatum()));
-            stmt.setString(2, reparatur.getTyp().toString());
-            stmt.setString(3, reparatur.getBeschreibung());
-            stmt.setDouble(4, reparatur.getKosten());
-            stmt.setString(5, reparatur.getFahrzeugKennzeichen());
-            stmt.setString(6, reparatur.getWerkstatt());
-            stmt.executeUpdate();
+        try (Connection conn = getConnection()) {
+            String sql = "INSERT INTO reparaturen (datum, typ, beschreibung, kosten, fahrzeug_kennzeichen, werkstatt) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setDate(1, toSqlDate(reparatur.getDatum()));
+                stmt.setString(2, reparatur.getTyp().toString());
+                stmt.setString(3, reparatur.getBeschreibung());
+                stmt.setDouble(4, reparatur.getKosten());
+                stmt.setString(5, reparatur.getFahrzeugKennzeichen());
+                stmt.setString(6, reparatur.getWerkstatt());
+                stmt.executeUpdate();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -192,20 +218,22 @@ public class DatabaseDataStoreImpl implements DataStore {
     @Override
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
         List<ReparaturBuchEintrag> reparaturen = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM reparaturen WHERE fahrzeug_kennzeichen = ?")) {
-            stmt.setString(1, kennzeichen);
-            ResultSet rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                reparaturen.add(new ReparaturBuchEintrag(
-                    rs.getDate("datum").toLocalDate(),
-                    ReparaturTyp.valueOf(rs.getString("typ")),
-                    rs.getString("beschreibung"),
-                    rs.getDouble("kosten"),
-                    rs.getString("fahrzeug_kennzeichen"),
-                    rs.getString("werkstatt")
-                ));
+        try (Connection conn = getConnection()) {
+            String sql = "SELECT * FROM reparaturen WHERE fahrzeug_kennzeichen = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, kennzeichen);
+                ResultSet rs = stmt.executeQuery();
+                
+                while (rs.next()) {
+                    reparaturen.add(new ReparaturBuchEintrag(
+                        rs.getDate("datum").toLocalDate(),
+                        ReparaturTyp.valueOf(rs.getString("typ")),
+                        rs.getString("beschreibung"),
+                        rs.getDouble("kosten"),
+                        rs.getString("fahrzeug_kennzeichen"),
+                        rs.getString("werkstatt")
+                    ));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -231,11 +259,6 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     private java.sql.Date toSqlDate(LocalDate date) {
         return java.sql.Date.valueOf(date);
-    }
-
-    private Connection getConnection() throws SQLException {
-        // TODO: Implement actual database connection
-        throw new UnsupportedOperationException("Database connection not implemented");
     }
 
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
