@@ -1,13 +1,11 @@
 package de.fuhrpark;
 
-import de.fuhrpark.ui.FuhrparkUI;
-import de.fuhrpark.service.FahrzeugService;
-import de.fuhrpark.service.FahrtenbuchService;
-import de.fuhrpark.service.ReparaturService;
+import de.fuhrpark.persistence.DataStore;
+import de.fuhrpark.persistence.impl.DataStoreImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
 import de.fuhrpark.service.impl.ReparaturServiceImpl;
-import javax.swing.SwingUtilities;
+import de.fuhrpark.ui.FuhrparkUI;
 
 /**
  * Hello world!
@@ -17,13 +15,14 @@ public class App
 {
     public static void main( String[] args )
     {
-        SwingUtilities.invokeLater(() -> {
-            FahrzeugService fahrzeugService = new FahrzeugServiceImpl();
-            FahrtenbuchService fahrtenbuchService = new FahrtenbuchServiceImpl();
-            ReparaturService reparaturService = new ReparaturServiceImpl();
-            
-            FuhrparkUI ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService, reparaturService);
-            ui.setVisible(true);
-        });
+        DataStore dataStore = new DataStoreImpl();
+        
+        FuhrparkUI ui = new FuhrparkUI(
+            new FahrzeugServiceImpl(dataStore),
+            new FahrtenbuchServiceImpl(dataStore),
+            new ReparaturServiceImpl(dataStore)
+        );
+        
+        ui.setVisible(true);
     }
 }
