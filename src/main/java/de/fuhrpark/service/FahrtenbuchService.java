@@ -6,4 +6,4 @@ import java.util.List;
 public interface FahrtenbuchService {
     void addEintrag(FahrtenbuchEintrag eintrag);
     List<FahrtenbuchEintrag> getEintraegeForFahrzeug(String kennzeichen);
-}
+} 

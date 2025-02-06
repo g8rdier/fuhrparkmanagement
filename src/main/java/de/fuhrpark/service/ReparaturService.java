@@ -6,4 +6,4 @@ import java.util.List;
 public interface ReparaturService {
     void addReparatur(ReparaturBuchEintrag eintrag);
     List<ReparaturBuchEintrag> getReparaturenForFahrzeug(String kennzeichen);
-}
+} 
