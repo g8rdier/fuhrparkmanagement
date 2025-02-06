@@ -1,33 +1,52 @@
 package de.fuhrpark.ui;
 
-import javax.swing.table.DefaultTableModel;
 import de.fuhrpark.model.Fahrzeug;
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
 import java.util.List;
 
-public class FahrzeugTableModel extends DefaultTableModel {
-    
-    public FahrzeugTableModel(String[] columnNames) {
-        super(columnNames, 0);
+public class FahrzeugTableModel extends AbstractTableModel {
+    private List<Fahrzeug> fahrzeuge = new ArrayList<>();
+    private final String[] columnNames = {
+        "Kennzeichen", "Marke", "Modell", "Typ", "Baujahr", "Aktueller Wert", "Status"
+    };
+
+    public void setFahrzeuge(List<Fahrzeug> fahrzeuge) {
+        this.fahrzeuge = new ArrayList<>(fahrzeuge);
+        fireTableDataChanged();
     }
 
     @Override
-    public boolean isCellEditable(int row, int column) {
-        return false; // Make table read-only
+    public int getRowCount() {
+        return fahrzeuge.size();
     }
 
-    public void updateData(List<Fahrzeug> fahrzeuge) {
-        setRowCount(0);
-        for (Fahrzeug fahrzeug : fahrzeuge) {
-            addRow(new Object[]{
-                fahrzeug.getKennzeichen(),
-                fahrzeug.getMarke(),
-                fahrzeug.getModell(),
-                fahrzeug.getTyp().toString(),
-                fahrzeug.getBaujahr(),
-                fahrzeug.getStatus(),
-                String.format("%.2f €", fahrzeug.getAktuellerWert())
-            });
-        }
-        fireTableDataChanged();
+    @Override
+    public int getColumnCount() {
+        return columnNames.length;
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return columnNames[column];
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Fahrzeug fahrzeug = fahrzeuge.get(rowIndex);
+        return switch (columnIndex) {
+            case 0 -> fahrzeug.getKennzeichen();
+            case 1 -> fahrzeug.getMarke();
+            case 2 -> fahrzeug.getModell();
+            case 3 -> fahrzeug.getTyp();
+            case 4 -> fahrzeug.getBaujahr();
+            case 5 -> String.format("%.2f €", fahrzeug.getAktuellerWert());
+            case 6 -> fahrzeug.getStatus();
+            default -> null;
+        };
+    }
+
+    public Fahrzeug getFahrzeugAt(int rowIndex) {
+        return fahrzeuge.get(rowIndex);
     }
 } 
