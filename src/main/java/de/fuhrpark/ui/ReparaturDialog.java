@@ -6,8 +6,10 @@ import de.fuhrpark.service.ReparaturService;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 
-public class ReparaturDialog extends JDialog {
+public class ReparaturDialog extends Dialog<ReparaturBuchEintrag> {
     private final JTable table;
     private final String kennzeichen;
     private final ReparaturService service;
@@ -33,6 +35,16 @@ public class ReparaturDialog extends JDialog {
         
         setSize(600, 400);
         setLocationRelativeTo(owner);
+
+        // Fix unused lambda parameters by using underscore
+        getDialogPane().lookupButton(ButtonType.OK).addEventFilter(ActionEvent.ACTION, _ -> {
+            // ... validation logic ...
+        });
+
+        setResultConverter(_ -> {  // Use underscore for unused parameter
+            // ... result conversion logic ...
+            return new ReparaturBuchEintrag(/* parameters */);
+        });
     }
 
     private void showNewEntryDialog() {
