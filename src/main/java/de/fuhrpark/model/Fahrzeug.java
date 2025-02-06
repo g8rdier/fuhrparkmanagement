@@ -15,14 +15,13 @@ public class Fahrzeug {
     private double aktuellerWert;
 
     // Konstruktor
-    public Fahrzeug(String kennzeichen, String marke, String modell, 
-                   FahrzeugTyp typ, int baujahr, double initialerWert) {
+    public Fahrzeug(String kennzeichen, String marke, String modell, FahrzeugTyp typ) {
         this.kennzeichen = kennzeichen;
         this.marke = marke;
         this.modell = modell;
         this.typ = typ;
-        this.baujahr = baujahr;
-        this.aktuellerWert = initialerWert;
+        this.baujahr = 0; // Default baujahr
+        this.aktuellerWert = 0.0; // Default aktuellerWert
         this.status = "verfügbar";
     }
 
@@ -61,6 +60,22 @@ public class Fahrzeug {
 
     public void setAktuellerWert(double wert) {
         this.aktuellerWert = wert;
+    }
+
+    public void setKennzeichen(String kennzeichen) {
+        this.kennzeichen = kennzeichen;
+    }
+
+    public void setMarke(String marke) {
+        this.marke = marke;
+    }
+
+    public void setModell(String modell) {
+        this.modell = modell;
+    }
+
+    public void setTyp(FahrzeugTyp typ) {
+        this.typ = typ;
     }
 
     /**
