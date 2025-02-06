@@ -69,4 +69,19 @@ public class FuhrparkManagerTest {
         var reparaturen = reparaturService.getReparaturenForFahrzeug(testFahrzeug.getKennzeichen());
         assertEquals(1, reparaturen.size());
     }
+
+    @Test
+    void testAddFahrtenbuchEintrag() {
+        FahrtenbuchEintrag eintrag = new FahrtenbuchEintrag(
+            LocalDate.now(),
+            "Berlin",
+            "Hamburg",
+            500.0,
+            "B-AA 1234",
+            "Max Mustermann"
+        );
+        fahrtenbuchService.addEintrag(eintrag);
+        var eintraege = fahrtenbuchService.getEintraegeForFahrzeug("B-AA 1234");
+        assertTrue(eintraege.contains(eintrag));
+    }
 } 

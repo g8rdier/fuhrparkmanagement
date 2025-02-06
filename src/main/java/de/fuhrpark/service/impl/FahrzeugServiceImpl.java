@@ -13,13 +13,8 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     }
 
     @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
-        return dataStore.getAlleFahrzeuge();
-    }
-
-    @Override
     public void addFahrzeug(Fahrzeug fahrzeug) {
-        dataStore.saveFahrzeug(fahrzeug);
+        dataStore.addFahrzeug(fahrzeug);
     }
 
     @Override
@@ -38,5 +33,10 @@ public class FahrzeugServiceImpl implements FahrzeugService {
             .filter(f -> f.getKennzeichen().equals(kennzeichen))
             .findFirst()
             .orElse(null);
+    }
+
+    @Override
+    public List<Fahrzeug> getAlleFahrzeuge() {
+        return dataStore.getAlleFahrzeuge();
     }
 } 
