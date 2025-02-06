@@ -2,9 +2,8 @@ package de.fuhrpark.persistence.impl;
 
 import de.fuhrpark.model.*;
 import de.fuhrpark.persistence.DataStore;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.io.*;
 
 public class DataStoreImpl implements DataStore {
     private final List<Fahrzeug> fahrzeuge = new ArrayList<>();
@@ -75,13 +74,16 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public void save(String path, Object obj) {
-        // Implementation for saving to file
+    public void save(String path, Object obj) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path))) {
+            oos.writeObject(obj);
+        }
     }
 
     @Override
-    public Object load(String path) {
-        // Implementation for loading from file
-        return null;
+    public Object load(String path) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
+            return ois.readObject();
+        }
     }
 } 
