@@ -10,7 +10,6 @@ import de.fuhrpark.model.ReparaturBuchEintrag;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 import java.util.List;
 
 public class FuhrparkUI extends JFrame {
@@ -50,7 +49,7 @@ public class FuhrparkUI extends JFrame {
 
     private JButton createButton(String text, Runnable action) {
         JButton button = new JButton(text);
-        button.addActionListener(e -> action.run());
+        button.addActionListener(actionEvent -> action.run());
         return button;
     }
 
@@ -107,7 +106,7 @@ public class FuhrparkUI extends JFrame {
 
         dialog.add(saveButton);
         dialog.add(new JButton("Abbrechen") {{ 
-            addActionListener(event -> dialog.dispose()); 
+            addActionListener(actionEvent -> dialog.dispose()); 
         }});
 
         dialog.pack();
@@ -171,8 +170,8 @@ public class FuhrparkUI extends JFrame {
             });
         }});
 
-        dialog.add(new JButton("Abbrechen") {{
-            addActionListener(e -> dialog.dispose());
+        dialog.add(new JButton("Abbrechen") {{ 
+            addActionListener(actionEvent -> dialog.dispose()); 
         }});
 
         dialog.pack();
@@ -241,10 +240,15 @@ public class FuhrparkUI extends JFrame {
         JDialog dialog = new JDialog(this, "Reparaturen: " + selectedFahrzeug.getKennzeichen(), true);
         dialog.setLayout(new BorderLayout());
         
-        String[] columns = {"Datum", "Beschreibung", "Kosten", "Werkstatt"};
+        String[] columns = {"Datum", "Typ", "Beschreibung", "Kosten", "Werkstatt"};
         Object[][] data = reparaturen.stream()
-            .map(r -> new Object[]{r.getDatum(), r.getBeschreibung(), 
-                                 String.format("%.2f €", r.getKosten()), r.getWerkstatt()})
+            .map(r -> new Object[]{
+                r.getDatum(), 
+                r.getTyp(),
+                r.getBeschreibung(), 
+                String.format("%.2f €", r.getKosten()), 
+                r.getWerkstatt()
+            })
             .toArray(Object[][]::new);
 
         JTable repairTable = new JTable(data, columns);
