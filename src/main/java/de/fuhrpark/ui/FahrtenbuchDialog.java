@@ -24,7 +24,7 @@ public class FahrtenbuchDialog extends JDialog {
         // Create toolbar with New button
         JToolBar toolBar = new JToolBar();
         JButton newButton = new JButton("Neu");
-        newButton.addActionListener(__ -> showNewEntryDialog());
+        newButton.addActionListener(_ -> showNewEntryDialog());
         toolBar.add(newButton);
 
         // Table setup
@@ -48,8 +48,12 @@ public class FahrtenbuchDialog extends JDialog {
         addComponent(panel, new JLabel("Kilometer:"), kilometerField, 2);
         addComponent(panel, new JLabel("Kennzeichen:"), kennzeichenField, 3);
 
-        JButton saveButton = new JButton("Speichern");
-        saveButton.addActionListener(__ -> {
+        // Button panel with fixed lambda parameters
+        JPanel buttonPanel = new JPanel();
+        JButton okButton = new JButton("OK");
+        JButton cancelButton = new JButton("Abbrechen");
+
+        okButton.addActionListener(_ -> {  // Use underscore for unused parameter
             if (isInputValid()) {
                 result = createFahrtenbuchEintrag();
                 service.addEintrag(result);
@@ -65,11 +69,11 @@ public class FahrtenbuchDialog extends JDialog {
             }
         });
 
-        JButton cancelButton = new JButton("Abbrechen");
-        cancelButton.addActionListener(__ -> dialog.dispose());
+        cancelButton.addActionListener(_ -> dialog.dispose());  // Use underscore for unused parameter
 
-        panel.add(saveButton);
-        panel.add(cancelButton);
+        panel.add(buttonPanel);
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
 
         dialog.add(panel);
         dialog.pack();
