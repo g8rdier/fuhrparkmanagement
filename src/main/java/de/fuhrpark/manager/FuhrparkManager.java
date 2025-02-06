@@ -1,12 +1,10 @@
 // src/main/java/de/fuhrpark/manager/FuhrparkManager.java
 package de.fuhrpark.manager;
 
-import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.FahrtenbuchEintrag;
-import de.fuhrpark.model.ReparaturBuchEintrag;
-import de.fuhrpark.service.FahrzeugService;
-import de.fuhrpark.service.FahrtenbuchService;
-import de.fuhrpark.service.ReparaturService;
+import de.fuhrpark.model.*;
+import de.fuhrpark.persistence.DataStore;
+import de.fuhrpark.service.*;
+import de.fuhrpark.service.impl.*;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -19,17 +17,23 @@ public class FuhrparkManager {
     private final FahrtenbuchService fahrtenbuchService;
     private final ReparaturService reparaturService;
 
-    public FuhrparkManager(FahrzeugService fahrzeugService, 
-                          FahrtenbuchService fahrtenbuchService,
-                          ReparaturService reparaturService) {
-        this.fahrzeugService = fahrzeugService;
-        this.fahrtenbuchService = fahrtenbuchService;
-        this.reparaturService = reparaturService;
+    public FuhrparkManager(DataStore dataStore) {
+        this.fahrzeugService = new FahrzeugServiceImpl(dataStore);
+        this.fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
+        this.reparaturService = new ReparaturServiceImpl(dataStore);
     }
 
     // Fahrzeug management
     public void addFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.addFahrzeug(fahrzeug);
+        fahrzeugService.saveFahrzeug(fahrzeug);
+    }
+
+    public void deleteFahrzeug(String kennzeichen) {
+        fahrzeugService.deleteFahrzeug(kennzeichen);
+    }
+
+    public List<Fahrzeug> getAlleFahrzeuge() {
+        return fahrzeugService.getAlleFahrzeuge();
     }
 
     public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
@@ -43,28 +47,17 @@ public class FuhrparkManager {
     }
 
     // Fahrtenbuch management
-    public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        Fahrzeug fahrzeug = getFahrzeugByKennzeichen(eintrag.getFahrzeugKennzeichen());
-        if (fahrzeug != null && fahrzeug.isVerfuegbar()) {
-            fahrtenbuchService.addEintrag(eintrag);
-            fahrzeug.setStatus("in Benutzung");
-            fahrzeugService.updateFahrzeug(fahrzeug);
-        }
+    public void addEintrag(FahrtenbuchEintrag eintrag) {
+        fahrtenbuchService.addEintrag(eintrag);
+    }
+
+    public List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen) {
+        return fahrtenbuchService.getEintraegeForFahrzeug(kennzeichen);
     }
 
     // Reparatur management
     public void addReparatur(ReparaturBuchEintrag reparatur) {
-        Fahrzeug fahrzeug = getFahrzeugByKennzeichen(reparatur.getFahrzeugKennzeichen());
-        if (fahrzeug != null) {
-            reparaturService.addReparatur(reparatur);
-            fahrzeug.setStatus("in Reparatur");
-            fahrzeug.setAktuellerWert(fahrzeug.getAktuellerWert() + reparatur.getKosten() * 0.5);
-            fahrzeugService.updateFahrzeug(fahrzeug);
-        }
-    }
-
-    public List<FahrtenbuchEintrag> getFahrtenbuch(String kennzeichen) {
-        return fahrtenbuchService.getEintraegeForFahrzeug(kennzeichen);
+        reparaturService.addReparatur(reparatur);
     }
 
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
