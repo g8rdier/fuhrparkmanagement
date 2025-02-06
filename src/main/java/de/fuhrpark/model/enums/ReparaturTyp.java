@@ -1,6 +1,7 @@
 package de.fuhrpark.model.enums;
 
 public enum ReparaturTyp {
+    INSPEKTION("Inspektion"),
     REPARATUR("Reparatur"),
     WARTUNG("Wartung"),
     AUSTAUSCH("Teileaustausch");
