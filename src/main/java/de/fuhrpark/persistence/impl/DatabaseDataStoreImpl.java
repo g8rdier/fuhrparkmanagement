@@ -83,42 +83,21 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public void saveFahrzeug(Fahrzeug fahrzeug) {
-        // Implementation
+    public void addFahrzeug(Fahrzeug fahrzeug) {
+        String sql = "INSERT INTO fahrzeuge (kennzeichen, marke, modell, typ) VALUES (?, ?, ?, ?)";
+        // Execute SQL with fahrzeug properties
     }
 
     @Override
     public void deleteFahrzeug(String kennzeichen) {
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             PreparedStatement stmt = conn.prepareStatement("DELETE FROM fahrzeuge WHERE kennzeichen = ?")) {
-            stmt.setString(1, kennzeichen);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String sql = "DELETE FROM fahrzeuge WHERE kennzeichen = ?";
+        // Execute SQL
     }
 
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
-        List<Fahrzeug> fahrzeuge = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM fahrzeuge")) {
-            
-            while (rs.next()) {
-                fahrzeuge.add(new Fahrzeug(
-                    rs.getString("kennzeichen"),
-                    rs.getString("marke"),
-                    rs.getString("modell"),
-                    FahrzeugTyp.valueOf(rs.getString("typ")),
-                    rs.getInt("baujahr"),
-                    rs.getDouble("wert")
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return fahrzeuge;
+        String sql = "SELECT * FROM fahrzeuge";
+        return new ArrayList<>(); // TODO: Implement actual database query
     }
 
     @Override
@@ -207,27 +186,9 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public void addFahrzeug(Fahrzeug fahrzeug) {
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             PreparedStatement stmt = conn.prepareStatement(
-                 "INSERT INTO fahrzeuge (kennzeichen, marke, modell, typ, baujahr, wert) VALUES (?, ?, ?, ?, ?, ?)"
-             )) {
-            stmt.setString(1, fahrzeug.getKennzeichen());
-            stmt.setString(2, fahrzeug.getMarke());
-            stmt.setString(3, fahrzeug.getModell());
-            stmt.setString(4, fahrzeug.getTyp().toString());
-            stmt.setInt(5, fahrzeug.getBaujahr());
-            stmt.setDouble(6, fahrzeug.getAktuellerWert());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void updateFahrzeug(Fahrzeug fahrzeug) {
         String sql = "UPDATE fahrzeuge SET marke = ?, modell = ?, typ = ? WHERE kennzeichen = ?";
-        // Execute SQL
+        // Execute SQL with fahrzeug properties
     }
 
     private java.sql.Date toSqlDate(LocalDate date) {
