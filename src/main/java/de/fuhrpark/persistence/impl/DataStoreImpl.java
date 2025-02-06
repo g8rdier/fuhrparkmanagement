@@ -21,21 +21,28 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
+    public List<Fahrzeug> getAlleFahrzeuge() {
+        return new ArrayList<>(fahrzeuge);
+    }
+
+    @Override
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        return fahrzeuge.stream()
-                .filter(f -> f.getKennzeichen().equals(kennzeichen))
-                .findFirst()
-                .orElse(null);
+        for (Fahrzeug f : fahrzeuge) {
+            if (f.getKennzeichen().equals(kennzeichen)) {
+                return f;
+            }
+        }
+        return null;
     }
 
     @Override
     public void updateFahrzeug(Fahrzeug fahrzeug) {
-        deleteFahrzeug(fahrzeug.getKennzeichen());
+        delete(fahrzeug.getKennzeichen());
         addFahrzeug(fahrzeug);
     }
 
     @Override
-    public void deleteFahrzeug(String kennzeichen) {
+    public void delete(String kennzeichen) {
         fahrzeuge.removeIf(f -> f.getKennzeichen().equals(kennzeichen));
     }
 
@@ -51,9 +58,18 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen) {
-        return fahrtenbuchEintraege.stream()
-                .filter(e -> e.getFahrzeugKennzeichen().equals(kennzeichen))
-                .collect(Collectors.toList());
+        List<FahrtenbuchEintrag> result = new ArrayList<>();
+        for (FahrtenbuchEintrag e : fahrtenbuchEintraege) {
+            if (e.getFahrzeugKennzeichen().equals(kennzeichen)) {
+                result.add(e);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void addReparatur(ReparaturBuchEintrag eintrag) {
+        reparaturBuchEintraege.add(eintrag);
     }
 
     @Override
@@ -68,9 +84,13 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
-        return reparaturBuchEintraege.stream()
-                .filter(e -> e.getFahrzeugKennzeichen().equals(kennzeichen))
-                .collect(Collectors.toList());
+        List<ReparaturBuchEintrag> result = new ArrayList<>();
+        for (ReparaturBuchEintrag e : reparaturBuchEintraege) {
+            if (e.getFahrzeugKennzeichen().equals(kennzeichen)) {
+                result.add(e);
+            }
+        }
+        return result;
     }
 
     @Override
