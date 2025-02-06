@@ -25,7 +25,7 @@ public class FuhrparkManager {
 
     // Fahrzeug management
     public void addFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.saveFahrzeug(fahrzeug);
+        fahrzeugService.addFahrzeug(fahrzeug);
     }
 
     public void deleteFahrzeug(String kennzeichen) {
