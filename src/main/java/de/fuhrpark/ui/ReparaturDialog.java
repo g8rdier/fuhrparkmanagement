@@ -20,7 +20,7 @@ public class ReparaturDialog extends JDialog {
         // Create toolbar with New button
         JToolBar toolBar = new JToolBar();
         JButton newButton = new JButton("Neu");
-        newButton.addActionListener(e -> showNewEntryDialog());
+        newButton.addActionListener(event -> showNewEntryDialog());
         toolBar.add(newButton);
 
         // Table setup
@@ -54,7 +54,7 @@ public class ReparaturDialog extends JDialog {
         panel.add(werkstattField);
 
         JButton saveButton = new JButton("Speichern");
-        saveButton.addActionListener(e -> {
+        saveButton.addActionListener(event -> {
             try {
                 double kosten = Double.parseDouble(kostenField.getText());
                 service.addReparatur(new ReparaturBuchEintrag(

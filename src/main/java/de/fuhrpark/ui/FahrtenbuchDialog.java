@@ -19,7 +19,7 @@ public class FahrtenbuchDialog extends JDialog {
         // Create toolbar with New button
         JToolBar toolBar = new JToolBar();
         JButton newButton = new JButton("Neu");
-        newButton.addActionListener(e -> showNewEntryDialog());
+        newButton.addActionListener(event -> showNewEntryDialog());
         toolBar.add(newButton);
 
         // Table setup
@@ -53,10 +53,10 @@ public class FahrtenbuchDialog extends JDialog {
         panel.add(fahrerField);
 
         JButton saveButton = new JButton("Speichern");
-        saveButton.addActionListener(e -> {
+        saveButton.addActionListener(event -> {
             try {
                 double kilometer = Double.parseDouble(kilometerField.getText());
-                service.addFahrtenbuchEintrag(new FahrtenbuchEintrag(
+                service.addEintrag(new FahrtenbuchEintrag(
                     LocalDate.now(),
                     startField.getText(),
                     zielField.getText(),
