@@ -8,22 +8,22 @@ public class ReparaturBuchEintrag {
     private final ReparaturTyp typ;
     private final String beschreibung;
     private final double kosten;
-    private final String fahrzeugKennzeichen;
+    private final String kennzeichen;
     private final String werkstatt;
 
     public ReparaturBuchEintrag(LocalDate datum, ReparaturTyp typ, 
                                String beschreibung, double kosten, 
-                               String fahrzeugKennzeichen, String werkstatt) {
+                               String kennzeichen, String werkstatt) {
         this.datum = datum;
         this.typ = typ;
         this.beschreibung = beschreibung;
         this.kosten = kosten;
-        this.fahrzeugKennzeichen = fahrzeugKennzeichen;
+        this.kennzeichen = kennzeichen;
         this.werkstatt = werkstatt;
     }
 
     // Getters
-    public String getFahrzeugKennzeichen() { return fahrzeugKennzeichen; }
+    public String getKennzeichen() { return kennzeichen; }
     public LocalDate getDatum() { return datum; }
     public String getBeschreibung() { return beschreibung; }
     public double getKosten() { return kosten; }
