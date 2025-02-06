@@ -7,21 +7,24 @@ import de.fuhrpark.model.ReparaturBuchEintrag;
 import java.util.List;
 
 public interface DataStore {
-    void save(String key, Object data);
-    Optional<Object> load(String key);
-    void delete(String key);
-
-    // Fahrzeug methods
+    // Fahrzeug operations
     void addFahrzeug(Fahrzeug fahrzeug);
     void updateFahrzeug(Fahrzeug fahrzeug);
     void deleteFahrzeug(String kennzeichen);
     List<Fahrzeug> getAlleFahrzeuge();
+    Fahrzeug getFahrzeug(String kennzeichen);
 
-    // Fahrtenbuch methods
+    // Fahrtenbuch operations
     void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag);
+    List<FahrtenbuchEintrag> getFahrtenbuchEintraege();
     List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen);
 
-    // Reparatur methods
-    void addReparatur(ReparaturBuchEintrag reparatur);
+    // Reparaturbuch operations
+    void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag);
+    List<ReparaturBuchEintrag> getReparaturBuchEintraege();
     List<ReparaturBuchEintrag> getReparaturen(String kennzeichen);
+
+    // Persistence operations
+    void save(String path, Object obj) throws Exception;
+    Object load(String path) throws Exception;
 } 

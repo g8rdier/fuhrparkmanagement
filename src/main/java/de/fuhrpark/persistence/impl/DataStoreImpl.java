@@ -4,6 +4,7 @@ import de.fuhrpark.model.*;
 import de.fuhrpark.persistence.DataStore;
 import java.util.*;
 import java.io.*;
+import java.util.stream.Collectors;
 
 public class DataStoreImpl implements DataStore {
     private final List<Fahrzeug> fahrzeuge = new ArrayList<>();
@@ -27,18 +28,16 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public List<Fahrzeug> getFahrzeuge() {
+    public List<Fahrzeug> getAlleFahrzeuge() {
         return new ArrayList<>(fahrzeuge);
     }
 
     @Override
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        for (Fahrzeug f : fahrzeuge) {
-            if (f.getKennzeichen().equals(kennzeichen)) {
-                return f;
-            }
-        }
-        return null;
+        return fahrzeuge.stream()
+                .filter(f -> f.getKennzeichen().equals(kennzeichen))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -49,6 +48,13 @@ public class DataStoreImpl implements DataStore {
     @Override
     public List<FahrtenbuchEintrag> getFahrtenbuchEintraege() {
         return new ArrayList<>(fahrtenbuchEintraege);
+    }
+
+    @Override
+    public List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen) {
+        return fahrtenbuchEintraege.stream()
+                .filter(e -> e.getFahrzeugKennzeichen().equals(kennzeichen))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -63,32 +69,22 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
-        List<ReparaturBuchEintrag> result = new ArrayList<>();
-        for (ReparaturBuchEintrag e : reparaturBuchEintraege) {
-            if (e.getKennzeichen().equals(kennzeichen)) {
-                result.add(e);
-            }
-        }
-        return result;
+        return reparaturBuchEintraege.stream()
+                .filter(e -> e.getFahrzeugKennzeichen().equals(kennzeichen))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public String save(String path, Object obj) {
+    public void save(String path, Object obj) throws Exception {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path))) {
             oos.writeObject(obj);
-            return path;
-        } catch (IOException e) {
-            throw new RuntimeException("Error saving data: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public String load(String path) {
+    public Object load(String path) throws Exception {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
-            ois.readObject();
-            return path;
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Error loading data: " + e.getMessage(), e);
+            return ois.readObject();
         }
     }
 }
