@@ -10,7 +10,7 @@ public class FahrtenbuchServiceImpl implements FahrtenbuchService {
     @Override
     public void addEintrag(FahrtenbuchEintrag eintrag) {
         String kennzeichen = eintrag.getFahrzeugKennzeichen();
-        fahrtenbuecher.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
+        fahrtenbuecher.computeIfAbsent(kennzeichen, _ -> new ArrayList<>()).add(eintrag);
     }
 
     @Override

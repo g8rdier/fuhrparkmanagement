@@ -10,7 +10,7 @@ public class ReparaturServiceImpl implements ReparaturService {
     @Override
     public void addReparatur(ReparaturBuchEintrag eintrag) {
         String kennzeichen = eintrag.getFahrzeugKennzeichen();
-        reparaturen.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
+        reparaturen.computeIfAbsent(kennzeichen, _ -> new ArrayList<>()).add(eintrag);
     }
 
     @Override
