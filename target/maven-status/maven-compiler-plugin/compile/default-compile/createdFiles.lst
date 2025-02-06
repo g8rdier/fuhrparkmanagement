@@ -1,0 +1,16 @@
+de/fuhrpark/service/FahrzeugService.class
+de/fuhrpark/service/impl/ReparaturServiceImpl.class
+de/fuhrpark/model/enums/ReparaturTyp.class
+de/fuhrpark/service/impl/FahrtenbuchServiceImpl.class
+de/fuhrpark/model/Fahrzeug.class
+de/fuhrpark/ui/FahrzeugTableModel.class
+de/fuhrpark/service/impl/FahrzeugServiceImpl.class
+de/fuhrpark/persistence/DataStore.class
+de/fuhrpark/model/enums/FahrzeugTyp.class
+de/fuhrpark/model/FahrtenbuchEintrag.class
+de/fuhrpark/App.class
+de/fuhrpark/service/FahrtenbuchService.class
+de/fuhrpark/service/ReparaturService.class
+de/fuhrpark/model/ReparaturBuchEintrag.class
+de/fuhrpark/ui/FuhrparkUI.class
+de/fuhrpark/manager/FuhrparkManager.class
