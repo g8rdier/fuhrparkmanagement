@@ -18,6 +18,11 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     }
 
     @Override
+    public void updateFahrzeug(Fahrzeug fahrzeug) {
+        dataStore.updateFahrzeug(fahrzeug);
+    }
+
+    @Override
     public void deleteFahrzeug(String kennzeichen) {
         dataStore.deleteFahrzeug(kennzeichen);
     }

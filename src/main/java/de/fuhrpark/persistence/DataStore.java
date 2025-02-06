@@ -13,6 +13,7 @@ public interface DataStore {
 
     // Fahrzeug methods
     void addFahrzeug(Fahrzeug fahrzeug);
+    void updateFahrzeug(Fahrzeug fahrzeug);
     void deleteFahrzeug(String kennzeichen);
     List<Fahrzeug> getAlleFahrzeuge();
 
