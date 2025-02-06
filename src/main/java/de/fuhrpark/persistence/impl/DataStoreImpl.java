@@ -1,78 +1,87 @@
 package de.fuhrpark.persistence.impl;
 
-import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.FahrtenbuchEintrag;
-import de.fuhrpark.model.ReparaturBuchEintrag;
+import de.fuhrpark.model.*;
 import de.fuhrpark.persistence.DataStore;
-
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class DataStoreImpl implements DataStore {
-    private final Map<String, Object> storage;
-    private final Map<String, Fahrzeug> fahrzeuge = new HashMap<>();
-    private final Map<String, List<FahrtenbuchEintrag>> fahrtenbuch = new HashMap<>();
-    private final Map<String, List<ReparaturBuchEintrag>> reparaturen = new HashMap<>();
-
-    public DataStoreImpl() {
-        this.storage = new HashMap<>();
-    }
-
-    @Override
-    public void save(String key, Object data) {
-        storage.put(key, data);
-    }
-
-    @Override
-    public Optional<Object> load(String key) {
-        return Optional.ofNullable(storage.get(key));
-    }
-
-    @Override
-    public void delete(String key) {
-        storage.remove(key);
-    }
+    private final List<Fahrzeug> fahrzeuge = new ArrayList<>();
+    private final List<FahrtenbuchEintrag> fahrtenbuchEintraege = new ArrayList<>();
+    private final List<ReparaturBuchEintrag> reparaturBuchEintraege = new ArrayList<>();
 
     @Override
     public void addFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+        fahrzeuge.add(fahrzeug);
+    }
+
+    @Override
+    public List<Fahrzeug> getFahrzeuge() {
+        return new ArrayList<>(fahrzeuge);
+    }
+
+    @Override
+    public Fahrzeug getFahrzeug(String kennzeichen) {
+        return fahrzeuge.stream()
+                .filter(f -> f.getKennzeichen().equals(kennzeichen))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public void updateFahrzeug(Fahrzeug fahrzeug) {
-        if (fahrzeuge.containsKey(fahrzeug.getKennzeichen())) {
-            fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
-        }
+        deleteFahrzeug(fahrzeug.getKennzeichen());
+        addFahrzeug(fahrzeug);
     }
 
     @Override
     public void deleteFahrzeug(String kennzeichen) {
-        fahrzeuge.remove(kennzeichen);
-        fahrtenbuch.remove(kennzeichen);
-        reparaturen.remove(kennzeichen);
-    }
-
-    @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
-        return new ArrayList<>(fahrzeuge.values());
+        fahrzeuge.removeIf(f -> f.getKennzeichen().equals(kennzeichen));
     }
 
     @Override
     public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        fahrtenbuch.computeIfAbsent(eintrag.getKennzeichen(), _ -> new ArrayList<>()).add(eintrag);
+        fahrtenbuchEintraege.add(eintrag);
+    }
+
+    @Override
+    public List<FahrtenbuchEintrag> getFahrtenbuchEintraege() {
+        return new ArrayList<>(fahrtenbuchEintraege);
     }
 
     @Override
     public List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen) {
-        return fahrtenbuch.getOrDefault(kennzeichen, new ArrayList<>());
+        return fahrtenbuchEintraege.stream()
+                .filter(e -> e.getFahrzeugKennzeichen().equals(kennzeichen))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void addReparatur(ReparaturBuchEintrag reparatur) {
-        reparaturen.computeIfAbsent(reparatur.getKennzeichen(), _ -> new ArrayList<>()).add(reparatur);
+    public void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag) {
+        reparaturBuchEintraege.add(eintrag);
+    }
+
+    @Override
+    public List<ReparaturBuchEintrag> getReparaturBuchEintraege() {
+        return new ArrayList<>(reparaturBuchEintraege);
     }
 
     @Override
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
-        return reparaturen.getOrDefault(kennzeichen, new ArrayList<>());
+        return reparaturBuchEintraege.stream()
+                .filter(e -> e.getFahrzeugKennzeichen().equals(kennzeichen))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void save(String path, Object obj) {
+        // Implementation for saving to file
+    }
+
+    @Override
+    public Object load(String path) {
+        // Implementation for loading from file
+        return null;
     }
 } 
