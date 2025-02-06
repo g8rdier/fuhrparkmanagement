@@ -237,6 +237,12 @@ public class DatabaseDataStoreImpl implements DataStore {
         }
     }
 
+    @Override
+    public void updateFahrzeug(Fahrzeug fahrzeug) {
+        String sql = "UPDATE fahrzeuge SET marke = ?, modell = ?, typ = ? WHERE kennzeichen = ?";
+        // Execute SQL
+    }
+
     private java.sql.Date toSqlDate(LocalDate date) {
         return java.sql.Date.valueOf(date);
     }
