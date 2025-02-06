@@ -3,12 +3,12 @@ package de.fuhrpark.model;
 import java.time.LocalDate;
 
 public class FahrtenbuchEintrag {
-    private LocalDate datum;
-    private String startOrt;
-    private String zielOrt;
-    private double kilometer;
-    private String kennzeichen;
-    private String fahrer;
+    private final LocalDate datum;
+    private final String startOrt;
+    private final String zielOrt;
+    private final double kilometer;
+    private final String kennzeichen;
+    private final String fahrer;
 
     public FahrtenbuchEintrag(LocalDate datum, String startOrt, String zielOrt, 
                              double kilometer, String kennzeichen, String fahrer) {
