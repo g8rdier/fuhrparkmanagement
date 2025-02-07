@@ -29,9 +29,9 @@ public class FuhrparkUI extends JFrame {
         this.fahrtenbuchService = fahrtenbuchService;
         this.reparaturService = reparaturService;
 
-        // Initialize table model with custom implementation
+        // Initialize table model with non-editable cells
         this.tableModel = new DefaultTableModel(
-            new Object[][] {},
+            new Object[0][4],
             new String[] {"Kennzeichen", "Typ", "Hersteller", "Modell"}
         ) {
             @Override
@@ -81,7 +81,7 @@ public class FuhrparkUI extends JFrame {
         JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        pack();
+        setSize(800, 600);
         setLocationRelativeTo(null);
     }
 
@@ -91,25 +91,11 @@ public class FuhrparkUI extends JFrame {
         for (Fahrzeug fahrzeug : fahrzeuge) {
             tableModel.addRow(new Object[]{
                 fahrzeug.getKennzeichen(),
-                fahrzeug.getTyp().toString(),
+                fahrzeug.getTyp(),
                 fahrzeug.getHersteller(),
                 fahrzeug.getModell()
             });
         }
-    }
-
-    private void showAddFahrzeugDialog() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this, "Neues Fahrzeug", true);
-        dialog.setVisible(true);
-        Fahrzeug fahrzeug = dialog.getResult();
-        if (fahrzeug != null) {
-            handleAddFahrzeug(fahrzeug);
-        }
-    }
-
-    private void handleAddFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.saveFahrzeug(fahrzeug);
-        refreshFahrzeugTable();
     }
 
     private Fahrzeug getSelectedFahrzeug() {
@@ -117,6 +103,16 @@ public class FuhrparkUI extends JFrame {
         if (selectedRow == -1) return null;
         String kennzeichen = (String) tableModel.getValueAt(selectedRow, 0);
         return fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
+    }
+
+    private void showAddFahrzeugDialog() {
+        FahrzeugDialog dialog = new FahrzeugDialog(this, "Neues Fahrzeug", true);
+        dialog.setVisible(true);
+        Fahrzeug fahrzeug = dialog.getResult();
+        if (fahrzeug != null) {
+            fahrzeugService.saveFahrzeug(fahrzeug);
+            refreshFahrzeugTable();
+        }
     }
 
     private void showAddFahrtDialog() {
