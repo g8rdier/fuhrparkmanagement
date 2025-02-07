@@ -25,49 +25,27 @@ public class FuhrparkManagerTest {
 
     @BeforeEach
     void setUp() {
-        // Simple initialization without mocks for now
-        fahrzeugService = new FahrzeugService() {
-            @Override
-            public void addFahrzeug(Fahrzeug fahrzeug) {}
-
-            @Override
-            public void updateFahrzeug(Fahrzeug fahrzeug) {}
-
-            @Override
-            public void deleteFahrzeug(String kennzeichen) {}
-
-            @Override
-            public java.util.List<Fahrzeug> getAlleFahrzeuge() {
-                return new java.util.ArrayList<>();
-            }
-
-            @Override
-            public Fahrzeug getFahrzeug(String kennzeichen) {
-                return null;
-            }
-
-            @Override
-            public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
-                return null;
-            }
-
-            @Override
-            public void saveFahrzeug(Fahrzeug fahrzeug) {}
-        };
-        
+        fahrzeugService = mock(FahrzeugService.class);
+        fahrtenbuchService = mock(FahrtenbuchService.class);
+        reparaturService = mock(ReparaturService.class);
         manager = new FuhrparkManager(fahrzeugService, fahrtenbuchService, reparaturService);
     }
 
     @Test
     void testAddFahrzeug() {
+        // Given
         Fahrzeug testFahrzeug = new Fahrzeug(
             "B-AB 123",
             FahrzeugTyp.PKW,
             "BMW",
             "320i"
         );
+
+        // When
         manager.addFahrzeug(testFahrzeug);
-        // Basic test without assertions for now
+
+        // Then
+        verify(fahrzeugService).saveFahrzeug(testFahrzeug);
     }
 
     @Test
@@ -92,20 +70,20 @@ public class FuhrparkManagerTest {
     void testGetFahrzeug() {
         // Given
         String kennzeichen = "B-AB 123";
-        Fahrzeug expectedFahrzeug = new Fahrzeug(
+        Fahrzeug testFahrzeug = new Fahrzeug(
             kennzeichen,
             FahrzeugTyp.PKW,
             "BMW",
             "320i"
         );
-        when(fahrzeugService.getFahrzeug(kennzeichen)).thenReturn(expectedFahrzeug);
+        when(fahrzeugService.getFahrzeugByKennzeichen(kennzeichen)).thenReturn(testFahrzeug);
 
         // When
-        Fahrzeug actualFahrzeug = manager.getFahrzeug(kennzeichen);
+        Fahrzeug result = manager.getFahrzeug(kennzeichen);
 
         // Then
-        assertEquals(expectedFahrzeug, actualFahrzeug);
-        verify(fahrzeugService).getFahrzeug(kennzeichen);
+        verify(fahrzeugService).getFahrzeugByKennzeichen(kennzeichen);
+        assertEquals(testFahrzeug, result);
     }
 
     @Test

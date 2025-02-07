@@ -4,6 +4,6 @@ import de.fuhrpark.model.ReparaturBuchEintrag;
 import java.util.List;
 
 public interface ReparaturService {
-    void addReparatur(ReparaturBuchEintrag reparatur);
+    void addReparatur(String kennzeichen, ReparaturBuchEintrag reparatur);
     List<ReparaturBuchEintrag> getReparaturenForFahrzeug(String kennzeichen);
 } 
