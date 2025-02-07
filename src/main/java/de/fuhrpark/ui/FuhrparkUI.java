@@ -20,8 +20,60 @@ public class FuhrparkUI extends JFrame {
     private final FahrtenbuchService fahrtenbuchService;
     private final ReparaturService reparaturService;
     
-    private final DefaultTableModel tableModel;
     private final JTable fahrzeugTable;
+    private final FahrzeugTableModel tableModel;
+
+    // Custom TableModel class to handle Fahrzeug objects
+    private class FahrzeugTableModel extends DefaultTableModel {
+        private final String[] columnNames = {"Kennzeichen", "Typ", "Hersteller", "Modell"};
+        private List<Fahrzeug> fahrzeuge;
+
+        public FahrzeugTableModel() {
+            super();
+            this.fahrzeuge = List.of();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
+
+        @Override
+        public int getRowCount() {
+            return fahrzeuge == null ? 0 : fahrzeuge.size();
+        }
+
+        @Override
+        public Object getValueAt(int row, int column) {
+            Fahrzeug fahrzeug = fahrzeuge.get(row);
+            return switch (column) {
+                case 0 -> fahrzeug.getKennzeichen();
+                case 1 -> fahrzeug.getTyp();
+                case 2 -> fahrzeug.getHersteller();
+                case 3 -> fahrzeug.getModell();
+                default -> null;
+            };
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+
+        public void setFahrzeuge(List<Fahrzeug> fahrzeuge) {
+            this.fahrzeuge = fahrzeuge;
+            fireTableDataChanged();
+        }
+
+        public Fahrzeug getFahrzeugAt(int row) {
+            return row >= 0 && row < fahrzeuge.size() ? fahrzeuge.get(row) : null;
+        }
+    }
 
     public FuhrparkUI(FahrzeugService fahrzeugService, 
                      FahrtenbuchService fahrtenbuchService,
@@ -30,20 +82,7 @@ public class FuhrparkUI extends JFrame {
         this.fahrtenbuchService = fahrtenbuchService;
         this.reparaturService = reparaturService;
 
-        // Initialize table model with proper column names
-        Vector<String> columnNames = new Vector<>();
-        columnNames.add("Kennzeichen");
-        columnNames.add("Typ");
-        columnNames.add("Hersteller");
-        columnNames.add("Modell");
-
-        this.tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        
+        this.tableModel = new FahrzeugTableModel();
         this.fahrzeugTable = new JTable(tableModel);
         this.fahrzeugTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -92,24 +131,13 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void refreshFahrzeugTable() {
-        tableModel.setRowCount(0);
         List<Fahrzeug> fahrzeuge = fahrzeugService.getAlleFahrzeuge();
-        for (Fahrzeug fahrzeug : fahrzeuge) {
-            Vector<Object> row = new Vector<>();
-            row.add(fahrzeug.getKennzeichen());
-            row.add(fahrzeug.getTyp());
-            row.add(fahrzeug.getHersteller());
-            row.add(fahrzeug.getModell());
-            tableModel.addRow(row);
-        }
+        tableModel.setFahrzeuge(fahrzeuge);
     }
 
     private Fahrzeug getSelectedFahrzeug() {
         int selectedRow = fahrzeugTable.getSelectedRow();
-        if (selectedRow == -1) return null;
-        
-        String kennzeichen = (String) tableModel.getValueAt(selectedRow, 0);
-        return fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
+        return tableModel.getFahrzeugAt(selectedRow);
     }
 
     private void showAddFahrzeugDialog() {
