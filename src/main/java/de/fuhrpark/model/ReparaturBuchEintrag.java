@@ -1,33 +1,33 @@
 package de.fuhrpark.model;
 
-import de.fuhrpark.model.enums.ReparaturTyp;
 import java.time.LocalDate;
 
 public class ReparaturBuchEintrag {
-    private final LocalDate datum;
-    private final ReparaturTyp typ;
     private final String beschreibung;
     private final double kosten;
-    private final String kennzeichen;
     private final String werkstatt;
+    private final LocalDate datum;
 
-    public ReparaturBuchEintrag(LocalDate datum, ReparaturTyp typ, 
-                               String beschreibung, double kosten, 
-                               String kennzeichen, String werkstatt) {
-        this.datum = datum;
-        this.typ = typ;
+    public ReparaturBuchEintrag(String beschreibung, double kosten, String werkstatt, LocalDate datum) {
         this.beschreibung = beschreibung;
         this.kosten = kosten;
-        this.kennzeichen = kennzeichen;
         this.werkstatt = werkstatt;
+        this.datum = datum;
     }
 
-    // Getters
-    public LocalDate getDatum() { return datum; }
-    public ReparaturTyp getTyp() { return typ; }
-    public String getBeschreibung() { return beschreibung; }
-    public double getKosten() { return kosten; }
-    public String getKennzeichen() { return kennzeichen; }
-    public String getFahrzeugKennzeichen() { return kennzeichen; }
-    public String getWerkstatt() { return werkstatt; }
+    public String getBeschreibung() {
+        return beschreibung;
+    }
+
+    public double getKosten() {
+        return kosten;
+    }
+
+    public String getWerkstatt() {
+        return werkstatt;
+    }
+
+    public LocalDate getDatum() {
+        return datum;
+    }
 } 
