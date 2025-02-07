@@ -28,15 +28,26 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     }
 
     @Override
-    public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
-        return dataStore.getAlleFahrzeuge().stream()
-            .filter(f -> f.getKennzeichen().equals(kennzeichen))
-            .findFirst()
-            .orElse(null);
+    public List<Fahrzeug> getAlleFahrzeuge() {
+        return dataStore.getAlleFahrzeuge();
     }
 
     @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
-        return dataStore.getAlleFahrzeuge();
+    public Fahrzeug getFahrzeug(String kennzeichen) {
+        return dataStore.getFahrzeug(kennzeichen);
+    }
+
+    @Override
+    public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
+        return dataStore.getFahrzeugByKennzeichen(kennzeichen);
+    }
+
+    @Override
+    public void saveFahrzeug(Fahrzeug fahrzeug) {
+        if (getFahrzeugByKennzeichen(fahrzeug.getKennzeichen()) == null) {
+            addFahrzeug(fahrzeug);
+        } else {
+            updateFahrzeug(fahrzeug);
+        }
     }
 }
