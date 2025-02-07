@@ -13,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.Vector;
 
 public class FuhrparkUI extends JFrame {
     private final FahrzeugService fahrzeugService;
@@ -29,11 +30,14 @@ public class FuhrparkUI extends JFrame {
         this.fahrtenbuchService = fahrtenbuchService;
         this.reparaturService = reparaturService;
 
-        // Initialize table model with non-editable cells
-        this.tableModel = new DefaultTableModel(
-            new Object[0][4],
-            new String[] {"Kennzeichen", "Typ", "Hersteller", "Modell"}
-        ) {
+        // Initialize table model with proper column names
+        Vector<String> columnNames = new Vector<>();
+        columnNames.add("Kennzeichen");
+        columnNames.add("Typ");
+        columnNames.add("Hersteller");
+        columnNames.add("Modell");
+
+        this.tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -63,6 +67,8 @@ public class FuhrparkUI extends JFrame {
 
         // Create toolbar
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        
         JButton addFahrzeugButton = new JButton("Neues Fahrzeug");
         addFahrzeugButton.addActionListener((ActionEvent e) -> showAddFahrzeugDialog());
         toolBar.add(addFahrzeugButton);
@@ -89,18 +95,19 @@ public class FuhrparkUI extends JFrame {
         tableModel.setRowCount(0);
         List<Fahrzeug> fahrzeuge = fahrzeugService.getAlleFahrzeuge();
         for (Fahrzeug fahrzeug : fahrzeuge) {
-            tableModel.addRow(new Object[]{
-                fahrzeug.getKennzeichen(),
-                fahrzeug.getTyp(),
-                fahrzeug.getHersteller(),
-                fahrzeug.getModell()
-            });
+            Vector<Object> row = new Vector<>();
+            row.add(fahrzeug.getKennzeichen());
+            row.add(fahrzeug.getTyp());
+            row.add(fahrzeug.getHersteller());
+            row.add(fahrzeug.getModell());
+            tableModel.addRow(row);
         }
     }
 
     private Fahrzeug getSelectedFahrzeug() {
         int selectedRow = fahrzeugTable.getSelectedRow();
         if (selectedRow == -1) return null;
+        
         String kennzeichen = (String) tableModel.getValueAt(selectedRow, 0);
         return fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
     }
@@ -125,7 +132,7 @@ public class FuhrparkUI extends JFrame {
             return;
         }
         
-        // TODO: Implement FahrtenbuchDialog
+        // TODO: Will be implemented later
         JOptionPane.showMessageDialog(this, "Fahrtenbuch-Dialog wird implementiert");
     }
 
