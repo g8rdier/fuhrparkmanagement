@@ -43,4 +43,4 @@ buildNumber.properties
 .classpath
 
 # IDE specific files
-*.iws 
+*.iws target/
