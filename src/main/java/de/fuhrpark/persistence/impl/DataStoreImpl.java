@@ -130,18 +130,3 @@ public class DataStoreImpl implements DataStore {
         }
     }
 }
-
-public class DatabaseDataStoreImpl extends DataStoreImpl {
-    @Override
-    public void save(String filename, Object data) {
-        // Database-specific save implementation
-        // Could use JDBC or JPA here
-    }
-
-    @Override
-    public Object load(String filename) {
-        // Database-specific load implementation
-        // Could use JDBC or JPA here
-        return null;
-    }
-}

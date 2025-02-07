@@ -88,13 +88,11 @@ public class DatabaseDataStoreImpl extends DataStoreImpl {
 
     @Override
     public void save(String filename, Object data) {
-        // For now, we'll use the file-based implementation from the parent class
         super.save(filename, data);
     }
 
     @Override
     public Object load(String filename) {
-        // For now, we'll use the file-based implementation from the parent class
         return super.load(filename);
     }
 
