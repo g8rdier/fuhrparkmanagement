@@ -4,6 +4,11 @@ import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.ReparaturBuchEintrag;
 import de.fuhrpark.persistence.DataStore;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -107,13 +112,26 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public void save(String filename, Object data) {
-        // TODO: Implement persistence
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(filename))) {
+            oos.writeObject(data);
+        } catch (IOException e) {
+            throw new RuntimeException("Error saving data to " + filename, e);
+        }
     }
 
     @Override
     public Object load(String filename) {
-        // TODO: Implement loading
-        return null;
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(filename))) {
+            return ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            // If file doesn't exist yet, return null instead of throwing
+            if (e instanceof FileNotFoundException) {
+                return null;
+            }
+            throw new RuntimeException("Error loading data from " + filename, e);
+        }
     }
 }
 
