@@ -13,8 +13,8 @@ public class ReparaturServiceImpl implements ReparaturService {
     }
 
     @Override
-    public void addReparatur(ReparaturBuchEintrag reparatur) {
-        dataStore.addReparatur(reparatur);
+    public void addReparatur(String kennzeichen, ReparaturBuchEintrag reparatur) {
+        dataStore.addReparatur(kennzeichen, reparatur);
     }
 
     @Override
