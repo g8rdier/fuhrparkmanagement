@@ -25,6 +25,11 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
+    public void saveFahrzeug(Fahrzeug fahrzeug) {
+        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+    }
+
+    @Override
     public void deleteFahrzeug(String kennzeichen) {
         fahrzeuge.remove(kennzeichen);
         fahrtenbuch.remove(kennzeichen);
@@ -39,6 +44,16 @@ public class DataStoreImpl implements DataStore {
     @Override
     public List<Fahrzeug> getFahrzeuge() {
         return new ArrayList<>(fahrzeuge.values());
+    }
+
+    @Override
+    public List<Fahrzeug> getAlleFahrzeuge() {
+        return new ArrayList<>(fahrzeuge.values());
+    }
+
+    @Override
+    public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
+        return fahrzeuge.get(kennzeichen);
     }
 
     @Override
@@ -76,6 +91,18 @@ public class DataStoreImpl implements DataStore {
         List<ReparaturBuchEintrag> alleEintraege = new ArrayList<>();
         reparaturen.values().forEach(alleEintraege::addAll);
         return alleEintraege;
+    }
+
+    @Override
+    public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
+        return reparaturen.getOrDefault(kennzeichen, new ArrayList<>());
+    }
+
+    @Override
+    public List<ReparaturBuchEintrag> getReparaturen() {
+        List<ReparaturBuchEintrag> alleReparaturen = new ArrayList<>();
+        reparaturen.values().forEach(alleReparaturen::addAll);
+        return alleReparaturen;
     }
 
     @Override
