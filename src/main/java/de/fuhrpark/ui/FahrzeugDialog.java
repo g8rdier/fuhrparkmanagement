@@ -1,7 +1,7 @@
 package de.fuhrpark.ui;
 
 import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.FahrzeugTyp;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 import javax.swing.*;
 import java.awt.*;
 
