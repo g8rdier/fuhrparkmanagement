@@ -36,9 +36,11 @@ public class FuhrparkManagerTest {
         // Given
         Fahrzeug testFahrzeug = new Fahrzeug(
             "B-AB 123",
-            FahrzeugTyp.PKW,
             "BMW",
-            "320i"
+            "320i",
+            FahrzeugTyp.PKW,
+            2020,
+            50000.0
         );
 
         // When
@@ -72,9 +74,11 @@ public class FuhrparkManagerTest {
         String kennzeichen = "B-AB 123";
         Fahrzeug expectedFahrzeug = new Fahrzeug(
             kennzeichen,
-            FahrzeugTyp.PKW,
             "BMW",
-            "320i"
+            "320i",
+            FahrzeugTyp.PKW,
+            2020,
+            50000.0
         );
         when(fahrzeugService.getFahrzeugByKennzeichen(kennzeichen)).thenReturn(expectedFahrzeug);
 

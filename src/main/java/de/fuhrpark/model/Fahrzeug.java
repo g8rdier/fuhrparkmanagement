@@ -6,35 +6,26 @@ import de.fuhrpark.model.enums.FahrzeugTyp;
  * Repräsentiert ein Fahrzeug im Fuhrpark.
  */
 public class Fahrzeug {
-    private String kennzeichen;
-    private String marke;
-    private String modell;
-    private FahrzeugTyp typ;
-    private int baujahr;
+    private final String kennzeichen;
+    private final String hersteller;
+    private final String modell;
+    private final FahrzeugTyp typ;
+    private final int baujahr;
+    private final double kilometerstand;
     private double grundpreis;
     private String status;
     private double aktuellerWert;
 
     // Konstruktor
-    public Fahrzeug(String kennzeichen, String marke, String modell, FahrzeugTyp typ) {
+    public Fahrzeug(String kennzeichen, String hersteller, String modell, 
+                    FahrzeugTyp typ, int baujahr, double kilometerstand) {
         this.kennzeichen = kennzeichen;
-        this.marke = marke;
-        this.modell = modell;
-        this.typ = typ;
-        this.baujahr = 0; // Default baujahr
-        this.aktuellerWert = 0.0; // Default aktuellerWert
-        this.status = "verfügbar";
-    }
-
-    // Additional constructor with all parameters
-    public Fahrzeug(String kennzeichen, String marke, String modell, FahrzeugTyp typ, 
-                   int baujahr, double grundpreis) {
-        this.kennzeichen = kennzeichen;
-        this.marke = marke;
+        this.hersteller = hersteller;
         this.modell = modell;
         this.typ = typ;
         this.baujahr = baujahr;
-        this.grundpreis = grundpreis;
+        this.kilometerstand = kilometerstand;
+        this.grundpreis = 0.0; // Default grundpreis
         this.aktuellerWert = 0.0; // Default aktuellerWert
         this.status = "verfügbar";
     }
@@ -44,8 +35,12 @@ public class Fahrzeug {
         return kennzeichen;
     }
 
-    public String getMarke() {
-        return marke;
+    public FahrzeugTyp getTyp() {
+        return typ;
+    }
+
+    public String getHersteller() {
+        return hersteller;
     }
 
     public String getModell() {
@@ -64,10 +59,6 @@ public class Fahrzeug {
         this.status = status;
     }
 
-    public FahrzeugTyp getTyp() {
-        return typ;
-    }
-
     public double getAktuellerWert() {
         return aktuellerWert;
     }
@@ -76,32 +67,16 @@ public class Fahrzeug {
         this.aktuellerWert = wert;
     }
 
-    public void setKennzeichen(String kennzeichen) {
-        this.kennzeichen = kennzeichen;
-    }
-
-    public void setMarke(String marke) {
-        this.marke = marke;
-    }
-
-    public void setModell(String modell) {
-        this.modell = modell;
-    }
-
-    public void setTyp(FahrzeugTyp typ) {
-        this.typ = typ;
-    }
-
     public double getGrundpreis() {
         return grundpreis;
     }
 
-    public void setBaujahr(int baujahr) {
-        this.baujahr = baujahr;
-    }
-
     public void setGrundpreis(double grundpreis) {
         this.grundpreis = grundpreis;
+    }
+
+    public double getKilometerstand() {
+        return kilometerstand;
     }
 
     /**
