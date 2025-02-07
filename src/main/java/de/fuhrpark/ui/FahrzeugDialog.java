@@ -11,6 +11,8 @@ public class FahrzeugDialog extends JDialog {
     private final JComboBox<FahrzeugTyp> typComboBox = new JComboBox<>(FahrzeugTyp.values());
     private final JTextField herstellerField = new JTextField(20);
     private final JTextField modellField = new JTextField(20);
+    private final JTextField baujahrField = new JTextField(4);
+    private final JTextField kilometerstandField = new JTextField(10);
 
     public FahrzeugDialog(Frame owner, String title, boolean modal) {
         super(owner, title, modal);
@@ -21,7 +23,7 @@ public class FahrzeugDialog extends JDialog {
         setLayout(new BorderLayout());
         
         // Input panel
-        JPanel inputPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        JPanel inputPanel = new JPanel(new GridLayout(6, 2, 5, 5));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         inputPanel.add(new JLabel("Kennzeichen:"));
@@ -32,6 +34,10 @@ public class FahrzeugDialog extends JDialog {
         inputPanel.add(herstellerField);
         inputPanel.add(new JLabel("Modell:"));
         inputPanel.add(modellField);
+        inputPanel.add(new JLabel("Baujahr:"));
+        inputPanel.add(baujahrField);
+        inputPanel.add(new JLabel("Kilometerstand:"));
+        inputPanel.add(kilometerstandField);
 
         add(inputPanel, BorderLayout.CENTER);
 
@@ -42,13 +48,22 @@ public class FahrzeugDialog extends JDialog {
 
         saveButton.addActionListener(e -> {
             if (validateInput()) {
-                result = new Fahrzeug(
-                    kennzeichenField.getText(),
-                    (FahrzeugTyp) typComboBox.getSelectedItem(),
-                    herstellerField.getText(),
-                    modellField.getText()
-                );
-                dispose();
+                try {
+                    result = new Fahrzeug(
+                        kennzeichenField.getText(),
+                        herstellerField.getText(),
+                        modellField.getText(),
+                        (FahrzeugTyp) typComboBox.getSelectedItem(),
+                        Integer.parseInt(baujahrField.getText()),
+                        Double.parseDouble(kilometerstandField.getText())
+                    );
+                    dispose();
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        "Bitte geben Sie gültige Zahlen für Baujahr und Kilometerstand ein.",
+                        "Eingabefehler",
+                        JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -64,27 +79,33 @@ public class FahrzeugDialog extends JDialog {
 
     private boolean validateInput() {
         if (kennzeichenField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Bitte geben Sie ein Kennzeichen ein.",
-                "Validierungsfehler",
-                JOptionPane.ERROR_MESSAGE);
+            showValidationError("Bitte geben Sie ein Kennzeichen ein.");
             return false;
         }
         if (herstellerField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Bitte geben Sie einen Hersteller ein.",
-                "Validierungsfehler",
-                JOptionPane.ERROR_MESSAGE);
+            showValidationError("Bitte geben Sie einen Hersteller ein.");
             return false;
         }
         if (modellField.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Bitte geben Sie ein Modell ein.",
-                "Validierungsfehler",
-                JOptionPane.ERROR_MESSAGE);
+            showValidationError("Bitte geben Sie ein Modell ein.");
+            return false;
+        }
+        if (baujahrField.getText().trim().isEmpty()) {
+            showValidationError("Bitte geben Sie ein Baujahr ein.");
+            return false;
+        }
+        if (kilometerstandField.getText().trim().isEmpty()) {
+            showValidationError("Bitte geben Sie einen Kilometerstand ein.");
             return false;
         }
         return true;
+    }
+
+    private void showValidationError(String message) {
+        JOptionPane.showMessageDialog(this, 
+            message,
+            "Validierungsfehler",
+            JOptionPane.ERROR_MESSAGE);
     }
 
     public Fahrzeug getResult() {
