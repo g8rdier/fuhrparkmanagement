@@ -88,22 +88,16 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void save(String filename, Object data) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream(filename))) {
-            oos.writeObject(data);
-        } catch (IOException e) {
-            throw new RuntimeException("Error saving data to " + filename, e);
-        }
+        // Database-specific save implementation
+        // TODO: Implement actual database connection and saving
+        throw new UnsupportedOperationException("Database saving not yet implemented");
     }
 
     @Override
     public Object load(String filename) {
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(filename))) {
-            return ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Error loading data from " + filename, e);
-        }
+        // Database-specific load implementation
+        // TODO: Implement actual database connection and loading
+        throw new UnsupportedOperationException("Database loading not yet implemented");
     }
 
     @Override
