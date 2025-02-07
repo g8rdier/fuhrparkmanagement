@@ -4,6 +4,7 @@ import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.ReparaturBuchEintrag;
 import de.fuhrpark.persistence.DataStore;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,13 +88,22 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void save(String filename, Object data) {
-        // TODO: Implement persistence
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(filename))) {
+            oos.writeObject(data);
+        } catch (IOException e) {
+            throw new RuntimeException("Error saving data to " + filename, e);
+        }
     }
 
     @Override
     public Object load(String filename) {
-        // TODO: Implement loading
-        return null;
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(filename))) {
+            return ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Error loading data from " + filename, e);
+        }
     }
 
     @Override

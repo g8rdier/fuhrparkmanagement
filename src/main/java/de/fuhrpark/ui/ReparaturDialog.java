@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class ReparaturDialog extends JDialog {
     private ReparaturBuchEintrag result = null;
@@ -81,10 +82,11 @@ public class ReparaturDialog extends JDialog {
             LocalDate datum = LocalDate.ofInstant(date.toInstant(), java.time.ZoneId.systemDefault());
             
             return new ReparaturBuchEintrag(
-                beschreibungField.getText().trim(),
+                "KENNZEICHEN",  // You need to add a field for kennzeichen or pass it from somewhere
                 kosten,
+                beschreibungField.getText().trim(),
                 werkstattField.getText().trim(),
-                datum
+                datum.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))  // Convert LocalDate to String
             );
         } catch (NumberFormatException ex) {
             showError("Bitte geben Sie einen gültigen Kostenbetrag ein.");
