@@ -1,6 +1,5 @@
 package de.fuhrpark.persistence;
 
-import java.util.Optional;
 import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.ReparaturBuchEintrag;

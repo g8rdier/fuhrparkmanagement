@@ -32,7 +32,7 @@ public class ReparaturTableModel extends AbstractTableModel {
         ReparaturBuchEintrag reparatur = reparaturen.get(rowIndex);
         return switch (columnIndex) {
             case 0 -> reparatur.getDatum();
-            case 1 -> reparatur.getTyp();
+            case 1 -> reparatur.getKennzeichen();
             case 2 -> reparatur.getBeschreibung();
             case 3 -> reparatur.getKosten();
             case 4 -> reparatur.getWerkstatt();

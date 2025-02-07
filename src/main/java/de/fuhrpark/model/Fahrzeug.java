@@ -7,7 +7,7 @@ import de.fuhrpark.model.enums.FahrzeugTyp;
  */
 public class Fahrzeug {
     private final String kennzeichen;
-    private final String hersteller;
+    private final String marke;
     private final String modell;
     private final FahrzeugTyp typ;
     private final int baujahr;
@@ -18,9 +18,9 @@ public class Fahrzeug {
 
     // Konstruktor
     public Fahrzeug(String kennzeichen, String hersteller, String modell, 
-                    FahrzeugTyp typ, int baujahr, double kilometerstand) {
+                    FahrzeugTyp typ, int baujahr, double kilometerstand, String marke) {
         this.kennzeichen = kennzeichen;
-        this.hersteller = hersteller;
+        this.marke = marke;
         this.modell = modell;
         this.typ = typ;
         this.baujahr = baujahr;
@@ -39,8 +39,8 @@ public class Fahrzeug {
         return typ;
     }
 
-    public String getHersteller() {
-        return hersteller;
+    public String getMarke() {
+        return marke;
     }
 
     public String getModell() {

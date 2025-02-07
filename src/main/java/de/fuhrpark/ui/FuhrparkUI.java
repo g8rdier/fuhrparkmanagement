@@ -54,7 +54,7 @@ public class FuhrparkUI extends JFrame {
             return switch (column) {
                 case 0 -> fahrzeug.getKennzeichen();
                 case 1 -> fahrzeug.getTyp();
-                case 2 -> fahrzeug.getHersteller();
+                case 2 -> fahrzeug.getMarke();
                 case 3 -> fahrzeug.getModell();
                 default -> null;
             };

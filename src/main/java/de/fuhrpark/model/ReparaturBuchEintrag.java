@@ -7,12 +7,14 @@ public class ReparaturBuchEintrag {
     private final double kosten;
     private final String werkstatt;
     private final LocalDate datum;
+    private final String kennzeichen;
 
-    public ReparaturBuchEintrag(String beschreibung, double kosten, String werkstatt, LocalDate datum) {
+    public ReparaturBuchEintrag(String beschreibung, double kosten, String werkstatt, LocalDate datum, String kennzeichen) {
         this.beschreibung = beschreibung;
         this.kosten = kosten;
         this.werkstatt = werkstatt;
         this.datum = datum;
+        this.kennzeichen = kennzeichen;
     }
 
     public String getBeschreibung() {
@@ -30,4 +32,8 @@ public class ReparaturBuchEintrag {
     public LocalDate getDatum() {
         return datum;
     }
+    public String getKennzeichen() {
+        return kennzeichen;
+    }
+
 } 

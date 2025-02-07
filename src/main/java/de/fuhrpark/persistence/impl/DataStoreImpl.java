@@ -85,7 +85,7 @@ public class DataStoreImpl implements DataStore {
     @Override
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
         return reparaturBuchEintraege.stream()
-                .filter(e -> e.getFahrzeugKennzeichen().equals(kennzeichen))
+                .filter(e -> e.getKennzeichen().equals(kennzeichen))
                 .collect(Collectors.toList());
     }
 
