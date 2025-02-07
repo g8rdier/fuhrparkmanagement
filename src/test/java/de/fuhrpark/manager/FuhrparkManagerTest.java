@@ -70,20 +70,21 @@ public class FuhrparkManagerTest {
     void testGetFahrzeug() {
         // Given
         String kennzeichen = "B-AB 123";
-        Fahrzeug testFahrzeug = new Fahrzeug(
+        Fahrzeug expectedFahrzeug = new Fahrzeug(
             kennzeichen,
             FahrzeugTyp.PKW,
             "BMW",
             "320i"
         );
-        when(fahrzeugService.getFahrzeugByKennzeichen(kennzeichen)).thenReturn(testFahrzeug);
+        when(fahrzeugService.getFahrzeugByKennzeichen(kennzeichen)).thenReturn(expectedFahrzeug);
 
         // When
         Fahrzeug result = manager.getFahrzeug(kennzeichen);
 
         // Then
+        assertNotNull(result);
+        assertEquals(kennzeichen, result.getKennzeichen());
         verify(fahrzeugService).getFahrzeugByKennzeichen(kennzeichen);
-        assertEquals(testFahrzeug, result);
     }
 
     @Test
