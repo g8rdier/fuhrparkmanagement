@@ -1,104 +1,120 @@
 package de.fuhrpark.ui;
 
 import de.fuhrpark.model.ReparaturBuchEintrag;
-import de.fuhrpark.model.enums.ReparaturTyp;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 
 public class ReparaturDialog extends JDialog {
-    private final JTextField kennzeichenField = new JTextField(20);
-    private final JTextField werkstattField = new JTextField(20);
-    private final JTextField kostenField = new JTextField(20);
-    private final JTextField beschreibungField = new JTextField(20);
-    private final JComboBox<ReparaturTyp> typComboBox = new JComboBox<>(ReparaturTyp.values());
     private ReparaturBuchEintrag result = null;
+    private final JTextField beschreibungField;
+    private final JTextField kostenField;
+    private final JTextField werkstattField;
+    private final JSpinner datumSpinner;
 
     public ReparaturDialog(Frame owner, String title, boolean modal) {
         super(owner, title, modal);
         
-        // Layout setup
+        // Initialize components
+        this.beschreibungField = new JTextField(30);
+        this.kostenField = new JTextField(10);
+        this.werkstattField = new JTextField(30);
+        
+        SpinnerDateModel dateModel = new SpinnerDateModel();
+        this.datumSpinner = new JSpinner(dateModel);
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(datumSpinner, "dd.MM.yyyy");
+        datumSpinner.setEditor(dateEditor);
+        
+        initComponents();
+    }
+
+    private void initComponents() {
         setLayout(new BorderLayout());
         
-        // Create main panel with GridBagLayout
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
+        // Input panel
+        JPanel inputPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        inputPanel.add(new JLabel("Beschreibung:"));
+        inputPanel.add(beschreibungField);
+        inputPanel.add(new JLabel("Kosten (€):"));
+        inputPanel.add(kostenField);
+        inputPanel.add(new JLabel("Werkstatt:"));
+        inputPanel.add(werkstattField);
+        inputPanel.add(new JLabel("Datum:"));
+        inputPanel.add(datumSpinner);
 
-        // Add components
-        addComponent(mainPanel, new JLabel("Kennzeichen:"), kennzeichenField, gbc, 0);
-        addComponent(mainPanel, new JLabel("Werkstatt:"), werkstattField, gbc, 1);
-        addComponent(mainPanel, new JLabel("Kosten:"), kostenField, gbc, 2);
-        addComponent(mainPanel, new JLabel("Beschreibung:"), beschreibungField, gbc, 3);
-        addComponent(mainPanel, new JLabel("Typ:"), typComboBox, gbc, 4);
+        add(inputPanel, BorderLayout.CENTER);
 
         // Button panel
-        JPanel buttonPanel = new JPanel();
-        JButton okButton = new JButton("OK");
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton saveButton = new JButton("Speichern");
         JButton cancelButton = new JButton("Abbrechen");
 
-        okButton.addActionListener(_ -> {
-            if (isInputValid()) {
+        saveButton.addActionListener((ActionEvent e) -> {
+            if (validateInput()) {
                 result = createReparaturBuchEintrag();
                 dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, 
-                    "Bitte füllen Sie alle Felder aus.", 
-                    "Ungültige Eingabe", 
-                    JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        cancelButton.addActionListener(_ -> dispose());
+        cancelButton.addActionListener((ActionEvent e) -> {
+            result = null;
+            dispose();
+        });
 
-        buttonPanel.add(okButton);
+        buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
-
-        // Add panels to dialog
-        add(mainPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Dialog settings
+        // Dialog properties
+        setResizable(false);
         pack();
-        setLocationRelativeTo(owner);
-    }
-
-    private void addComponent(JPanel panel, JLabel label, JComponent field, 
-                            GridBagConstraints gbc, int row) {
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        panel.add(label, gbc);
-
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(field, gbc);
-    }
-
-    private boolean isInputValid() {
-        return !kennzeichenField.getText().trim().isEmpty() &&
-               !werkstattField.getText().trim().isEmpty() &&
-               !kostenField.getText().trim().isEmpty() &&
-               typComboBox.getSelectedItem() != null;
+        setLocationRelativeTo(getOwner());
     }
 
     private ReparaturBuchEintrag createReparaturBuchEintrag() {
         try {
+            double kosten = Double.parseDouble(kostenField.getText().trim().replace(",", "."));
+            java.util.Date date = (java.util.Date) datumSpinner.getValue();
+            LocalDate datum = LocalDate.ofInstant(date.toInstant(), java.time.ZoneId.systemDefault());
+            
             return new ReparaturBuchEintrag(
-                LocalDate.now(),
-                (ReparaturTyp) typComboBox.getSelectedItem(),
                 beschreibungField.getText().trim(),
-                Double.parseDouble(kostenField.getText().trim()),
-                kennzeichenField.getText().trim(),
-                werkstattField.getText().trim()
+                kosten,
+                werkstattField.getText().trim(),
+                datum
             );
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
-                "Bitte geben Sie einen gültigen Kostenbetrag ein.",
-                "Ungültige Eingabe",
-                JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException ex) {
+            showError("Bitte geben Sie einen gültigen Kostenbetrag ein.");
             return null;
         }
+    }
+
+    private boolean validateInput() {
+        if (beschreibungField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie eine Beschreibung ein.");
+            return false;
+        }
+        if (werkstattField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie eine Werkstatt ein.");
+            return false;
+        }
+        try {
+            Double.parseDouble(kostenField.getText().trim().replace(",", "."));
+        } catch (NumberFormatException ex) {
+            showError("Bitte geben Sie einen gültigen Kostenbetrag ein.");
+            return false;
+        }
+        return true;
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this,
+            message,
+            "Validierungsfehler",
+            JOptionPane.ERROR_MESSAGE);
     }
 
     public ReparaturBuchEintrag getResult() {
