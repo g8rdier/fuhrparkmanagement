@@ -6,7 +6,6 @@ import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
 import de.fuhrpark.service.impl.ReparaturServiceImpl;
 import de.fuhrpark.ui.FuhrparkUI;
-import de.fuhrpark.manager.FuhrparkManager;
 
 /**
  * Hello world!
@@ -22,8 +21,7 @@ public class App
         var fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
         var reparaturService = new ReparaturServiceImpl(dataStore);
         
-        var manager = new FuhrparkManager(fahrzeugService, fahrtenbuchService, reparaturService);
-        var ui = new FuhrparkUI(manager);
+        var ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService, reparaturService);
         
         ui.setVisible(true);
     }
