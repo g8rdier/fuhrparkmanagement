@@ -29,12 +29,26 @@ public class FuhrparkUI extends JFrame {
         this.fahrtenbuchService = fahrtenbuchService;
         this.reparaturService = reparaturService;
 
-        // Initialize table model and table
+        // Initialize table model with non-editable cells
         this.tableModel = new DefaultTableModel(
             new Object[][] {},
             new String[] {"Kennzeichen", "Typ", "Hersteller", "Modell"}
-        );
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+            
+            @Override
+            public Fahrzeug getFahrzeugAt(int row) {
+                return fahrzeugService.getFahrzeugByKennzeichen(
+                    (String) getValueAt(row, 0)
+                );
+            }
+        };
+        
         this.fahrzeugTable = new JTable(tableModel);
+        this.fahrzeugTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         setTitle("Fuhrpark Verwaltung");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -80,10 +94,11 @@ public class FuhrparkUI extends JFrame {
 
     private void refreshFahrzeugTable() {
         tableModel.setRowCount(0);
-        for (Fahrzeug fahrzeug : fahrzeugService.getAlleFahrzeuge()) {
+        List<Fahrzeug> fahrzeuge = fahrzeugService.getAlleFahrzeuge();
+        for (Fahrzeug fahrzeug : fahrzeuge) {
             tableModel.addRow(new Object[]{
                 fahrzeug.getKennzeichen(),
-                fahrzeug.getTyp(),
+                fahrzeug.getTyp().toString(),
                 fahrzeug.getHersteller(),
                 fahrzeug.getModell()
             });
@@ -91,15 +106,45 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void showAddFahrzeugDialog() {
-        // Implementation
+        FahrzeugDialog dialog = new FahrzeugDialog(this, "Neues Fahrzeug", true);
+        dialog.setVisible(true);
+        Fahrzeug fahrzeug = dialog.getResult();
+        if (fahrzeug != null) {
+            handleAddFahrzeug(fahrzeug);
+        }
+    }
+
+    private void handleAddFahrzeug(Fahrzeug fahrzeug) {
+        fahrzeugService.saveFahrzeug(fahrzeug);
+        refreshFahrzeugTable();
     }
 
     private void showAddFahrtDialog() {
-        // Implementation
+        if (fahrzeugTable.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(this, 
+                "Bitte wählen Sie zuerst ein Fahrzeug aus.",
+                "Kein Fahrzeug ausgewählt",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        Fahrzeug selectedFahrzeug = tableModel.getFahrzeugAt(fahrzeugTable.getSelectedRow());
+        FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, "Neue Fahrt", true);
+        dialog.setVisible(true);
     }
 
     private void showAddReparaturDialog() {
-        // Implementation
+        if (fahrzeugTable.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(this, 
+                "Bitte wählen Sie zuerst ein Fahrzeug aus.",
+                "Kein Fahrzeug ausgewählt",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        Fahrzeug selectedFahrzeug = tableModel.getFahrzeugAt(fahrzeugTable.getSelectedRow());
+        ReparaturDialog dialog = new ReparaturDialog(this, "Neue Reparatur", true);
+        dialog.setVisible(true);
     }
 
     private void showLogbookView() {
@@ -162,9 +207,5 @@ public class FuhrparkUI extends JFrame {
         dialog.setSize(600, 400);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-    }
-
-    private void handleAddFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.addFahrzeug(fahrzeug);
     }
 } 
