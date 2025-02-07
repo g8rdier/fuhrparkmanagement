@@ -8,17 +8,19 @@ import java.util.List;
 public interface DataStore {
     void addFahrzeug(Fahrzeug fahrzeug);
     void updateFahrzeug(Fahrzeug fahrzeug);
-    void deleteFahrzeug(String kennzeichen);
+    void saveFahrzeug(Fahrzeug fahrzeug);
     Fahrzeug getFahrzeug(String kennzeichen);
     List<Fahrzeug> getFahrzeuge();
+    List<Fahrzeug> getAlleFahrzeuge();
+    Fahrzeug getFahrzeugByKennzeichen(String kennzeichen);
     
     void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag);
     List<FahrtenbuchEintrag> getFahrtenbuchEintraege();
     List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen);
     
     void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag);
-    void addReparatur(String kennzeichen, ReparaturBuchEintrag reparatur);
     List<ReparaturBuchEintrag> getReparaturBuchEintraege();
+    List<ReparaturBuchEintrag> getReparaturen(String kennzeichen);
     
     void save(String filename, Object data);
     Object load(String filename);
