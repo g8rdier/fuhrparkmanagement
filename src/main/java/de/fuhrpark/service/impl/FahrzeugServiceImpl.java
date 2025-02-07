@@ -13,6 +13,15 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     }
 
     @Override
+    public void saveFahrzeug(Fahrzeug fahrzeug) {
+        if (getFahrzeugByKennzeichen(fahrzeug.getKennzeichen()) == null) {
+            addFahrzeug(fahrzeug);
+        } else {
+            updateFahrzeug(fahrzeug);
+        }
+    }
+
+    @Override
     public void addFahrzeug(Fahrzeug fahrzeug) {
         dataStore.addFahrzeug(fahrzeug);
     }
@@ -40,14 +49,5 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     @Override
     public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
         return dataStore.getFahrzeugByKennzeichen(kennzeichen);
-    }
-
-    @Override
-    public void saveFahrzeug(Fahrzeug fahrzeug) {
-        if (getFahrzeugByKennzeichen(fahrzeug.getKennzeichen()) == null) {
-            addFahrzeug(fahrzeug);
-        } else {
-            updateFahrzeug(fahrzeug);
-        }
     }
 }
