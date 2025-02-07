@@ -29,7 +29,7 @@ public class FuhrparkUI extends JFrame {
         this.fahrtenbuchService = fahrtenbuchService;
         this.reparaturService = reparaturService;
 
-        // Initialize table model with non-editable cells
+        // Initialize table model with custom implementation
         this.tableModel = new DefaultTableModel(
             new Object[][] {},
             new String[] {"Kennzeichen", "Typ", "Hersteller", "Modell"}
@@ -37,13 +37,6 @@ public class FuhrparkUI extends JFrame {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
-            }
-            
-            @Override
-            public Fahrzeug getFahrzeugAt(int row) {
-                return fahrzeugService.getFahrzeugByKennzeichen(
-                    (String) getValueAt(row, 0)
-                );
             }
         };
         
@@ -119,8 +112,16 @@ public class FuhrparkUI extends JFrame {
         refreshFahrzeugTable();
     }
 
+    private Fahrzeug getSelectedFahrzeug() {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow == -1) return null;
+        String kennzeichen = (String) tableModel.getValueAt(selectedRow, 0);
+        return fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
+    }
+
     private void showAddFahrtDialog() {
-        if (fahrzeugTable.getSelectedRow() == -1) {
+        Fahrzeug selectedFahrzeug = getSelectedFahrzeug();
+        if (selectedFahrzeug == null) {
             JOptionPane.showMessageDialog(this, 
                 "Bitte wählen Sie zuerst ein Fahrzeug aus.",
                 "Kein Fahrzeug ausgewählt",
@@ -128,13 +129,13 @@ public class FuhrparkUI extends JFrame {
             return;
         }
         
-        Fahrzeug selectedFahrzeug = tableModel.getFahrzeugAt(fahrzeugTable.getSelectedRow());
-        FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, "Neue Fahrt", true);
-        dialog.setVisible(true);
+        // TODO: Implement FahrtenbuchDialog
+        JOptionPane.showMessageDialog(this, "Fahrtenbuch-Dialog wird implementiert");
     }
 
     private void showAddReparaturDialog() {
-        if (fahrzeugTable.getSelectedRow() == -1) {
+        Fahrzeug selectedFahrzeug = getSelectedFahrzeug();
+        if (selectedFahrzeug == null) {
             JOptionPane.showMessageDialog(this, 
                 "Bitte wählen Sie zuerst ein Fahrzeug aus.",
                 "Kein Fahrzeug ausgewählt",
@@ -142,7 +143,6 @@ public class FuhrparkUI extends JFrame {
             return;
         }
         
-        Fahrzeug selectedFahrzeug = tableModel.getFahrzeugAt(fahrzeugTable.getSelectedRow());
         ReparaturDialog dialog = new ReparaturDialog(this, "Neue Reparatur", true);
         dialog.setVisible(true);
     }
