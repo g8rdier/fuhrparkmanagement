@@ -13,22 +13,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 public class FuhrparkManagerTest {
-    @Mock
-    private FahrzeugService fahrzeugService;
-    @Mock
-    private FahrtenbuchService fahrtenbuchService;
-    @Mock
-    private ReparaturService reparaturService;
-    
     private FuhrparkManager manager;
+    private FahrzeugService fahrzeugService;
+    private FahrtenbuchService fahrtenbuchService;
+    private ReparaturService reparaturService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        fahrzeugService = mock(FahrzeugService.class);
+        fahrtenbuchService = mock(FahrtenbuchService.class);
+        reparaturService = mock(ReparaturService.class);
         manager = new FuhrparkManager(fahrzeugService, fahrtenbuchService, reparaturService);
     }
 
