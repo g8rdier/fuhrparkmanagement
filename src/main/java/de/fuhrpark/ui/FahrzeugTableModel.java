@@ -8,7 +8,7 @@ import java.util.List;
 public class FahrzeugTableModel extends AbstractTableModel {
     private List<Fahrzeug> fahrzeuge = new ArrayList<>();
     private final String[] columnNames = {
-        "Kennzeichen", "Marke", "Modell", "Typ", "Baujahr", "Aktueller Wert", "Status"
+        "Kennzeichen", "Hersteller", "Modell", "Typ", "Baujahr", "Kilometerstand"
     };
 
     public void setFahrzeuge(List<Fahrzeug> fahrzeuge) {
@@ -40,8 +40,7 @@ public class FahrzeugTableModel extends AbstractTableModel {
             case 2 -> fahrzeug.getModell();
             case 3 -> fahrzeug.getTyp();
             case 4 -> fahrzeug.getBaujahr();
-            case 5 -> String.format("%.2f €", fahrzeug.getAktuellerWert());
-            case 6 -> fahrzeug.getStatus();
+            case 5 -> fahrzeug.getKilometerstand();
             default -> null;
         };
     }

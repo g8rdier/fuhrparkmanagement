@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDate;
-
 public class FuhrparkManagerTest {
     private FuhrparkManager manager;
     private FahrzeugService fahrzeugService;
@@ -49,13 +47,8 @@ public class FuhrparkManagerTest {
     @Test
     void testAddReparatur() {
         // Given
-        String kennzeichen = "B-AB 123";
-        ReparaturBuchEintrag reparatur = new ReparaturBuchEintrag(
-            "Ölwechsel",
-            150.0,
-            "Werkstatt XYZ",
-            LocalDate.now()
-        );
+        String kennzeichen = "TEST-123";
+        ReparaturBuchEintrag reparatur = mock(ReparaturBuchEintrag.class);
 
         // When
         manager.addReparatur(kennzeichen, reparatur);

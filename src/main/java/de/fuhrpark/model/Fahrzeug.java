@@ -17,8 +17,8 @@ public class Fahrzeug {
     private double aktuellerWert;
 
     // Konstruktor
-    public Fahrzeug(String kennzeichen, String hersteller, String modell, 
-                    FahrzeugTyp typ, int baujahr, double kilometerstand, String marke) {
+    public Fahrzeug(String kennzeichen, String marke, String modell, 
+                    FahrzeugTyp typ, int baujahr, double kilometerstand) {
         this.kennzeichen = kennzeichen;
         this.marke = marke;
         this.modell = modell;

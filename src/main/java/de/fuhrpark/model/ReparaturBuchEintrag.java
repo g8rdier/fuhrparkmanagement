@@ -1,28 +1,35 @@
 package de.fuhrpark.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class ReparaturBuchEintrag {
-    private final String beschreibung;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    
+    private final String kennzeichen;
     private final double kosten;
+    private final String beschreibung;
     private final String werkstatt;
     private final LocalDate datum;
-    private final String kennzeichen;
 
-    public ReparaturBuchEintrag(String beschreibung, double kosten, String werkstatt, LocalDate datum, String kennzeichen) {
-        this.beschreibung = beschreibung;
-        this.kosten = kosten;
-        this.werkstatt = werkstatt;
-        this.datum = datum;
+    public ReparaturBuchEintrag(String kennzeichen, double kosten, String beschreibung, String werkstatt, String datumStr) {
         this.kennzeichen = kennzeichen;
+        this.kosten = kosten;
+        this.beschreibung = beschreibung;
+        this.werkstatt = werkstatt;
+        this.datum = LocalDate.parse(datumStr, DATE_FORMATTER);
     }
 
-    public String getBeschreibung() {
-        return beschreibung;
+    public String getKennzeichen() {
+        return kennzeichen;
     }
 
     public double getKosten() {
         return kosten;
+    }
+
+    public String getBeschreibung() {
+        return beschreibung;
     }
 
     public String getWerkstatt() {
@@ -32,8 +39,8 @@ public class ReparaturBuchEintrag {
     public LocalDate getDatum() {
         return datum;
     }
-    public String getKennzeichen() {
-        return kennzeichen;
-    }
 
+    public String getDatumFormatted() {
+        return datum.format(DATE_FORMATTER);
+    }
 } 

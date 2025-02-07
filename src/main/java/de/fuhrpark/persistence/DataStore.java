@@ -9,6 +9,7 @@ public interface DataStore {
     void addFahrzeug(Fahrzeug fahrzeug);
     void updateFahrzeug(Fahrzeug fahrzeug);
     void saveFahrzeug(Fahrzeug fahrzeug);
+    void deleteFahrzeug(String kennzeichen);
     Fahrzeug getFahrzeug(String kennzeichen);
     List<Fahrzeug> getFahrzeuge();
     List<Fahrzeug> getAlleFahrzeuge();
@@ -19,7 +20,9 @@ public interface DataStore {
     List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen);
     
     void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag);
+    void addReparatur(String kennzeichen, ReparaturBuchEintrag reparatur);
     List<ReparaturBuchEintrag> getReparaturBuchEintraege();
+    List<ReparaturBuchEintrag> getReparaturen();
     List<ReparaturBuchEintrag> getReparaturen(String kennzeichen);
     
     void save(String filename, Object data);
