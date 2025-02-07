@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DatabaseDataStoreImpl implements DataStore {
+public class DatabaseDataStoreImpl extends DataStoreImpl {
     private final Map<String, Fahrzeug> fahrzeuge = new HashMap<>();
     private final Map<String, List<FahrtenbuchEintrag>> fahrtenbuch = new HashMap<>();
     private final Map<String, List<ReparaturBuchEintrag>> reparaturen = new HashMap<>();
@@ -88,16 +88,14 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void save(String filename, Object data) {
-        // Database-specific save implementation
-        // TODO: Implement actual database connection and saving
-        throw new UnsupportedOperationException("Database saving not yet implemented");
+        // For now, we'll use the file-based implementation from the parent class
+        super.save(filename, data);
     }
 
     @Override
     public Object load(String filename) {
-        // Database-specific load implementation
-        // TODO: Implement actual database connection and loading
-        throw new UnsupportedOperationException("Database loading not yet implemented");
+        // For now, we'll use the file-based implementation from the parent class
+        return super.load(filename);
     }
 
     @Override
