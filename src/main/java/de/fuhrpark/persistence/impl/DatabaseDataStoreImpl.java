@@ -8,48 +8,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseDataStoreImpl implements DataStore {
-    private static final String DB_URL = "jdbc:sqlite:fuhrpark.db";
+    private static final String DB_URL = "jdbc:h2:./fuhrpark";
+    private static final String USER = "sa";
+    private static final String PASS = "";
 
     public DatabaseDataStoreImpl() {
         initializeDatabase();
     }
 
     private void initializeDatabase() {
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement()) {
-            stmt.execute("CREATE TABLE IF NOT EXISTS fahrzeuge (" +
-                        "kennzeichen TEXT PRIMARY KEY," +
-                        "typ TEXT NOT NULL)");
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+            String sql = "CREATE TABLE IF NOT EXISTS fahrzeuge " +
+                        "(kennzeichen VARCHAR(255) PRIMARY KEY)";
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute(sql);
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize database", e);
         }
     }
 
     @Override
     public void saveFahrzeug(Fahrzeug fahrzeug) {
-        String sql = "INSERT OR REPLACE INTO fahrzeuge (kennzeichen, typ) VALUES (?, ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        String sql = "MERGE INTO fahrzeuge (kennzeichen) VALUES (?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, fahrzeug.getKennzeichen());
-            pstmt.setString(2, fahrzeug.getTyp());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to save vehicle", e);
         }
     }
 
     @Override
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        String sql = "SELECT kennzeichen, typ FROM fahrzeuge WHERE kennzeichen = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        String sql = "SELECT kennzeichen FROM fahrzeuge WHERE kennzeichen = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, kennzeichen);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return createFahrzeugFromResultSet(rs);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return createFahrzeugFromResultSet(rs);
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to get vehicle", e);
         }
         return null;
     }
@@ -57,15 +60,15 @@ public class DatabaseDataStoreImpl implements DataStore {
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
         List<Fahrzeug> fahrzeuge = new ArrayList<>();
-        String sql = "SELECT kennzeichen, typ FROM fahrzeuge";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        String sql = "SELECT kennzeichen FROM fahrzeuge";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 fahrzeuge.add(createFahrzeugFromResultSet(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to get all vehicles", e);
         }
         return fahrzeuge;
     }
@@ -73,17 +76,17 @@ public class DatabaseDataStoreImpl implements DataStore {
     @Override
     public void deleteFahrzeug(String kennzeichen) {
         String sql = "DELETE FROM fahrzeuge WHERE kennzeichen = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, kennzeichen);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to delete vehicle", e);
         }
     }
 
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
         String kennzeichen = rs.getString("kennzeichen");
-        return new PKW(kennzeichen); // For now, we only support PKW
+        return new PKW(kennzeichen);
     }
 }
