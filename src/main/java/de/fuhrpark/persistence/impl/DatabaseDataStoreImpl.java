@@ -5,7 +5,7 @@ import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.ReparaturBuchEintrag;
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.DatabaseConfig;
-import de.fuhrpark.enums.FahrzeugTyp;
+import de.fuhrpark.model.FahrzeugTyp;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class DatabaseDataStoreImpl implements DataStore {
             stmt.setString(1, fahrzeug.getKennzeichen());
             stmt.setString(2, fahrzeug.getMarke());
             stmt.setString(3, fahrzeug.getModell());
-            stmt.setString(4, fahrzeug.getTyp().name());
+            stmt.setString(4, fahrzeug.getTyp().toString());
             stmt.setInt(5, fahrzeug.getBaujahr());
             stmt.setDouble(6, fahrzeug.getKilometerstand());
             stmt.executeUpdate();
@@ -62,7 +62,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
+    public List<Fahrzeug> getFahrzeuge() {
         String sql = "SELECT * FROM fahrzeuge";
         List<Fahrzeug> fahrzeuge = new ArrayList<>();
         try (Connection conn = DatabaseConfig.getConnection();
@@ -128,7 +128,6 @@ public class DatabaseDataStoreImpl implements DataStore {
                     rs.getDouble("kosten"),
                     rs.getString("werkstatt")
                 );
-                eintrag.setKennzeichen(kennzeichen);
                 reparaturen.add(eintrag);
             }
         } catch (SQLException e) {
@@ -151,7 +150,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     @Override
     public void deleteFahrzeug(String kennzeichen) {
         try (Connection conn = DatabaseConfig.getConnection()) {
-            // Delete repairs first due to foreign key constraints
+            // Delete repairs first
             String deleteSql = "DELETE FROM reparaturbuch WHERE kennzeichen = ?";
             try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
                 deleteStmt.setString(1, kennzeichen);
