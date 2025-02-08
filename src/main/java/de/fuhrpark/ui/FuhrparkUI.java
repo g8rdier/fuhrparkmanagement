@@ -150,15 +150,15 @@ public class FuhrparkUI extends JFrame {
             // Parse price using German locale to handle dots and commas correctly
             NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
             Number number = format.parse(priceText);
-            double price = number.doubleValue();
+            double priceValue = number.doubleValue();
             
-            if (price <= 0) {
+            if (priceValue <= 0) {
                 showError("Der Kaufpreis muss größer als 0 sein.");
                 return;
             }
 
             // Format price for display
-            String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY).format(price);
+            String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY).format(priceValue);
             
             // Add to list with formatted price
             String vehicleEntry = String.format("%s [%s] %s %s - %s",
@@ -234,13 +234,6 @@ public class FuhrparkUI extends JFrame {
         licensePlateField.setText("");
         priceField.setText("");
         fahrzeugTypComboBox.setSelectedIndex(0);
-    }
-    
-    private void showValidationError() {
-        JOptionPane.showMessageDialog(this,
-            "Bitte füllen Sie alle Felder korrekt aus.",
-            "Ungültige Eingabe",
-            JOptionPane.ERROR_MESSAGE);
     }
     
     private void showError(String message) {
