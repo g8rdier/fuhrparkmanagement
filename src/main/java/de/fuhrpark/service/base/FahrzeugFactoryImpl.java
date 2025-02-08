@@ -1,7 +1,7 @@
-package de.fuhrpark.service.impl;  // Changed from de.fuhrpark.service.impl to match expected package
+package de.fuhrpark.service.impl;
 
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.base.FahrzeugTyp;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.model.impl.PKW;
 import de.fuhrpark.model.impl.LKW;
 import de.fuhrpark.service.base.FahrzeugFactory;
