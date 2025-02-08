@@ -5,8 +5,8 @@ import de.fuhrpark.model.enums.FahrzeugTyp;
 /**
  * Repräsentiert ein Fahrzeug im Fuhrpark.
  */
-public class Fahrzeug {
-    private final String kennzeichen;
+public abstract class Fahrzeug {
+    protected String kennzeichen;
     private final String marke;
     private final String modell;
     private final FahrzeugTyp typ;
