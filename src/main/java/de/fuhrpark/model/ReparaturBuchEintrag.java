@@ -11,6 +11,13 @@ public class ReparaturBuchEintrag {
     private double kosten;
     private String werkstatt;
 
+    public ReparaturBuchEintrag(LocalDate datum, String beschreibung, double kosten, String werkstatt) {
+        this.datum = datum;
+        this.beschreibung = beschreibung;
+        this.kosten = kosten;
+        this.werkstatt = werkstatt;
+    }
+
     public ReparaturBuchEintrag(Long id, String kennzeichen, LocalDate datum, 
                                String beschreibung, double kosten, String werkstatt) {
         this.id = id;
