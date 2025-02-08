@@ -10,12 +10,10 @@ public class VehicleEditDialog extends JDialog {
     private final JTextField brandField;
     private final JTextField modelField;
     private final JTextField licensePlateField;
-    private final FuhrparkUI parent;
     private boolean approved = false;
     
     public VehicleEditDialog(Frame owner, String type, String brand, String model, String licensePlate) {
         super(owner, "Fahrzeug bearbeiten", true);
-        this.parent = (FuhrparkUI) owner;
         
         // Initialize components
         typeComboBox = new JComboBox<>(VEHICLE_TYPES);
