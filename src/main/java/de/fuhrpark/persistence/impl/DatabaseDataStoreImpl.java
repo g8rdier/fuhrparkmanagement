@@ -30,7 +30,15 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void saveFahrzeug(Fahrzeug fahrzeug) {
-        String sql = "INSERT INTO fahrzeuge (kennzeichen, marke, modell, typ, baujahr, kilometerstand) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO fahrzeuge (kennzeichen, marke, modell, typ, baujahr, kilometerstand) " +
+                     "VALUES (?, ?, ?, ?, ?, ?) " +
+                     "ON DUPLICATE KEY UPDATE " +
+                     "marke = VALUES(marke), " +
+                     "modell = VALUES(modell), " +
+                     "typ = VALUES(typ), " +
+                     "baujahr = VALUES(baujahr), " +
+                     "kilometerstand = VALUES(kilometerstand)";
+                     
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, fahrzeug.getKennzeichen());
@@ -40,8 +48,11 @@ public class DatabaseDataStoreImpl implements DataStore {
             stmt.setInt(5, fahrzeug.getBaujahr());
             stmt.setDouble(6, fahrzeug.getKilometerstand());
             stmt.executeUpdate();
+            
+            // Also update the local cache
+            fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
         } catch (SQLException e) {
-            throw new RuntimeException("Error saving vehicle", e);
+            throw new RuntimeException("Error saving vehicle: " + e.getMessage(), e);
         }
     }
 

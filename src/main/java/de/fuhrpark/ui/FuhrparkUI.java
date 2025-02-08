@@ -262,15 +262,23 @@ public class FuhrparkUI extends JFrame {
         
         Fahrzeug newFahrzeug = dialog.getResult();
         if (newFahrzeug != null) {
-            fahrzeugService.addFahrzeug(newFahrzeug);
-            // Update the table model with fresh data
-            ((FahrzeugTableModel) fahrzeugTable.getModel()).updateData(
-                fahrzeugService.getAlleFahrzeuge()
-            );
-            // Select the new vehicle
-            selectFahrzeug(newFahrzeug.getKennzeichen());
-            // Refresh the table display
-            fahrzeugTable.repaint();
+            try {
+                // Save to database
+                fahrzeugService.saveFahrzeug(newFahrzeug);
+                // Update the table model with fresh data
+                ((FahrzeugTableModel) fahrzeugTable.getModel()).updateData(
+                    fahrzeugService.getAlleFahrzeuge()
+                );
+                // Select the new vehicle
+                selectFahrzeug(newFahrzeug.getKennzeichen());
+                // Refresh the table display
+                fahrzeugTable.repaint();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Fehler beim Speichern des Fahrzeugs: " + e.getMessage(),
+                    "Fehler",
+                    JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
