@@ -24,6 +24,17 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
+    public void aktualisiereFahrzeug(Fahrzeug fahrzeug) {
+        if (fahrzeug == null || fahrzeug.getKennzeichen() == null) {
+            throw new IllegalArgumentException("Fahrzeug und Kennzeichen dürfen nicht null sein");
+        }
+        if (!fahrzeuge.containsKey(fahrzeug.getKennzeichen())) {
+            throw new IllegalArgumentException("Fahrzeug nicht gefunden: " + fahrzeug.getKennzeichen());
+        }
+        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+    }
+
+    @Override
     public void loescheFahrzeug(String kennzeichen) {
         if (kennzeichen == null) {
             throw new IllegalArgumentException("Kennzeichen darf nicht null sein");

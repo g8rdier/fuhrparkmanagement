@@ -8,6 +8,7 @@ import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.service.base.FahrtenbuchService;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
+import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
 import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import de.fuhrpark.ui.dialog.FahrzeugDialog;
@@ -37,6 +38,7 @@ public class FuhrparkUI extends JFrame {
 
     public FuhrparkUI(FuhrparkManager manager, FahrzeugService fahrzeugService, 
                      FahrtenbuchService fahrtenbuchService) {
+        super("Fuhrpark Verwaltung");
         this.manager = manager;
         this.fahrzeugService = fahrzeugService;
         this.fahrzeugFactory = new FahrzeugFactoryImpl();
@@ -44,7 +46,6 @@ public class FuhrparkUI extends JFrame {
         this.tableModel = new FahrzeugTableModel();
         
         // Setup UI
-        setTitle("Fuhrpark Verwaltung");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         
@@ -115,7 +116,7 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void addNewFahrzeug() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugFactory);
+        FahrzeugDialog dialog = new FahrzeugDialog(this, manager.getFahrzeugFactory());
         dialog.setVisible(true);
         
         Fahrzeug fahrzeug = dialog.getResult();

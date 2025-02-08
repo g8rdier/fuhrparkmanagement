@@ -1,7 +1,6 @@
 package de.fuhrpark.ui.dialog;
 
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.enums.FahrzeugTyp;
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,8 +11,8 @@ public class FahrzeugEditDialog extends JDialog {
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
 
-    public FahrzeugEditDialog(Window owner, Fahrzeug fahrzeug) {
-        super(owner, "Fahrzeug bearbeiten", ModalityType.APPLICATION_MODAL);
+    public FahrzeugEditDialog(Frame owner, Fahrzeug fahrzeug) {
+        super(owner, "Fahrzeug bearbeiten", true);
         this.fahrzeug = fahrzeug;
         
         markeField = new JTextField(20);
@@ -38,7 +37,7 @@ public class FahrzeugEditDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Show kennzeichen and type as read-only
+        // Read-only fields
         addFormField(inputPanel, "Kennzeichen:", new JLabel(fahrzeug.getKennzeichen()), gbc, 0);
         addFormField(inputPanel, "Typ:", new JLabel(fahrzeug.getClass().getSimpleName()), gbc, 1);
         
@@ -47,16 +46,7 @@ public class FahrzeugEditDialog extends JDialog {
         addFormField(inputPanel, "Modell:", modellField, gbc, 3);
         addFormField(inputPanel, "Preis (€): *", preisField, gbc, 4);
 
-        // Add required fields note with smaller font
-        JLabel requiredNote = new JLabel("* Pflichtfeld");
-        requiredNote.setForeground(Color.RED);
-        requiredNote.setFont(requiredNote.getFont().deriveFont(10.0f));  // Make font smaller
-        gbc.gridy = 5;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        inputPanel.add(requiredNote, gbc);
-
-        // Button panel
+        // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
@@ -72,14 +62,11 @@ public class FahrzeugEditDialog extends JDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        // Add panels to dialog
         add(inputPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Configure dialog
         pack();
         setLocationRelativeTo(owner);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     private void addFormField(JPanel panel, String label, JComponent field, GridBagConstraints gbc, int row) {
