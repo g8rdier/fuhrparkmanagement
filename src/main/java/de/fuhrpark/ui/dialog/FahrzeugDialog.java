@@ -1,6 +1,7 @@
 package de.fuhrpark.ui.dialog;
 
 import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +11,8 @@ public class FahrzeugDialog extends JDialog {
     private final JTextField kennzeichenField = new JTextField(10);
     private final JTextField markeField = new JTextField(10);
     private final JTextField modellField = new JTextField(10);
-    private final JComboBox<String> typeComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
+    private final JTextField preisField = new JTextField(10);
+    private final JComboBox<FahrzeugTyp> typeComboBox = new JComboBox<>(FahrzeugTyp.values());
     private final FahrzeugFactory fahrzeugFactory;
 
     public FahrzeugDialog(Frame owner, FahrzeugFactory factory) {
@@ -26,7 +28,7 @@ public class FahrzeugDialog extends JDialog {
         setLayout(new BorderLayout());
         
         // Input panel
-        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 5, 5));
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         inputPanel.add(new JLabel("Kennzeichen:"));
@@ -35,6 +37,8 @@ public class FahrzeugDialog extends JDialog {
         inputPanel.add(markeField);
         inputPanel.add(new JLabel("Modell:"));
         inputPanel.add(modellField);
+        inputPanel.add(new JLabel("Preis:"));
+        inputPanel.add(preisField);
         inputPanel.add(new JLabel("Typ:"));
         inputPanel.add(typeComboBox);
 
@@ -78,15 +82,17 @@ public class FahrzeugDialog extends JDialog {
     }
 
     private Fahrzeug createFahrzeug() {
-        String typ = (String) typeComboBox.getSelectedItem();
-        String kennzeichen = kennzeichenField.getText();
-        String marke = markeField.getText();
-        String modell = modellField.getText();
+        try {
+            FahrzeugTyp typ = (FahrzeugTyp) typeComboBox.getSelectedItem();
+            String kennzeichen = kennzeichenField.getText().trim();
+            String marke = markeField.getText().trim();
+            String modell = modellField.getText().trim();
+            double preis = Double.parseDouble(preisField.getText().trim());
 
-        if ("PKW".equals(typ)) {
-            return fahrzeugFactory.erstelleFahrzeug("PKW", kennzeichen, marke, modell, 5, true);
-        } else {
-            return fahrzeugFactory.erstelleFahrzeug("LKW", kennzeichen, marke, modell, 7.5, false);
+            return fahrzeugFactory.erstelleFahrzeug(typ, marke, modell, kennzeichen, preis);
+        } catch (NumberFormatException e) {
+            showValidationError("Bitte geben Sie einen gültigen Preis ein.");
+            return null;
         }
     }
 

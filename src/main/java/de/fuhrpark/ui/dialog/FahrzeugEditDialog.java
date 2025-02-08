@@ -1,35 +1,34 @@
 package de.fuhrpark.ui.dialog;
 
-import de.fuhrpark.ui.model.VehicleData;
+import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 import javax.swing.*;
 import java.awt.*;
 
-public class VehicleEditDialog extends JDialog {
-    private final JComboBox<String> typeComboBox;
-    private final JTextField brandField;
-    private final JTextField modelField;
-    private final JTextField licensePlateField;
-    private final JTextField priceField;
+public class FahrzeugEditDialog extends JDialog {
+    private final JTextField markeField;
+    private final JTextField modellField;
+    private final JTextField preisField;
     private boolean confirmed = false;
+    private final Fahrzeug fahrzeug;
 
-    public VehicleEditDialog(JFrame parent, VehicleData data) {
+    public FahrzeugEditDialog(JFrame parent, Fahrzeug fahrzeug) {
         super(parent, "Fahrzeug bearbeiten", true);
+        this.fahrzeug = fahrzeug;
         
-        // Initialize components with only PKW and LKW
-        typeComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
-        brandField = new JTextField(20);
-        modelField = new JTextField(20);
-        licensePlateField = new JTextField(20);
-        priceField = new JTextField(20);
+        markeField = new JTextField(20);
+        modellField = new JTextField(20);
+        preisField = new JTextField(20);
 
         // Set initial values
-        typeComboBox.setSelectedItem(data.getType());
-        brandField.setText(data.getBrand());
-        modelField.setText(data.getModel());
-        licensePlateField.setText(data.getLicensePlate());
-        priceField.setText(data.getPrice());
+        markeField.setText(fahrzeug.getMarke());
+        modellField.setText(fahrzeug.getModell());
+        preisField.setText(String.valueOf(fahrzeug.getPreis()));
 
-        // Layout
+        initComponents();
+    }
+
+    private void initComponents() {
         setLayout(new BorderLayout(10, 10));
         
         JPanel inputPanel = new JPanel(new GridBagLayout());
@@ -37,12 +36,14 @@ public class VehicleEditDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Add components with required field markers
-        addFormField(inputPanel, "Fahrzeugtyp: *", typeComboBox, gbc, 0);
-        addFormField(inputPanel, "Marke: *", brandField, gbc, 1);
-        addFormField(inputPanel, "Modell:", modelField, gbc, 2);
-        addFormField(inputPanel, "Kennzeichen: *", licensePlateField, gbc, 3);
-        addFormField(inputPanel, "Kaufpreis (€): *", priceField, gbc, 4);
+        // Show kennzeichen and type as read-only
+        addFormField(inputPanel, "Kennzeichen:", new JLabel(fahrzeug.getKennzeichen()), gbc, 0);
+        addFormField(inputPanel, "Typ:", new JLabel(fahrzeug.getClass().getSimpleName()), gbc, 1);
+        
+        // Editable fields
+        addFormField(inputPanel, "Marke: *", markeField, gbc, 2);
+        addFormField(inputPanel, "Modell:", modellField, gbc, 3);
+        addFormField(inputPanel, "Preis (€): *", preisField, gbc, 4);
 
         // Add required fields note with smaller font
         JLabel requiredNote = new JLabel("* Pflichtfeld");
@@ -94,36 +95,23 @@ public class VehicleEditDialog extends JDialog {
         return confirmed;
     }
 
-    public String getVehicleType() {
-        return (String) typeComboBox.getSelectedItem();
-    }
-
-    public String getBrand() {
-        return brandField.getText();
-    }
-
-    public String getModel() {
-        return modelField.getText();
-    }
-
-    public String getLicensePlate() {
-        return licensePlateField.getText();
-    }
-
-    public String getPrice() {
-        return priceField.getText();
+    public boolean updateFahrzeug() {
+        if (!validateInputs()) {
+            return false;
+        }
+        
+        fahrzeug.setMarke(markeField.getText().trim());
+        fahrzeug.setModell(modellField.getText().trim());
+        fahrzeug.setPreis(Double.parseDouble(preisField.getText().trim()));
+        return true;
     }
 
     private boolean validateInputs() {
-        if (brandField.getText().trim().isEmpty()) {
+        if (markeField.getText().trim().isEmpty()) {
             showError("Bitte geben Sie eine Marke ein.");
             return false;
         }
-        if (licensePlateField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie ein Kennzeichen ein.");
-            return false;
-        }
-        if (priceField.getText().trim().isEmpty()) {
+        if (preisField.getText().trim().isEmpty()) {
             showError("Bitte geben Sie einen Kaufpreis ein.");
             return false;
         }

@@ -9,6 +9,8 @@ import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
+import de.fuhrpark.ui.dialog.FahrzeugDialog;
+import de.fuhrpark.ui.dialog.FahrzeugEditDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,7 +79,7 @@ public class FuhrparkUI extends JFrame {
         inputPanel.add(preisField);
 
         JButton addButton = new JButton("Hinzufügen");
-        addButton.addActionListener(e -> addFahrzeug());
+        addButton.addActionListener(e -> addNewFahrzeug());
         inputPanel.add(addButton);
 
         // Table Panel
@@ -108,77 +110,28 @@ public class FuhrparkUI extends JFrame {
         tableModel.setData(fahrzeuge);
     }
 
-    private void addFahrzeug() {
-        try {
-            String typString = fahrzeugTypComboBox.getSelectedItem().toString();
-            String kennzeichen = kennzeichenField.getText().trim();
-            String marke = markeField.getText().trim();
-            String modell = modellField.getText().trim();
-            double preis = Double.parseDouble(preisField.getText().trim());
-
-            manager.createFahrzeug(typString, kennzeichen, marke, modell, preis);
+    private void addNewFahrzeug() {
+        FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugFactory);
+        dialog.setVisible(true);
+        
+        Fahrzeug fahrzeug = dialog.getResult();
+        if (fahrzeug != null) {
+            manager.speichereFahrzeug(fahrzeug);
             refreshTable();
-            clearInputFields();
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Bitte geben Sie einen gültigen Preis ein.");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Fehler beim Hinzufügen: " + e.getMessage());
         }
-    }
-
-    private void clearInputFields() {
-        kennzeichenField.setText("");
-        markeField.setText("");
-        modellField.setText("");
-        preisField.setText("");
-        fahrzeugTypComboBox.setSelectedIndex(0);
     }
 
     private void editSelectedFahrzeug() {
         int selectedRow = fahrzeugTable.getSelectedRow();
         if (selectedRow >= 0) {
             Fahrzeug fahrzeug = tableModel.getRow(selectedRow);
-            
-            JDialog dialog = new JDialog(this, "Fahrzeug bearbeiten", true);
-            dialog.setLayout(new GridLayout(5, 2, 5, 5));
-            
-            JTextField markeField = new JTextField(fahrzeug.getMarke());
-            JTextField modellField = new JTextField(fahrzeug.getModell());
-            JTextField preisField = new JTextField(String.valueOf(fahrzeug.getPreis()));
-            
-            dialog.add(new JLabel("Kennzeichen:"));
-            dialog.add(new JLabel(fahrzeug.getKennzeichen()));
-            dialog.add(new JLabel("Marke:"));
-            dialog.add(markeField);
-            dialog.add(new JLabel("Modell:"));
-            dialog.add(modellField);
-            dialog.add(new JLabel("Preis:"));
-            dialog.add(preisField);
-            
-            JButton saveButton = new JButton("Speichern");
-            saveButton.addActionListener(e -> {
-                try {
-                    fahrzeug.setMarke(markeField.getText());
-                    fahrzeug.setModell(modellField.getText());
-                    fahrzeug.setPreis(Double.parseDouble(preisField.getText()));
-                    
-                    manager.updateFahrzeug(fahrzeug);
-                    refreshTable();
-                    dialog.dispose();
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(dialog, 
-                        "Bitte geben Sie einen gültigen Preis ein.",
-                        "Eingabefehler",
-                        JOptionPane.ERROR_MESSAGE);
-                }
-            });
-            
-            dialog.add(saveButton);
-            dialog.add(new JButton("Abbrechen") {{ addActionListener(e -> dialog.dispose()); }});
-            
-            dialog.pack();
-            dialog.setLocationRelativeTo(this);
+            FahrzeugEditDialog dialog = new FahrzeugEditDialog(this, fahrzeug);
             dialog.setVisible(true);
+            
+            if (dialog.isConfirmed() && dialog.updateFahrzeug()) {
+                manager.updateFahrzeug(fahrzeug);
+                refreshTable();
+            }
         }
     }
 
