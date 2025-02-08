@@ -2,7 +2,6 @@ package de.fuhrpark.ui.dialog;
 
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import javax.swing.*;
 import java.awt.*;
 
@@ -14,9 +13,12 @@ public class FahrzeugDialog extends JDialog {
     private final JComboBox<String> typeComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
     private final FahrzeugFactory fahrzeugFactory;
 
-    public FahrzeugDialog(Frame owner) {
+    public FahrzeugDialog(Frame owner, FahrzeugFactory factory) {
         super(owner, "Fahrzeug hinzufügen", true);
-        this.fahrzeugFactory = FahrzeugFactoryImpl.getInstance();
+        if (factory == null) {
+            throw new IllegalArgumentException("FahrzeugFactory darf nicht null sein");
+        }
+        this.fahrzeugFactory = factory;
         initComponents();
     }
 

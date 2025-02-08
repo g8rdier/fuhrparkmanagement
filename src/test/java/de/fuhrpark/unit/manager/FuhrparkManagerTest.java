@@ -10,6 +10,7 @@ import de.fuhrpark.persistence.impl.DataStoreImpl;
 import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
+import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.PKW;
 import de.fuhrpark.model.LKW;
@@ -28,7 +29,7 @@ public class FuhrparkManagerTest {
     public void setUp() {
         dataStore = new DataStoreImpl();
         service = new FahrzeugServiceImpl(dataStore);
-        factory = new FahrzeugFactoryImpl();
+        factory = FahrzeugFactoryImpl.getInstance();
         manager = new FuhrparkManager(service, factory);
     }
 
