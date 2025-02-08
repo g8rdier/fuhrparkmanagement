@@ -68,10 +68,6 @@ public class FuhrparkUI extends JFrame {
         // Configure toolbar
         toolBar.setFloatable(false);
         
-        JButton fahrtenbuchButton = new JButton("Fahrtenbuch");
-        fahrtenbuchButton.addActionListener(e -> handleFahrtenbuchOeffnen());
-        toolBar.add(fahrtenbuchButton);
-
         JButton reparaturBuchButton = new JButton("Reparaturbuch");
         reparaturBuchButton.addActionListener(e -> handleReparaturBuchOeffnen());
         toolBar.add(reparaturBuchButton);
