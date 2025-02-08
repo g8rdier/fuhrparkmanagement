@@ -48,23 +48,85 @@ public class FuhrparkUI extends JFrame {
     private static final String LOCATION_PATTERN = "[A-ZÄÖÜ]{1,3}";  // Unterscheidungszeichen
     private static final String LETTERS_PATTERN = "[A-Z]{1,2}";      // Erkennungsnummer (Buchstaben)
     private static final String NUMBERS_PATTERN = "[1-9][0-9]{0,3}"; // Erkennungsnummer (Ziffern)
-    private static final String SPECIAL_SUFFIX = "(H|E)?";           // Optional H or E suffix
-
+    
+    private static class PlateDocument extends javax.swing.text.PlainDocument {
+        @Override
+        public void insertString(int offs, String str, javax.swing.text.AttributeSet a) 
+                throws javax.swing.text.BadLocationException {
+            if (str == null) return;
+            
+            // Convert input to uppercase
+            str = str.toUpperCase();
+            
+            // Get current text and create new text
+            String currentText = getText(0, getLength());
+            StringBuilder newText = new StringBuilder(currentText);
+            newText.insert(offs, str);
+            
+            // Clean the text for processing
+            String processed = newText.toString().replace("-", "").replace(" ", "");
+            
+            // Only allow valid characters
+            if (!processed.matches("[A-ZÄÖÜ0-9HE]*")) {
+                return;
+            }
+            
+            // Check length (excluding separators)
+            if (processed.length() > 8) {
+                return;
+            }
+            
+            // Format the text
+            StringBuilder formatted = new StringBuilder();
+            int mainPartLength = processed.endsWith("H") || processed.endsWith("E") ? 
+                               processed.length() - 1 : processed.length();
+            
+            // Add characters with proper formatting
+            for (int i = 0; i < processed.length(); i++) {
+                char c = processed.charAt(i);
+                
+                // Handle main part
+                if (i < mainPartLength) {
+                    if (i == 0) {
+                        formatted.append(c);
+                    } else if (i <= 2) {
+                        formatted.append(c);
+                    } else if (i == 3) {
+                        formatted.append('-').append(c);
+                    } else if (i == 4) {
+                        formatted.append(c);
+                    } else if (i == 5) {
+                        formatted.append(' ').append(c);
+                    } else {
+                        formatted.append(c);
+                    }
+                } else {
+                    // Add H or E suffix
+                    formatted.append(c);
+                }
+            }
+            
+            // Update the document
+            super.remove(0, getLength());
+            super.insertString(0, formatted.toString(), a);
+        }
+    }
+    
     public static boolean isValidLicensePlate(String licensePlate) {
         if (licensePlate == null || licensePlate.isEmpty()) {
             return false;
         }
         
-        // Convert to uppercase and trim
-        licensePlate = licensePlate.toUpperCase().trim();
+        // Clean the input
+        String cleaned = licensePlate.toUpperCase().trim();
         
-        // Check for basic format (parts separated by - and space)
-        if (!licensePlate.contains("-") || !licensePlate.contains(" ")) {
+        // Check basic format
+        if (!cleaned.contains("-") || !cleaned.contains(" ")) {
             return false;
         }
         
         // Split into parts
-        String[] mainParts = licensePlate.split("-");
+        String[] mainParts = cleaned.split("-");
         if (mainParts.length != 2) return false;
         
         String location = mainParts[0];
@@ -74,29 +136,17 @@ public class FuhrparkUI extends JFrame {
         String letters = numberParts[0];
         String numbers = numberParts[1];
         
-        // Special case: Historic or Electric vehicle
+        // Handle H/E suffix
         String numbersPart = numbers;
-        String suffix = "";
         if (numbers.endsWith("H") || numbers.endsWith("E")) {
-            suffix = numbers.substring(numbers.length() - 1);
             numbersPart = numbers.substring(0, numbers.length() - 1);
         }
         
         // Validate each part
-        boolean validLocation = location.matches(LOCATION_PATTERN);
-        boolean validLetters = letters.matches(LETTERS_PATTERN);
-        boolean validNumbers = numbersPart.matches(NUMBERS_PATTERN);
-        boolean validSuffix = suffix.matches(SPECIAL_SUFFIX);
-        
-        // Check total length (max 8 characters, excluding separators)
-        int totalLength = location.length() + letters.length() + numbersPart.length() + suffix.length();
-        boolean validLength = totalLength <= 8;
-        
-        if (!validLocation || !validLetters || !validNumbers || !validSuffix || !validLength) {
-            return false;
-        }
-        
-        return true;
+        return location.matches(LOCATION_PATTERN) &&
+               letters.matches(LETTERS_PATTERN) &&
+               numbersPart.matches(NUMBERS_PATTERN) &&
+               cleaned.length() <= 10; // Including separators
     }
     
     private void showLicensePlateHelp() {
@@ -414,67 +464,6 @@ public class FuhrparkUI extends JFrame {
         JTextField field = new JTextField();
         field.setDocument(new PlateDocument());
         return field;
-    }
-    
-    // Custom document for license plate formatting
-    private static class PlateDocument extends javax.swing.text.PlainDocument {
-        @Override
-        public void insertString(int offs, String str, javax.swing.text.AttributeSet a) 
-                throws javax.swing.text.BadLocationException {
-            if (str == null) return;
-            
-            String text = getText(0, getLength());
-            String newText = new StringBuilder(text).insert(offs, str.toUpperCase()).toString();
-            
-            // Remove any existing separators for validation
-            String cleaned = newText.replace("-", "").replace(" ", "");
-            
-            // Check if it ends with H or E
-            String suffix = "";
-            if (cleaned.endsWith("H") || cleaned.endsWith("E")) {
-                suffix = cleaned.substring(cleaned.length() - 1);
-                cleaned = cleaned.substring(0, cleaned.length() - 1);
-            }
-            
-            // Max length check (8 chars including suffix, but excluding separators)
-            if (cleaned.length() + suffix.length() > 8) return;
-            
-            // Format the text with separators
-            StringBuilder formatted = new StringBuilder();
-            int charCount = 0;
-            
-            // Add the main part (location, letters, numbers)
-            for (char c : cleaned.toCharArray()) {
-                if (charCount == 0) {
-                    // First part (location) starts
-                    formatted.append(c);
-                } else if (charCount <= 2) {
-                    // Still in location part
-                    formatted.append(c);
-                } else if (charCount == 3) {
-                    // After location, add separator and start letters
-                    formatted.append('-').append(c);
-                } else if (charCount == 4) {
-                    // Still in letters part
-                    formatted.append(c);
-                } else if (charCount == 5) {
-                    // Before numbers, add space
-                    formatted.append(' ').append(c);
-                } else {
-                    // Rest of the numbers
-                    formatted.append(c);
-                }
-                charCount++;
-            }
-            
-            // Add the suffix if present
-            if (!suffix.isEmpty()) {
-                formatted.append(suffix);
-            }
-            
-            super.remove(0, getLength());
-            super.insertString(0, formatted.toString(), a);
-        }
     }
     
     public static void main(String[] args) {
