@@ -3,7 +3,6 @@ package de.fuhrpark.ui;
 import de.fuhrpark.model.ReparaturBuchEintrag;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 

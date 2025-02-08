@@ -82,7 +82,13 @@ public class FuhrparkUI extends JFrame {
         JButton addReparaturButton = new JButton("Reparatur hinzufügen");
         
         // Add button functionality
-        fahrtenbuchButton.addActionListener(e -> openFahrtenbuch());
+        fahrtenbuchButton.addActionListener(_ -> {
+            String kennzeichen = getCurrentKennzeichen();
+            if (kennzeichen != null) {
+                FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, kennzeichen, fahrtenbuchService);
+                dialog.setVisible(true);
+            }
+        });
         addReparaturButton.addActionListener(_ -> {
             // Add reparatur logic
         });
@@ -101,50 +107,6 @@ public class FuhrparkUI extends JFrame {
 
         setSize(800, 600);
         setLocationRelativeTo(null);
-    }
-
-    private void searchFahrzeug() {
-        String kennzeichen = searchField.getText().trim();
-        if (!kennzeichen.isEmpty()) {
-            Fahrzeug fahrzeug = fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
-            updateFahrzeugDetails(fahrzeug);
-            if (fahrzeug != null) {
-                List<ReparaturBuchEintrag> reparaturen = 
-                    reparaturService.getReparaturenForFahrzeug(kennzeichen);
-                updateReparaturenTable(reparaturen);
-            }
-        }
-    }
-
-    private void openFahrtenbuch() {
-        String kennzeichen = searchField.getText().trim();
-        if (!kennzeichen.isEmpty()) {
-            FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, kennzeichen, fahrtenbuchService);
-            dialog.setLocationRelativeTo(this);
-            dialog.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(this, 
-                "Bitte zuerst ein Fahrzeug auswählen.", 
-                "Hinweis", 
-                JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    private void addNewReparatur() {
-        String kennzeichen = searchField.getText().trim();
-        if (!kennzeichen.isEmpty()) {
-            // Here you could open a dialog to add a new repair entry
-            // For now, we'll just show a message
-            JOptionPane.showMessageDialog(this, 
-                "Funktion zum Hinzufügen einer Reparatur wird implementiert.", 
-                "Info", 
-                JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, 
-                "Bitte zuerst ein Fahrzeug auswählen.", 
-                "Hinweis", 
-                JOptionPane.INFORMATION_MESSAGE);
-        }
     }
 
     public void updateFahrzeugDetails(Fahrzeug fahrzeug) {
