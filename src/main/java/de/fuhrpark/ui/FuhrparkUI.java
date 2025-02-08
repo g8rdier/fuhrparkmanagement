@@ -9,7 +9,6 @@ import java.util.Map;
 public class FuhrparkUI extends JFrame {
     private JComboBox<String> vehicleTypeCombo;
     private JTextField brandCombo;
-    private JTextField customBrandField;
     private JTextField modelField;
     private JTextField licensePlateField;
     private JButton saveButton;
@@ -39,8 +38,6 @@ public class FuhrparkUI extends JFrame {
         "Other"
     };
     
-    private static final String OTHER_BRAND = "Other";
-
     private JButton editButton;
     private JButton deleteButton;
     
