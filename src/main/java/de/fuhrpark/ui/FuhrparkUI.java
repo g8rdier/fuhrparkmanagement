@@ -107,7 +107,7 @@ public class FuhrparkUI extends JFrame {
         if (fahrzeug != null) {
             // Use fahrzeugService to get and display vehicle details
             kennzeichenLabel.setText(fahrzeug.getKennzeichen());
-            markeLabel.setText(fahrzeug.getHersteller());
+            markeLabel.setText(fahrzeug.getMarke());
             modellLabel.setText(fahrzeug.getModell());
             typLabel.setText(fahrzeug.getTyp().toString());
             baujahrLabel.setText(String.valueOf(fahrzeug.getBaujahr()));
