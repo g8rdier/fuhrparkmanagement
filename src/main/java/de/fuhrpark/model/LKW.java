@@ -1,5 +1,6 @@
 package de.fuhrpark.model;
 
+import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.enums.FahrzeugTyp;
 
 /**

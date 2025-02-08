@@ -1,6 +1,6 @@
-package de.fuhrpark.service;
+package de.fuhrpark.service.base;
 
-import de.fuhrpark.model.Fahrzeug;
+import de.fuhrpark.model.base.Fahrzeug;
 import java.util.List;
 
 /**
