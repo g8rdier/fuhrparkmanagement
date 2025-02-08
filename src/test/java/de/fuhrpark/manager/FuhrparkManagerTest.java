@@ -1,5 +1,13 @@
 package de.fuhrpark.manager;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.impl.DataStoreImpl;
 import de.fuhrpark.service.FahrzeugFactory;
@@ -9,9 +17,6 @@ import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.PKW;
 import de.fuhrpark.model.LKW;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Testet die Funktionalität des FuhrparkManagers
@@ -19,28 +24,24 @@ import static org.junit.Assert.*;
 public class FuhrparkManagerTest {
     private FuhrparkManager manager;
     private DataStore dataStore;
-    private FahrzeugFactory factory;
     private FahrzeugService service;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        // Initialisierung der Komponenten
         dataStore = new DataStoreImpl();
-        factory = new FahrzeugFactoryImpl();
         service = new FahrzeugServiceImpl(dataStore);
-        manager = new FuhrparkManager(service, factory);
+        manager = new FuhrparkManager(service, FahrzeugFactoryImpl.getInstance());
     }
 
     @Test
     public void testErstellePKW() {
-        // Test PKW erstellen
         Fahrzeug pkw = manager.erstelleNeuesFahrzeug(
             "PKW", 
             "B-TK 1234", 
             "BMW", 
             "X5", 
-            5,  // Sitzplätze
-            true // Klimaanlage
+            5, 
+            true
         );
         
         assertNotNull(pkw);
@@ -50,14 +51,13 @@ public class FuhrparkManagerTest {
 
     @Test
     public void testErstelleLKW() {
-        // Test LKW erstellen
         Fahrzeug lkw = manager.erstelleNeuesFahrzeug(
             "LKW", 
             "B-LK 5678", 
             "MAN", 
             "TGX", 
-            7.5,  // Ladekapazität
-            true  // Anhängerkupplung
+            7.5, 
+            true
         );
         
         assertNotNull(lkw);
@@ -67,7 +67,6 @@ public class FuhrparkManagerTest {
 
     @Test
     public void testFahrzeugFinden() {
-        // Fahrzeug erstellen und dann finden
         String kennzeichen = "B-TEST 999";
         manager.erstelleNeuesFahrzeug("PKW", kennzeichen, "VW", "Golf", 5, true);
         
@@ -78,7 +77,6 @@ public class FuhrparkManagerTest {
 
     @Test
     public void testFahrzeugLoeschen() {
-        // Fahrzeug erstellen und dann löschen
         String kennzeichen = "B-DEL 777";
         manager.erstelleNeuesFahrzeug("PKW", kennzeichen, "Audi", "A4", 5, true);
         
