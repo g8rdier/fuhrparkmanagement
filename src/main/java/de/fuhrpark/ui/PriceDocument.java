@@ -1,3 +1,5 @@
+package de.fuhrpark.ui;
+
 public class PriceDocument extends javax.swing.text.PlainDocument {
     @Override
     public void insertString(int offs, String str, javax.swing.text.AttributeSet a)
