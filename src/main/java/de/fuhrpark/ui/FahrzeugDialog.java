@@ -1,8 +1,6 @@
 package de.fuhrpark.ui;
 
 import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.PKW;
-import de.fuhrpark.model.LKW;
 import de.fuhrpark.service.FahrzeugFactory;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import javax.swing.*;

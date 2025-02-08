@@ -1,16 +1,12 @@
 package de.fuhrpark.manager;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.impl.DataStoreImpl;
-import de.fuhrpark.service.FahrzeugFactory;
 import de.fuhrpark.service.FahrzeugService;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
