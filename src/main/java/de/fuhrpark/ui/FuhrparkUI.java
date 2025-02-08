@@ -410,7 +410,7 @@ public class FuhrparkUI extends JFrame {
         saveButton.setText("Fahrzeug hinzufügen");
     }
     
-    private JTextField createLicensePlateField() {
+    public JTextField createLicensePlateField() {
         JTextField field = new JTextField();
         field.setDocument(new PlateDocument());
         return field;
