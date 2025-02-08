@@ -108,14 +108,13 @@ public class FuhrparkUI extends JFrame {
 
     private void addFahrzeug() {
         try {
-            FahrzeugTyp typ = (FahrzeugTyp) fahrzeugTypComboBox.getSelectedItem();
+            String typString = fahrzeugTypComboBox.getSelectedItem().toString();
             String kennzeichen = kennzeichenField.getText().trim();
             String marke = markeField.getText().trim();
             String modell = modellField.getText().trim();
             double preis = Double.parseDouble(preisField.getText().trim());
 
-            Fahrzeug fahrzeug = fahrzeugFactory.erstelleFahrzeug(typ, marke, modell, kennzeichen, preis);
-            fahrzeugService.speichereFahrzeug(fahrzeug);
+            manager.createFahrzeug(typString, kennzeichen, marke, modell, preis);
             refreshTable();
             clearInputFields();
         } catch (NumberFormatException e) {
@@ -152,7 +151,7 @@ public class FuhrparkUI extends JFrame {
                 JOptionPane.YES_NO_OPTION);
             
             if (confirm == JOptionPane.YES_OPTION) {
-                fahrzeugService.loescheFahrzeug(fahrzeug.getKennzeichen());
+                manager.deleteFahrzeug(fahrzeug.getKennzeichen());
                 refreshTable();
             }
         }
