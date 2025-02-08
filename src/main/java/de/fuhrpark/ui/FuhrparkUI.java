@@ -69,7 +69,7 @@ public class FuhrparkUI extends JFrame {
             Fahrzeug fahrzeug = fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
             updateFahrzeugDetails(fahrzeug);
             if (fahrzeug != null) {
-                List<ReparaturBuchEintrag> reparaturen = reparaturService.getReparaturen(kennzeichen);
+                List<ReparaturBuchEintrag> reparaturen = reparaturService.getReparaturenForFahrzeug(kennzeichen);
                 updateReparaturenTable(reparaturen);
             }
         });
