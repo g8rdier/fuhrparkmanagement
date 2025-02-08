@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
 
 public class DatabaseDataStoreImpl implements DataStore {
     private final Map<String, Fahrzeug> fahrzeuge = new HashMap<>();
@@ -166,24 +167,25 @@ public class DatabaseDataStoreImpl implements DataStore {
     @Override
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
         String sql = "SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC";
-        List<ReparaturBuchEintrag> reparaturen = new ArrayList<>();
+        List<ReparaturBuchEintrag> reparaturList = new ArrayList<>();
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, kennzeichen);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 ReparaturBuchEintrag eintrag = new ReparaturBuchEintrag(
+                    kennzeichen,
                     rs.getDate("datum").toLocalDate(),
                     rs.getString("beschreibung"),
                     rs.getDouble("kosten"),
                     rs.getString("werkstatt")
                 );
-                reparaturen.add(eintrag);
+                reparaturList.add(eintrag);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching repairs", e);
+            throw new RuntimeException("Error fetching repairs for vehicle", e);
         }
-        return reparaturen;
+        return reparaturList;
     }
 
     @Override
@@ -248,45 +250,27 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public List<ReparaturBuchEintrag> getReparaturenForFahrzeug(String kennzeichen) {
-        List<ReparaturBuchEintrag> reparaturen = new ArrayList<>();
-        String sql = "SELECT * FROM reparaturen WHERE fahrzeug_kennzeichen = ?";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, kennzeichen);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    reparaturen.add(new ReparaturBuchEintrag(
-                        rs.getString("fahrzeug_kennzeichen"),
-                        rs.getDate("datum").toLocalDate(),
-                        rs.getString("beschreibung"),
-                        rs.getDouble("kosten"),
-                        rs.getString("werkstatt")
-                    ));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error fetching repairs: " + e.getMessage());
-            return new ArrayList<>();
-        }
-        return reparaturen;
+        return getReparaturen(kennzeichen);  // Use the existing method instead of duplicating code
     }
 
     @Override
-    public void saveReparatur(ReparaturBuchEintrag reparatur) {
-        String sql = "INSERT INTO reparaturen (fahrzeug_kennzeichen, datum, beschreibung, kosten, werkstatt) VALUES (?, ?, ?, ?, ?)";
+    public void saveReparatur(ReparaturBuchEintrag eintrag) {
+        String sql = "INSERT INTO reparaturbuch (kennzeichen, datum, beschreibung, kosten, werkstatt) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setString(1, reparatur.getKennzeichen());
-            stmt.setDate(2, java.sql.Date.valueOf(reparatur.getDatum()));
-            stmt.setString(3, reparatur.getBeschreibung());
-            stmt.setDouble(4, reparatur.getKosten());
-            stmt.setString(5, reparatur.getWerkstatt());
+            stmt.setString(1, eintrag.getKennzeichen());
+            stmt.setDate(2, java.sql.Date.valueOf(eintrag.getDatum()));
+            stmt.setString(3, eintrag.getBeschreibung());
+            stmt.setDouble(4, eintrag.getKosten());
+            stmt.setString(5, eintrag.getWerkstatt());
             
             stmt.executeUpdate();
+            
+            // Update local cache
+            reparaturen.computeIfAbsent(eintrag.getKennzeichen(), k -> new ArrayList<>())
+                      .add(eintrag);
         } catch (SQLException e) {
             throw new RuntimeException("Error saving repair: " + e.getMessage(), e);
         }
