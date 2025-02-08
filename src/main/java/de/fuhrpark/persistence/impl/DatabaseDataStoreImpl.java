@@ -5,6 +5,7 @@ import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.ReparaturBuchEintrag;
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.DatabaseConfig;
+import de.fuhrpark.model.FahrzeugTyp;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -29,12 +30,35 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void saveFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+        String sql = "INSERT INTO fahrzeuge (kennzeichen, marke, modell, typ, baujahr, kilometerstand) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, fahrzeug.getKennzeichen());
+            stmt.setString(2, fahrzeug.getMarke());
+            stmt.setString(3, fahrzeug.getModell());
+            stmt.setString(4, fahrzeug.getTyp().toString());
+            stmt.setInt(5, fahrzeug.getBaujahr());
+            stmt.setInt(6, fahrzeug.getKilometerstand());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error saving vehicle", e);
+        }
     }
 
     @Override
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        return fahrzeuge.get(kennzeichen);
+        String sql = "SELECT * FROM fahrzeuge WHERE kennzeichen = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, kennzeichen);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return createFahrzeugFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching vehicle", e);
+        }
+        return null;
     }
 
     @Override
@@ -44,7 +68,18 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
-        return new ArrayList<>(fahrzeuge.values());
+        String sql = "SELECT * FROM fahrzeuge";
+        List<Fahrzeug> fahrzeuge = new ArrayList<>();
+        try (Connection conn = DatabaseConfig.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                fahrzeuge.add(createFahrzeugFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching vehicles", e);
+        }
+        return fahrzeuge;
     }
 
     @Override
@@ -87,12 +122,10 @@ public class DatabaseDataStoreImpl implements DataStore {
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
         String sql = "SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC";
         List<ReparaturBuchEintrag> reparaturen = new ArrayList<>();
-        
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, kennzeichen);
             ResultSet rs = stmt.executeQuery();
-            
             while (rs.next()) {
                 ReparaturBuchEintrag eintrag = new ReparaturBuchEintrag(
                     rs.getDate("datum").toLocalDate(),
@@ -100,7 +133,6 @@ public class DatabaseDataStoreImpl implements DataStore {
                     rs.getDouble("kosten"),
                     rs.getString("werkstatt")
                 );
-                eintrag.setKennzeichen(kennzeichen);
                 reparaturen.add(eintrag);
             }
         } catch (SQLException e) {
@@ -122,8 +154,14 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void deleteFahrzeug(String kennzeichen) {
-        fahrzeuge.remove(kennzeichen);
-        reparaturen.remove(kennzeichen);
+        String sql = "DELETE FROM fahrzeuge WHERE kennzeichen = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, kennzeichen);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error deleting vehicle", e);
+        }
     }
 
     @Override
@@ -147,5 +185,16 @@ public class DatabaseDataStoreImpl implements DataStore {
         } catch (SQLException e) {
             throw new RuntimeException("Error saving repair", e);
         }
+    }
+
+    private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
+        return new Fahrzeug(
+            rs.getString("kennzeichen"),
+            rs.getString("marke"),
+            rs.getString("modell"),
+            FahrzeugTyp.valueOf(rs.getString("typ")),
+            rs.getInt("baujahr"),
+            rs.getInt("kilometerstand")
+        );
     }
 }

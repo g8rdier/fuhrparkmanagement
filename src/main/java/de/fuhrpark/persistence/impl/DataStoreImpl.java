@@ -78,10 +78,12 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public void saveReparatur(String kennzeichen, ReparaturBuchEintrag eintrag) {
-        if (!reparaturen.containsKey(kennzeichen)) {
-            reparaturen.put(kennzeichen, new ArrayList<>());
+        List<ReparaturBuchEintrag> fahrzeugReparaturen = reparaturen.get(kennzeichen);
+        if (fahrzeugReparaturen == null) {
+            fahrzeugReparaturen = new ArrayList<>();
+            reparaturen.put(kennzeichen, fahrzeugReparaturen);
         }
-        reparaturen.get(kennzeichen).add(eintrag);
+        fahrzeugReparaturen.add(eintrag);
     }
 
     @Override
@@ -93,7 +95,7 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
-        return reparaturen.getOrDefault(kennzeichen, new ArrayList<>());
+        return new ArrayList<>(reparaturen.getOrDefault(kennzeichen, new ArrayList<>()));
     }
 
     @Override
