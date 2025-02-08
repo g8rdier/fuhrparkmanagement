@@ -12,6 +12,13 @@ import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.ui.dialog.VehicleEditDialog;
 import de.fuhrpark.ui.model.VehicleData;
 import de.fuhrpark.manager.FuhrparkManager;
+import de.fuhrpark.service.base.FahrzeugFactory;
+import de.fuhrpark.service.base.FahrzeugService;
+import de.fuhrpark.ui.dialog.FahrzeugDialog;
+import de.fuhrpark.ui.dialog.FahrtenbuchDialog;
+import de.fuhrpark.ui.model.FahrzeugData;
+import de.fuhrpark.ui.model.PreisDocument;
+import java.util.List;
 
 public class FuhrparkUI extends JFrame {
     // Constants
@@ -36,25 +43,19 @@ public class FuhrparkUI extends JFrame {
     private final FuhrparkManager manager;
     private final JTable fahrzeugTable;
     
-    public static boolean isValidLicensePlate(String licensePlate) {
-        if (licensePlate == null || licensePlate.isEmpty()) {
-            return false;
-        }
+    private final FahrzeugService fahrzeugService;
+    private final FahrzeugFactory fahrzeugFactory;
+    private final DefaultListModel<String> fahrzeugListModel;
 
-        // Basic format check (with flexible separators)
-        String cleaned = licensePlate.replace("-", "").replace(" ", "").toUpperCase();
-        
-        // Use the defined patterns for validation
-        String fullPattern = LOCATION_PATTERN + LETTERS_PATTERN + NUMBERS_PATTERN + "[HE]?";
-        return cleaned.matches(fullPattern);
-    }
-    
-    public FuhrparkUI(FuhrparkManager manager) {
-        super("Fuhrpark Verwaltung");
-        if (manager == null) {
-            throw new IllegalArgumentException("Manager darf nicht null sein");
+    public FuhrparkUI(FuhrparkManager manager, FahrzeugService service, FahrzeugFactory factory) {
+        super("Fuhrpark Manager");
+        if (manager == null || service == null || factory == null) {
+            throw new IllegalArgumentException("Manager und Service und Factory dürfen nicht null sein");
         }
         this.manager = manager;
+        this.fahrzeugService = service;
+        this.fahrzeugFactory = factory;
+        this.fahrzeugListModel = new DefaultListModel<>();
         this.fahrzeugTable = new JTable();
         
         // Initialize all fields in constructor before calling initComponents
@@ -71,49 +72,73 @@ public class FuhrparkUI extends JFrame {
         addButton = new JButton("Fahrzeug hinzufügen");
 
         initComponents();
+        loadFahrzeuge();
     }
     
     private void initComponents() {
-        setLayout(new BorderLayout());
-        
-        // Main content
-        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
-        add(scrollPane, BorderLayout.CENTER);
-        
+        setLayout(new BorderLayout(5, 5));
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         // Toolbar
         JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
-        
         JButton addButton = new JButton("Hinzufügen");
         JButton editButton = new JButton("Bearbeiten");
         JButton deleteButton = new JButton("Löschen");
-        
+        JButton fahrtenbuchButton = new JButton("Fahrtenbuch");
+
         addButton.addActionListener(e -> showAddDialog());
         editButton.addActionListener(e -> showEditDialog());
-        deleteButton.addActionListener(e -> deleteSelectedVehicle());
-        
+        deleteButton.addActionListener(e -> deleteFahrzeug());
+        fahrtenbuchButton.addActionListener(e -> showFahrtenbuch());
+
         toolbar.add(addButton);
         toolbar.add(editButton);
         toolbar.add(deleteButton);
-        
+        toolbar.add(fahrtenbuchButton);
         add(toolbar, BorderLayout.NORTH);
-        
-        // Configure frame
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Table
+        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
+        add(scrollPane, BorderLayout.CENTER);
+
         setSize(800, 600);
         setLocationRelativeTo(null);
     }
     
+    private void loadFahrzeuge() {
+        List<Fahrzeug> fahrzeuge = fahrzeugService.getAlleFahrzeuge();
+        // TODO: Update table model with fahrzeuge
+    }
+    
     private void showAddDialog() {
-        // TODO: Implement add dialog
+        FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugFactory);
+        dialog.setVisible(true);
+        if (dialog.getResult() != null) {
+            fahrzeugService.speichereFahrzeug(dialog.getResult());
+            loadFahrzeuge();
+        }
     }
     
     private void showEditDialog() {
         // TODO: Implement edit dialog
     }
     
-    private void deleteSelectedVehicle() {
+    private void deleteFahrzeug() {
         // TODO: Implement delete functionality
+    }
+    
+    private void showFahrtenbuch() {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            String kennzeichen = (String) fahrzeugTable.getValueAt(selectedRow, 0);
+            FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, null, kennzeichen);
+            dialog.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Bitte wählen Sie ein Fahrzeug aus.",
+                "Fehler",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     private void addVehicle() {
