@@ -85,31 +85,6 @@ public class FuhrparkUI extends JFrame {
         return cleaned.matches(fullPattern);
     }
     
-    private void showLicensePlateHelp() {
-        JOptionPane.showMessageDialog(this,
-            """
-            Bitte geben Sie ein gültiges Kennzeichen ein.
-            
-            Format: XXX-YY 1234Z
-            
-            • Unterscheidungszeichen (1-3 Buchstaben)
-            • Bindestrich (-)
-            • 1-2 Buchstaben
-            • Leerzeichen
-            • 1-4 Ziffern (keine führende 0)
-            • Optional: H (Historisch) oder E (Elektro)
-            
-            Beispiele:
-            • B-AB 123
-            • M-XY 4567
-            • HH-AB 42
-            • B-AB 123H
-            • M-XX 55E
-            """,
-            "Kennzeichen Format",
-            JOptionPane.INFORMATION_MESSAGE);
-    }
-
     public FuhrparkUI() {
         // Basic window setup
         setTitle("Fuhrpark Verwaltung");
@@ -218,7 +193,24 @@ public class FuhrparkUI extends JFrame {
                 JOptionPane.WARNING_MESSAGE);
             return;
         }
-        // TODO: Implement edit functionality
+
+        String entry = listModel.getElementAt(selectedIndex);
+        // Parse entry (format: "TYPE [PLATE] BRAND MODEL")
+        String type = entry.substring(0, entry.indexOf('[') - 1);
+        String plate = entry.substring(entry.indexOf('[') + 1, entry.indexOf(']'));
+        String rest = entry.substring(entry.indexOf(']') + 2);
+        String[] parts = rest.split(" ", 2);
+        String brand = parts[0];
+        String model = parts[1];
+
+        // Set fields with current values
+        fahrzeugTypComboBox.setSelectedItem(type);
+        markeField.setText(brand);
+        modelField.setText(model);
+        licensePlateField.setText(plate);
+
+        // Remove the old entry
+        listModel.remove(selectedIndex);
     }
     
     private void deleteVehicle() {
@@ -246,6 +238,20 @@ public class FuhrparkUI extends JFrame {
         JTextField field = new JTextField();
         field.setDocument(new PlateDocument());
         return field;
+    }
+    
+    // Add method for license plate validation
+    private boolean isLicensePlateInUse(String licensePlate, int excludeIndex) {
+        for (int i = 0; i < listModel.size(); i++) {
+            if (i == excludeIndex) continue;
+            String entry = listModel.getElementAt(i);
+            // Extract license plate from entry (format: "TYPE [PLATE] BRAND MODEL")
+            String plate = entry.substring(entry.indexOf('[') + 1, entry.indexOf(']'));
+            if (plate.equals(licensePlate)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public static void main(String[] args) {
