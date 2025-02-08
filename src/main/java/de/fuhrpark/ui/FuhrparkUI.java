@@ -74,11 +74,11 @@ public class FuhrparkUI extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
         
-        // Labels
+        // Labels with required field marker (*)
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.0;
-        inputPanel.add(new JLabel("Fahrzeugtyp:"), gbc);
+        inputPanel.add(new JLabel("Fahrzeugtyp: *"), gbc);
         
         gbc.gridy = 1;
         inputPanel.add(new JLabel("Marke:"), gbc);
@@ -87,10 +87,10 @@ public class FuhrparkUI extends JFrame {
         inputPanel.add(new JLabel("Modell:"), gbc);
         
         gbc.gridy = 3;
-        inputPanel.add(new JLabel("Kennzeichen:"), gbc);
+        inputPanel.add(new JLabel("Kennzeichen: *"), gbc);
         
         gbc.gridy = 4;
-        inputPanel.add(new JLabel("Kaufpreis (€):"), gbc);
+        inputPanel.add(new JLabel("Kaufpreis (€): *"), gbc);
         
         // Input fields
         gbc.gridx = 1;
@@ -153,6 +153,14 @@ public class FuhrparkUI extends JFrame {
             deleteButton.setEnabled(hasSelection);
         });
         
+        // Add a note about required fields
+        JLabel requiredNote = new JLabel("* Pflichtfeld");
+        requiredNote.setForeground(Color.RED);
+        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        inputPanel.add(requiredNote, gbc);
+        
         pack();
         setLocationRelativeTo(null);
     }
@@ -164,15 +172,7 @@ public class FuhrparkUI extends JFrame {
         String licensePlate = licensePlateField.getText().trim();
         String priceText = priceField.getText().trim();
 
-        // Basic validation
-        if (brand.isEmpty()) {
-            showError("Bitte geben Sie eine Marke ein.");
-            return;
-        }
-        if (model.isEmpty()) {
-            showError("Bitte geben Sie ein Modell ein.");
-            return;
-        }
+        // Only validate required fields
         if (licensePlate.isEmpty()) {
             showError("Bitte geben Sie ein Kennzeichen ein.");
             return;
@@ -194,8 +194,12 @@ public class FuhrparkUI extends JFrame {
             String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY)
                 .format(priceValue);
             
+            // Use empty string for optional fields if they're not filled
+            String brandDisplay = brand.isEmpty() ? "-" : brand;
+            String modelDisplay = model.isEmpty() ? "-" : model;
+            
             String vehicleEntry = String.format("%s [%s] %s %s - %s",
-                type, licensePlate, brand, model, formattedPrice);
+                type, licensePlate, brandDisplay, modelDisplay, formattedPrice);
             listModel.addElement(vehicleEntry);
             
             clearFields();
