@@ -1,3 +1,5 @@
+package de.fuhrpark.model;
+
 public class PKW extends Fahrzeug {
     public PKW(String kennzeichen) {
         super(kennzeichen);
