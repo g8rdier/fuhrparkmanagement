@@ -163,26 +163,37 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
-        String sql = "SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC";
-        List<ReparaturBuchEintrag> reparaturList = new ArrayList<>();
+        List<ReparaturBuchEintrag> reparaturen = new ArrayList<>();
+        String sql = """
+            SELECT id, fahrzeug_kennzeichen, datum, beschreibung, kosten, werkstatt 
+            FROM reparaturen 
+            WHERE fahrzeug_kennzeichen = ?
+            ORDER BY datum DESC
+        """;
+        
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
             stmt.setString(1, kennzeichen);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                ReparaturBuchEintrag eintrag = new ReparaturBuchEintrag(
-                    rs.getDate("datum").toLocalDate(),
-                    rs.getString("beschreibung"),
-                    rs.getDouble("kosten"),
-                    rs.getString("werkstatt")
-                );
-                eintrag.setKennzeichen(rs.getString("kennzeichen"));
-                reparaturList.add(eintrag);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ReparaturBuchEintrag reparatur = new ReparaturBuchEintrag(
+                        rs.getLong("id"),
+                        rs.getString("fahrzeug_kennzeichen"),
+                        rs.getDate("datum").toLocalDate(),
+                        rs.getString("beschreibung"),
+                        rs.getDouble("kosten"),
+                        rs.getString("werkstatt")
+                    );
+                    reparaturen.add(reparatur);
+                }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error fetching repairs for vehicle", e);
+            throw new RuntimeException("Error fetching repairs for vehicle: " + kennzeichen, e);
         }
-        return reparaturList;
+        
+        return reparaturen;
     }
 
     @Override
@@ -225,18 +236,24 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public void saveReparatur(String kennzeichen, ReparaturBuchEintrag eintrag) {
-        String sql = "INSERT INTO reparaturbuch (kennzeichen, datum, beschreibung, kosten, werkstatt) VALUES (?, ?, ?, ?, ?)";
+    public void saveReparatur(String kennzeichen, ReparaturBuchEintrag reparatur) {
+        String sql = """
+            INSERT INTO reparaturen (fahrzeug_kennzeichen, datum, beschreibung, kosten, werkstatt)
+            VALUES (?, ?, ?, ?, ?)
+        """;
+        
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
             stmt.setString(1, kennzeichen);
-            stmt.setDate(2, Date.valueOf(eintrag.getDatum()));
-            stmt.setString(3, eintrag.getBeschreibung());
-            stmt.setDouble(4, eintrag.getKosten());
-            stmt.setString(5, eintrag.getWerkstatt());
+            stmt.setDate(2, Date.valueOf(reparatur.getDatum()));
+            stmt.setString(3, reparatur.getBeschreibung());
+            stmt.setDouble(4, reparatur.getKosten());
+            stmt.setString(5, reparatur.getWerkstatt());
+            
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error saving repair", e);
+            throw new RuntimeException("Error saving repair for vehicle: " + kennzeichen, e);
         }
     }
 
