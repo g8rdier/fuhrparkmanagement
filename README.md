@@ -27,7 +27,7 @@ Eine Java-Desktop-Anwendung zur Verwaltung eines Fuhrparks mit Fahrtenbuch und R
 1. Sicherstellen, dass Java 17 oder höher installiert ist
 2. Repository klonen:
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/g8rdier/fuhrparkmanagement.git
    cd fuhrpark
    ```
 3. Anwendung bauen:
