@@ -113,8 +113,8 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void loadFahrzeuge() {
-        List<Fahrzeug> fahrzeuge = fahrzeugService.getFahrzeuge();
-        tableModel.updateData(fahrzeuge);
+        List<Fahrzeug> fahrzeuge = fahrzeugService.getFahrzeugListe();
+        tableModel.updateFahrzeuge(fahrzeuge);
     }
     
     private void showAddDialog() {

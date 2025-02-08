@@ -1,9 +1,10 @@
 package de.fuhrpark.unit.manager;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.persistence.impl.DatabaseDataStoreImpl;
@@ -20,17 +21,17 @@ import de.fuhrpark.manager.FuhrparkManager;
  * Testet die Funktionalität des FuhrparkManagers
  */
 public class FuhrparkManagerTest {
-    private DataStore dataStore;
+    @Mock
     private FahrzeugService fahrzeugService;
+    
+    @Mock
     private FahrzeugFactory fahrzeugFactory;
+    
     private FuhrparkManager manager;
 
     @BeforeEach
     public void setUp() {
-        // TODO: Initialize with mock objects after implementing mocking framework
-        dataStore = null;
-        fahrzeugService = null;
-        fahrzeugFactory = null;
+        MockitoAnnotations.openMocks(this);
         manager = new FuhrparkManager(fahrzeugService, fahrzeugFactory);
     }
 
