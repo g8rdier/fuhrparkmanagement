@@ -2,6 +2,7 @@ package de.fuhrpark.ui;
 
 import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.ReparaturBuchEintrag;
+import de.fuhrpark.model.FahrtenbuchEintrag;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -117,8 +118,10 @@ public class FuhrparkUI extends JFrame {
             List<ReparaturBuchEintrag> reparaturen = reparaturService.getReparaturenForFahrzeug(fahrzeug.getKennzeichen());
             updateReparaturenTable(reparaturen);
             
-            // Use fahrtenbuchService to update logbook if needed
-            // ... any logbook-related updates
+            // Add this to use fahrtenbuchService
+            List<FahrtenbuchEintrag> fahrten = fahrtenbuchService.getEintraegeForFahrzeug(fahrzeug.getKennzeichen());
+            // You might want to add a method to display these entries somewhere in your UI
+            updateFahrtenList(fahrten);
         } else {
             // Clear all labels if no vehicle found
             clearLabels();
@@ -164,5 +167,9 @@ public class FuhrparkUI extends JFrame {
         }
         return kennzeichen;
     }
-} 
+
+    private void updateFahrtenList(List<FahrtenbuchEintrag> fahrten) {
+        // Add code here to display the fahrtenbuch entries in your UI
+        // For example, you might want to add another JTable or list to show them
+    }
 } 
