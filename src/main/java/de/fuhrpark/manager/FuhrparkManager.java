@@ -1,10 +1,9 @@
 // src/main/java/de/fuhrpark/manager/FuhrparkManager.java
 package de.fuhrpark.manager;
 
-import de.fuhrpark.service.FahrzeugFactory;
-import de.fuhrpark.service.FahrzeugService;
-import de.fuhrpark.model.Fahrzeug;
-import java.util.List;
+import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.service.base.FahrzeugService;
+import de.fuhrpark.service.base.FahrzeugFactory;
 
 /**
  * Zentrale Verwaltungsklasse für den Fuhrpark.
@@ -33,19 +32,15 @@ public class FuhrparkManager {
         return fahrzeug;
     }
 
-    public void addFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.speichereFahrzeug(fahrzeug);
+    public void aktualisiereFahrzeug(Fahrzeug fahrzeug) {
+        fahrzeugService.aktualisiereFahrzeug(fahrzeug);
     }
 
-    public Fahrzeug getFahrzeug(String kennzeichen) {
-        return fahrzeugService.findeFahrzeugNachKennzeichen(kennzeichen);
-    }
-
-    public List<Fahrzeug> getAlleFahrzeuge() {
-        return fahrzeugService.findeAlleFahrzeuge();
-    }
-
-    public void deleteFahrzeug(String kennzeichen) {
+    public void loescheFahrzeug(String kennzeichen) {
         fahrzeugService.loescheFahrzeug(kennzeichen);
+    }
+
+    public Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen) {
+        return fahrzeugService.findeFahrzeugNachKennzeichen(kennzeichen);
     }
 }
