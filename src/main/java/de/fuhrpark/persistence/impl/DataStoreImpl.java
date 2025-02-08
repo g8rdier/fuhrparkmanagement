@@ -128,4 +128,20 @@ public class DataStoreImpl implements DataStore {
     public List<Fahrzeug> getFahrzeuge() {
         return getAlleFahrzeuge();
     }
+
+    @Override
+    public void saveFahrt(String kennzeichen, FahrtenbuchEintrag fahrt) {
+        List<FahrtenbuchEintrag> fahrten = getFahrten(kennzeichen);
+        fahrten.add(fahrt);
+        saveToFile();
+    }
+
+    @Override
+    public List<FahrtenbuchEintrag> getFahrten(String kennzeichen) {
+        if (!fahrtenbuch.containsKey(kennzeichen)) {
+            return new ArrayList<>();
+        }
+        FahrzeugData fahrzeugData = fahrtenbuch.get(kennzeichen);
+        return fahrzeugData.getFahrten();
+    }
 }

@@ -44,7 +44,7 @@ public class App
 
             // Launch UI
             SwingUtilities.invokeLater(() -> {
-                var ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService, reparaturService);
+                FuhrparkUI ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService, reparaturService);
                 ui.setVisible(true);
             });
         } catch (Exception e) {

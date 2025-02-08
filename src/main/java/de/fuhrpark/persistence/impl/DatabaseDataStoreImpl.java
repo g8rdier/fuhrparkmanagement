@@ -245,6 +245,57 @@ public class DatabaseDataStoreImpl implements DataStore {
         return getAlleFahrzeuge();  // Always get fresh data from database
     }
 
+    @Override
+    public void saveFahrt(String kennzeichen, FahrtenbuchEintrag fahrt) {
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                 "INSERT INTO fahrtenbuch (kennzeichen, datum, start_ort, ziel_ort, kilometer, fahrer_typ, fahrer_name, grund) " +
+                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+            
+            stmt.setString(1, kennzeichen);
+            stmt.setDate(2, Date.valueOf(fahrt.getDatum()));
+            stmt.setString(3, fahrt.getStartOrt());
+            stmt.setString(4, fahrt.getZielOrt());
+            stmt.setDouble(5, fahrt.getKilometer());
+            stmt.setString(6, fahrt.getFahrerTyp());
+            stmt.setString(7, fahrt.getFahrerName());
+            stmt.setString(8, fahrt.getGrund());
+            
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error saving fahrt: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<FahrtenbuchEintrag> getFahrten(String kennzeichen) {
+        List<FahrtenbuchEintrag> fahrten = new ArrayList<>();
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                 "SELECT * FROM fahrtenbuch WHERE kennzeichen = ? ORDER BY datum DESC")) {
+            
+            stmt.setString(1, kennzeichen);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                FahrtenbuchEintrag fahrt = new FahrtenbuchEintrag(
+                    rs.getDate("datum").toLocalDate(),
+                    rs.getString("start_ort"),
+                    rs.getString("ziel_ort"),
+                    rs.getDouble("kilometer"),
+                    rs.getString("kennzeichen"),
+                    rs.getString("fahrer_typ"),
+                    rs.getString("fahrer_name"),
+                    rs.getString("grund")
+                );
+                fahrten.add(fahrt);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching fahrten: " + e.getMessage(), e);
+        }
+        return fahrten;
+    }
+
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
         return new Fahrzeug(
             rs.getString("kennzeichen"),
