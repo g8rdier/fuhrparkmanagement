@@ -20,7 +20,7 @@ public interface DataStore {
     List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen);
     
     void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag);
-    void addReparatur(String kennzeichen, ReparaturBuchEintrag reparatur);
+    void saveReparatur(String kennzeichen, ReparaturBuchEintrag eintrag);
     List<ReparaturBuchEintrag> getReparaturBuchEintraege();
     List<ReparaturBuchEintrag> getReparaturen();
     List<ReparaturBuchEintrag> getReparaturen(String kennzeichen);

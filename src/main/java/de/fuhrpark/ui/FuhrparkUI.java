@@ -121,7 +121,7 @@ public class FuhrparkUI extends JFrame {
             kennzeichenLabel.setText(fahrzeug.getKennzeichen());
             markeLabel.setText(fahrzeug.getMarke());
             modellLabel.setText(fahrzeug.getModell());
-            typLabel.setText(fahrzeug.getTyp());
+            typLabel.setText(fahrzeug.getTyp().toString());
             baujahrLabel.setText(String.valueOf(fahrzeug.getBaujahr()));
             kilometerstandLabel.setText(String.valueOf(fahrzeug.getKilometerstand()));
             
@@ -182,13 +182,12 @@ public class FuhrparkUI extends JFrame {
     private void handleAddReparatur() {
         String currentKennzeichen = kennzeichenLabel.getText();
         if (currentKennzeichen != null && !currentKennzeichen.isEmpty()) {
-            ReparaturDialog dialog = new ReparaturDialog(this, "Neue Reparatur", true);
+            ReparaturDialog dialog = new ReparaturDialog(this, "Neue Reparatur");
             dialog.setVisible(true);
             
             ReparaturBuchEintrag eintrag = dialog.getResult();
             if (eintrag != null) {
-                eintrag.setKennzeichen(currentKennzeichen);
-                reparaturService.addReparatur(eintrag);
+                reparaturService.addReparatur(currentKennzeichen, eintrag);
                 updateReparaturTable(currentKennzeichen);
             }
         } else {
