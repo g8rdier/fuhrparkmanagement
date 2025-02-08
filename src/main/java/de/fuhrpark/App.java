@@ -15,8 +15,7 @@ public class App {
         FahrtenbuchService fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
         
         javax.swing.SwingUtilities.invokeLater(() -> {
-            FuhrparkUI ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService);
-            ui.setVisible(true);
+            new FuhrparkUI();
         });
     }
 }
