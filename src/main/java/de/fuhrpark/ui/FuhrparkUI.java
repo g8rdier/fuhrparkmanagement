@@ -180,22 +180,21 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void handleAddReparatur() {
-        String currentKennzeichen = kennzeichenLabel.getText();
-        if (currentKennzeichen != null && !currentKennzeichen.isEmpty()) {
-            ReparaturDialog dialog = new ReparaturDialog(this, "Neue Reparatur");
-            dialog.setVisible(true);
-            
-            ReparaturBuchEintrag eintrag = dialog.getResult();
-            if (eintrag != null) {
-                reparaturService.addReparatur(currentKennzeichen, eintrag);
-                updateReparaturTable(currentKennzeichen);
-            }
-        } else {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this,
                 "Bitte wählen Sie zuerst ein Fahrzeug aus.",
                 "Kein Fahrzeug ausgewählt",
                 JOptionPane.WARNING_MESSAGE);
+            return;
         }
+        
+        // Convert view index to model index in case table is sorted
+        int modelRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
+        String kennzeichen = (String) fahrzeugTable.getModel().getValueAt(modelRow, 0);
+        
+        var dialog = new ReparaturBuchDialog(this, kennzeichen, reparaturService);
+        dialog.setVisible(true);
     }
 
     private void handleFahrtenbuchOeffnen() {

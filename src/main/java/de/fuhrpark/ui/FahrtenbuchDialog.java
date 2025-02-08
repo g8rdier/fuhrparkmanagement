@@ -14,6 +14,9 @@ public class FahrtenbuchDialog extends JDialog {
     private final JTextField zielOrtField = new JTextField(20);
     private final JTextField kilometerField = new JTextField(20);
     private final JTextField kennzeichenField = new JTextField(20);
+    private final JTextField fahrerNameField = new JTextField(20);
+    private final JTextField grundField = new JTextField(20);
+    private final JComboBox<String> fahrerTypCombo = new JComboBox<>(new String[]{"Privat", "Firma"});
     private FahrtenbuchEintrag result = null;
 
     public FahrtenbuchDialog(Frame owner, String kennzeichen, FahrtenbuchService service) {
@@ -53,10 +56,15 @@ public class FahrtenbuchDialog extends JDialog {
         addComponent(mainPanel, new JLabel("Ziel:"), zielOrtField, gbc, 1);
         addComponent(mainPanel, new JLabel("Kilometer:"), kilometerField, gbc, 2);
         
+        // Add new components
+        addComponent(mainPanel, new JLabel("Fahrer Typ:"), fahrerTypCombo, gbc, 3);
+        addComponent(mainPanel, new JLabel("Fahrer Name:"), fahrerNameField, gbc, 4);
+        addComponent(mainPanel, new JLabel("Grund:"), grundField, gbc, 5);
+        
         // Pre-fill and disable kennzeichen field
         kennzeichenField.setText(kennzeichen);
         kennzeichenField.setEnabled(false);
-        addComponent(mainPanel, new JLabel("Kennzeichen:"), kennzeichenField, gbc, 3);
+        addComponent(mainPanel, new JLabel("Kennzeichen:"), kennzeichenField, gbc, 6);
 
         // Button panel
         JPanel buttonPanel = new JPanel();
@@ -107,7 +115,9 @@ public class FahrtenbuchDialog extends JDialog {
         return !startOrtField.getText().trim().isEmpty() &&
                !zielOrtField.getText().trim().isEmpty() &&
                !kilometerField.getText().trim().isEmpty() &&
-               !kennzeichenField.getText().trim().isEmpty();
+               !kennzeichenField.getText().trim().isEmpty() &&
+               !fahrerNameField.getText().trim().isEmpty() &&
+               !grundField.getText().trim().isEmpty();
     }
 
     private FahrtenbuchEintrag createFahrtenbuchEintrag() {
@@ -117,7 +127,10 @@ public class FahrtenbuchDialog extends JDialog {
                 startOrtField.getText().trim(),
                 zielOrtField.getText().trim(),
                 Double.parseDouble(kilometerField.getText().trim()),
-                kennzeichenField.getText().trim()
+                kennzeichenField.getText().trim(),
+                fahrerTypCombo.getSelectedItem().toString(),
+                fahrerNameField.getText().trim(),
+                grundField.getText().trim()
             );
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,

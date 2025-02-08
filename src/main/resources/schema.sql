@@ -18,6 +18,9 @@ CREATE TABLE fahrtenbuch (
     start_ort VARCHAR(100),
     ziel_ort VARCHAR(100),
     kilometer DOUBLE,
+    fahrer_typ VARCHAR(20),  -- 'PRIVAT' or 'FIRMA'
+    fahrer_name VARCHAR(100),
+    grund VARCHAR(200),
     FOREIGN KEY (kennzeichen) REFERENCES fahrzeuge(kennzeichen)
 );
 
@@ -29,4 +32,4 @@ CREATE TABLE reparaturbuch (
     kosten DOUBLE,
     werkstatt VARCHAR(100),
     FOREIGN KEY (kennzeichen) REFERENCES fahrzeuge(kennzeichen)
-); 
+);
