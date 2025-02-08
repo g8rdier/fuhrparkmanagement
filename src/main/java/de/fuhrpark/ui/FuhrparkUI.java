@@ -11,7 +11,7 @@ import java.text.ParseException;
 
 public class FuhrparkUI extends JFrame {
     // Constants
-    private static final String[] VEHICLE_TYPES = {"PKW", "LKW", "Motorrad"};
+    private static final String[] VEHICLE_TYPES = {"PKW", "LKW"};
     private static final String LOCATION_PATTERN = "[A-ZÄÖÜ]{1,3}";
     private static final String LETTERS_PATTERN = "[A-Z]{1,2}";
     private static final String NUMBERS_PATTERN = "[1-9][0-9]{0,3}";

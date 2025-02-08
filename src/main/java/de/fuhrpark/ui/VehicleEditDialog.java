@@ -14,8 +14,8 @@ public class VehicleEditDialog extends JDialog {
     public VehicleEditDialog(JFrame parent, VehicleData data) {
         super(parent, "Fahrzeug bearbeiten", true);
         
-        // Initialize components
-        typeComboBox = new JComboBox<>(new String[]{"PKW", "LKW", "Motorrad"});
+        // Initialize components with only PKW and LKW
+        typeComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         brandField = new JTextField(20);
         modelField = new JTextField(20);
         licensePlateField = new JTextField(20);
