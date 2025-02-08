@@ -18,7 +18,7 @@ public class FahrzeugDialog extends JDialog {
 
     public FahrzeugDialog(Frame owner) {
         super(owner, "Fahrzeug hinzufügen", true);
-        this.fahrzeugFactory = new FahrzeugFactoryImpl();
+        this.fahrzeugFactory = FahrzeugFactoryImpl.getInstance();
         initComponents();
     }
 

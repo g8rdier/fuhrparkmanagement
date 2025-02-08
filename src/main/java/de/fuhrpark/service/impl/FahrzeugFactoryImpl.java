@@ -6,10 +6,20 @@ import de.fuhrpark.model.LKW;
 import de.fuhrpark.service.FahrzeugFactory;
 
 /**
- * Implementierung der FahrzeugFactory
+ * Singleton-Implementierung der FahrzeugFactory
  */
 public class FahrzeugFactoryImpl implements FahrzeugFactory {
+    private static FahrzeugFactoryImpl instance;
     
+    private FahrzeugFactoryImpl() {}
+    
+    public static FahrzeugFactoryImpl getInstance() {
+        if (instance == null) {
+            instance = new FahrzeugFactoryImpl();
+        }
+        return instance;
+    }
+
     @Override
     public Fahrzeug erstelleFahrzeug(String typ, String kennzeichen, String marke, 
                                     String modell, Object... zusatzParameter) {
