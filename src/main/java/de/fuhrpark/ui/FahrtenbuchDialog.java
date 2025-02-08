@@ -24,7 +24,7 @@ public class FahrtenbuchDialog extends JDialog {
         // Create toolbar with New button
         JToolBar toolBar = new JToolBar();
         JButton newButton = new JButton("Neu");
-        newButton.addActionListener(event -> showNewEntryDialog());
+        newButton.addActionListener(_ -> showNewEntryDialog());
         toolBar.add(newButton);
 
         // Table setup
@@ -57,7 +57,7 @@ public class FahrtenbuchDialog extends JDialog {
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
 
-        okButton.addActionListener(event -> {
+        okButton.addActionListener(_ -> {
             if (isInputValid()) {
                 result = createFahrtenbuchEintrag();
                 service.addEintrag(result);
@@ -73,7 +73,7 @@ public class FahrtenbuchDialog extends JDialog {
             }
         });
 
-        cancelButton.addActionListener(event -> dialog.dispose());
+        cancelButton.addActionListener(_ -> dialog.dispose());
 
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
