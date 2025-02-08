@@ -82,9 +82,8 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public void addReparatur(String kennzeichen, ReparaturBuchEintrag reparatur) {
-        reparaturen.computeIfAbsent(kennzeichen, k -> new ArrayList<>())
-                  .add(reparatur);
+    public void saveReparatur(String kennzeichen, ReparaturBuchEintrag eintrag) {
+        reparaturen.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
     }
 
     @Override

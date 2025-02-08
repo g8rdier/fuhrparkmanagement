@@ -100,6 +100,7 @@ public class DatabaseDataStoreImpl implements DataStore {
                     rs.getDouble("kosten"),
                     rs.getString("werkstatt")
                 );
+                eintrag.setKennzeichen(kennzeichen);
                 reparaturen.add(eintrag);
             }
         } catch (SQLException e) {
