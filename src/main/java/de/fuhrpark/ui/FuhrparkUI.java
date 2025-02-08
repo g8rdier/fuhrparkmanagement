@@ -249,9 +249,9 @@ public class FuhrparkUI extends JFrame {
             };
         }
 
-        public void updateData(List<Fahrzeug> newFahrzeuge) {
+        public void updateData(List<Fahrzeug> fahrzeuge) {
             this.fahrzeuge.clear();
-            this.fahrzeuge.addAll(newFahrzeuge);
+            this.fahrzeuge.addAll(fahrzeuge);
             fireTableDataChanged();
         }
     }
@@ -263,12 +263,14 @@ public class FuhrparkUI extends JFrame {
         Fahrzeug newFahrzeug = dialog.getResult();
         if (newFahrzeug != null) {
             fahrzeugService.addFahrzeug(newFahrzeug);
-            // Update the table
+            // Update the table model with fresh data
             ((FahrzeugTableModel) fahrzeugTable.getModel()).updateData(
                 fahrzeugService.getAlleFahrzeuge()
             );
             // Select the new vehicle
             selectFahrzeug(newFahrzeug.getKennzeichen());
+            // Refresh the table display
+            fahrzeugTable.repaint();
         }
     }
 
