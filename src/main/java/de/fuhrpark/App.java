@@ -25,8 +25,13 @@ public class App
     public static void main( String[] args )
     {
         try {
+            // First ensure H2 driver is loaded
+            Class.forName("org.h2.Driver");
+            System.out.println("H2 Driver loaded successfully");
+
             // Initialize database with detailed error handling
             if (!initDatabase()) {
+                System.err.println("Failed to initialize database");
                 System.exit(1);
                 return;
             }
@@ -48,47 +53,61 @@ public class App
                 "Fehler beim Starten der Anwendung: " + e.getMessage(),
                 "Fehler",
                 JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
         }
     }
 
     private static boolean initDatabase() {
         try {
-            // Test connection first
+            // Test connection and create tables if needed
             if (!DatabaseConfig.testConnection()) {
                 throw new RuntimeException("Database connection test failed");
             }
             System.out.println("Database connection test successful");
 
-            // First try to establish connection
-            try (var conn = DatabaseConfig.getConnection()) {
-                System.out.println("Database connection established successfully");
-            } catch (Exception e) {
-                throw new RuntimeException("Could not connect to database", e);
-            }
-
-            // Then try to read schema file
-            InputStream schemaStream = App.class.getResourceAsStream("/schema.sql");
-            if (schemaStream == null) {
-                throw new RuntimeException("Could not find schema.sql in resources");
-            }
-
-            // Read schema content
-            String schema = new String(schemaStream.readAllBytes());
-            System.out.println("Schema file read successfully");
-
-            // Execute schema
-            try (Connection conn = DatabaseConfig.getConnection();
-                 Statement stmt = conn.createStatement()) {
-                stmt.execute(schema);
-                System.out.println("Schema executed successfully");
+            // Initialize schema
+            try (Connection conn = DatabaseConfig.getConnection()) {
+                // Create tables if they don't exist
+                String schema = """
+                    CREATE TABLE IF NOT EXISTS fahrzeuge (
+                        kennzeichen VARCHAR(20) PRIMARY KEY,
+                        marke VARCHAR(50),
+                        modell VARCHAR(50),
+                        typ VARCHAR(20),
+                        baujahr INT,
+                        kilometerstand DOUBLE
+                    );
+                    
+                    CREATE TABLE IF NOT EXISTS reparaturen (
+                        id IDENTITY PRIMARY KEY,
+                        fahrzeug_kennzeichen VARCHAR(20),
+                        datum DATE,
+                        beschreibung VARCHAR(500),
+                        kosten DOUBLE,
+                        werkstatt VARCHAR(100),
+                        FOREIGN KEY (fahrzeug_kennzeichen) REFERENCES fahrzeuge(kennzeichen)
+                    );
+                    
+                    CREATE TABLE IF NOT EXISTS fahrtenbuch (
+                        id IDENTITY PRIMARY KEY,
+                        fahrzeug_kennzeichen VARCHAR(20),
+                        datum DATE,
+                        start_km DOUBLE,
+                        end_km DOUBLE,
+                        zweck VARCHAR(200),
+                        FOREIGN KEY (fahrzeug_kennzeichen) REFERENCES fahrzeuge(kennzeichen)
+                    );
+                """;
+                
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.execute(schema);
+                    System.out.println("Database schema initialized successfully");
+                }
                 return true;
             }
         } catch (Exception e) {
+            System.err.println("Database initialization error: " + e.getMessage());
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null,
-                "Fehler beim Initialisieren der Datenbank:\n" + e.getMessage(),
-                "Datenbankfehler",
-                JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
