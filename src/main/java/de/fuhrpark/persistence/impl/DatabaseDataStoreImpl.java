@@ -257,15 +257,13 @@ public class DatabaseDataStoreImpl implements DataStore {
             stmt.setString(1, kennzeichen);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    ReparaturBuchEintrag reparatur = ReparaturBuchEintrag.builder()
-                        .id(rs.getLong("id"))
-                        .fahrzeugKennzeichen(rs.getString("fahrzeug_kennzeichen"))
-                        .datum(rs.getDate("datum").toLocalDate())
-                        .beschreibung(rs.getString("beschreibung"))
-                        .kosten(rs.getDouble("kosten"))
-                        .werkstatt(rs.getString("werkstatt"))
-                        .build();
-                    reparaturen.add(reparatur);
+                    reparaturen.add(new ReparaturBuchEintrag(
+                        rs.getString("fahrzeug_kennzeichen"),
+                        rs.getDate("datum").toLocalDate(),
+                        rs.getString("beschreibung"),
+                        rs.getDouble("kosten"),
+                        rs.getString("werkstatt")
+                    ));
                 }
             }
         } catch (SQLException e) {
@@ -282,7 +280,7 @@ public class DatabaseDataStoreImpl implements DataStore {
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setString(1, reparatur.getFahrzeugKennzeichen());
+            stmt.setString(1, reparatur.getKennzeichen());
             stmt.setDate(2, java.sql.Date.valueOf(reparatur.getDatum()));
             stmt.setString(3, reparatur.getBeschreibung());
             stmt.setDouble(4, reparatur.getKosten());
