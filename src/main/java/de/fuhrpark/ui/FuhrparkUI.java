@@ -11,7 +11,7 @@ import java.text.ParseException;
 
 public class FuhrparkUI extends JFrame {
     // Constants
-    private static final String[] VEHICLE_TYPES = {"PKW", "LKW"};
+    private static final String[] VEHICLE_TYPES = {"PKW", "LKW", "Motorrad"};
     private static final String LOCATION_PATTERN = "[A-ZÄÖÜ]{1,3}";
     private static final String LETTERS_PATTERN = "[A-Z]{1,2}";
     private static final String NUMBERS_PATTERN = "[1-9][0-9]{0,3}";
@@ -43,7 +43,7 @@ public class FuhrparkUI extends JFrame {
     
     public FuhrparkUI() {
         // Initialize all fields in constructor before calling initComponents
-        fahrzeugTypComboBox = new JComboBox<>(new String[]{"PKW", "LKW", "Motorrad"});
+        fahrzeugTypComboBox = new JComboBox<>(VEHICLE_TYPES);
         markeField = new JTextField();
         modelField = new JTextField();
         licensePlateField = new JTextField();
@@ -206,38 +206,27 @@ public class FuhrparkUI extends JFrame {
     private void editVehicle() {
         int selectedIndex = vehicleList.getSelectedIndex();
         if (selectedIndex == -1) {
-            JOptionPane.showMessageDialog(this,
-                "Bitte wählen Sie ein Fahrzeug aus.",
-                "Kein Fahrzeug ausgewählt",
-                JOptionPane.WARNING_MESSAGE);
+            showError("Bitte wählen Sie ein Fahrzeug aus.");
             return;
         }
 
         String entry = listModel.getElementAt(selectedIndex);
-        // Parse entry (format: "TYPE [PLATE] BRAND MODEL - PRICE")
-        String type = entry.substring(0, entry.indexOf('[') - 1);
-        String plate = entry.substring(entry.indexOf('[') + 1, entry.indexOf(']'));
-        String rest = entry.substring(entry.indexOf(']') + 2);
-        String[] parts = rest.split(" - ", 2);
-        String brand = parts[0];
-        String model = parts[1];
-        String price = parts[2];
-
-        VehicleEditDialog dialog = new VehicleEditDialog(this, type, brand, model, plate, price);
+        VehicleEditDialog dialog = new VehicleEditDialog(this, parseVehicleEntry(entry));
         dialog.setVisible(true);
 
-        if (dialog.isApproved()) {
+        if (dialog.isConfirmed()) {
             try {
                 NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
                 Number number = format.parse(dialog.getPrice());
-                double price = number.doubleValue();
+                double priceValue = number.doubleValue();
                 
-                if (price <= 0) {
+                if (priceValue <= 0) {
                     showError("Der Kaufpreis muss größer als 0 sein.");
                     return;
                 }
 
-                String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY).format(price);
+                String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY)
+                    .format(priceValue);
                 
                 String newEntry = String.format("%s [%s] %s %s - %s",
                     dialog.getType(), dialog.getLicensePlate(), 
@@ -246,7 +235,6 @@ public class FuhrparkUI extends JFrame {
                 
             } catch (ParseException e) {
                 showError("Bitte geben Sie einen gültigen Kaufpreis ein.");
-                return;
             }
         }
     }
@@ -254,23 +242,34 @@ public class FuhrparkUI extends JFrame {
     private void deleteVehicle() {
         int selectedIndex = vehicleList.getSelectedIndex();
         if (selectedIndex != -1) {
-            listModel.remove(selectedIndex);
+            int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Möchten Sie das ausgewählte Fahrzeug wirklich löschen?",
+                "Fahrzeug löschen",
+                JOptionPane.YES_NO_OPTION
+            );
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                listModel.remove(selectedIndex);
+            }
         }
     }
     
     private void clearFields() {
+        fahrzeugTypComboBox.setSelectedIndex(0);
         markeField.setText("");
         modelField.setText("");
         licensePlateField.setText("");
         priceField.setText("");
-        fahrzeugTypComboBox.setSelectedIndex(0);
     }
     
     private void showError(String message) {
-        JOptionPane.showMessageDialog(this,
+        JOptionPane.showMessageDialog(
+            this,
             message,
             "Fehler",
-            JOptionPane.ERROR_MESSAGE);
+            JOptionPane.ERROR_MESSAGE
+        );
     }
     
     public JTextField createLicensePlateField() {
@@ -291,6 +290,55 @@ public class FuhrparkUI extends JFrame {
             }
         }
         return false;
+    }
+    
+    // Helper method to parse vehicle entry for editing
+    private VehicleData parseVehicleEntry(String entry) {
+        // Example entry format: "PKW [B-AB 123] VW Golf - 25.000,00 €"
+        VehicleData data = new VehicleData();
+        
+        // Extract type (everything before the first '[')
+        int typeEnd = entry.indexOf('[');
+        data.setType(entry.substring(0, typeEnd).trim());
+        
+        // Extract license plate (between '[' and ']')
+        int plateStart = typeEnd + 1;
+        int plateEnd = entry.indexOf(']');
+        data.setLicensePlate(entry.substring(plateStart, plateEnd).trim());
+        
+        // Extract remaining parts
+        String[] parts = entry.substring(plateEnd + 1).split("-");
+        
+        // Extract brand and model
+        String[] brandModel = parts[0].trim().split(" ", 2);
+        data.setBrand(brandModel[0].trim());
+        data.setModel(brandModel[1].trim());
+        
+        // Extract price
+        data.setPrice(parts[1].trim());
+        
+        return data;
+    }
+    
+    // Helper class for vehicle data
+    private static class VehicleData {
+        private String type;
+        private String brand;
+        private String model;
+        private String licensePlate;
+        private String price;
+
+        // Getters and setters
+        public String getType() { return type; }
+        public void setType(String type) { this.type = type; }
+        public String getBrand() { return brand; }
+        public void setBrand(String brand) { this.brand = brand; }
+        public String getModel() { return model; }
+        public void setModel(String model) { this.model = model; }
+        public String getLicensePlate() { return licensePlate; }
+        public void setLicensePlate(String licensePlate) { this.licensePlate = licensePlate; }
+        public String getPrice() { return price; }
+        public void setPrice(String price) { this.price = price; }
     }
     
     public static void main(String[] args) {
