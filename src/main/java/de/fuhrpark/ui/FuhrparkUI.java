@@ -26,6 +26,24 @@ public class FuhrparkUI extends JFrame {
     
     private Map<String, DefaultListModel<String>> vehicleTrips = new HashMap<>();
 
+    private JComboBox<String> brandCombo;
+    private JTextField customBrandField;
+    private JPanel brandPanel;
+    
+    private static final String[] CAR_BRANDS = {
+        "Audi",
+        "BMW",
+        "Ford",
+        "Mercedes-Benz",
+        "Opel",
+        "Porsche",
+        "Volkswagen",
+        "Volvo",
+        "Other"
+    };
+    
+    private static final String OTHER_BRAND = "Other";
+
     public FuhrparkUI() {
         setTitle("Fuhrpark Verwaltung");
         setLayout(new BorderLayout(10, 10));
@@ -56,15 +74,36 @@ public class FuhrparkUI extends JFrame {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
+        JPanel inputPanel = new JPanel(new GridLayout(0, 2, 5, 5));
         
         inputPanel.add(new JLabel("Fahrzeugtyp:"));
         vehicleTypeCombo = new JComboBox<>(new String[]{"PKW", "LKW"});
         inputPanel.add(vehicleTypeCombo);
         
         inputPanel.add(new JLabel("Marke:"));
-        brandField = new JTextField();
-        inputPanel.add(brandField);
+        brandPanel = new JPanel(new CardLayout());
+        
+        JPanel brandComboPanel = new JPanel(new BorderLayout());
+        brandCombo = new JComboBox<>(CAR_BRANDS);
+        brandComboPanel.add(brandCombo);
+        
+        JPanel customBrandPanel = new JPanel(new BorderLayout());
+        customBrandField = new JTextField();
+        customBrandField.setVisible(false);
+        customBrandPanel.add(customBrandField);
+        
+        JPanel combinedBrandPanel = new JPanel(new BorderLayout());
+        combinedBrandPanel.add(brandCombo, BorderLayout.NORTH);
+        combinedBrandPanel.add(customBrandField, BorderLayout.SOUTH);
+        inputPanel.add(combinedBrandPanel);
+        
+        brandCombo.addActionListener(e -> {
+            String selectedBrand = (String) brandCombo.getSelectedItem();
+            customBrandField.setVisible(OTHER_BRAND.equals(selectedBrand));
+            if (!OTHER_BRAND.equals(selectedBrand)) {
+                customBrandField.setText("");
+            }
+        });
         
         inputPanel.add(new JLabel("Modell:"));
         modelField = new JTextField();
@@ -189,11 +228,13 @@ public class FuhrparkUI extends JFrame {
     
     private void addVehicle() {
         String type = (String) vehicleTypeCombo.getSelectedItem();
-        String brand = brandField.getText().trim();
+        String selectedBrand = (String) brandCombo.getSelectedItem();
+        String brand = OTHER_BRAND.equals(selectedBrand) ? customBrandField.getText().trim() : selectedBrand;
         String model = modelField.getText().trim();
         String licensePlate = licensePlateField.getText().trim();
         
-        if (brand.isEmpty() || model.isEmpty() || licensePlate.isEmpty()) {
+        if (brand.isEmpty() || model.isEmpty() || licensePlate.isEmpty() || 
+            (OTHER_BRAND.equals(selectedBrand) && customBrandField.getText().trim().isEmpty())) {
             JOptionPane.showMessageDialog(this, 
                 "Bitte alle Felder ausfüllen", 
                 "Fehler", 
@@ -205,7 +246,9 @@ public class FuhrparkUI extends JFrame {
             type, licensePlate, brand, model);
         listModel.addElement(vehicleEntry);
         
-        brandField.setText("");
+        brandCombo.setSelectedIndex(0);
+        customBrandField.setText("");
+        customBrandField.setVisible(false);
         modelField.setText("");
         licensePlateField.setText("");
     }
