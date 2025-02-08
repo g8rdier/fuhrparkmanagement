@@ -67,7 +67,7 @@ public class FahrzeugDialog extends JDialog {
             }
         });
 
-        cancelButton.addActionListener(e -> dispose());
+        cancelButton.addActionListener(_ -> dispose());
 
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
