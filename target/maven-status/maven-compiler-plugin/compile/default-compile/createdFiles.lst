@@ -13,6 +13,7 @@ de/fuhrpark/ui/FuhrparkUI$1.class
 de/fuhrpark/ui/FuhrparkUI.class
 de/fuhrpark/persistence/impl/DatabaseDataStoreImpl.class
 de/fuhrpark/manager/FuhrparkManager.class
+de/fuhrpark/ui/ReparaturBuchTableModel.class
 de/fuhrpark/service/impl/ReparaturServiceImpl.class
 de/fuhrpark/ui/FahrtenbuchTableModel.class
 de/fuhrpark/model/enums/ReparaturTyp.class
@@ -23,4 +24,5 @@ de/fuhrpark/model/enums/FahrzeugTyp.class
 de/fuhrpark/App.class
 de/fuhrpark/service/FahrtenbuchService.class
 de/fuhrpark/service/ReparaturService.class
+de/fuhrpark/ui/ReparaturBuchDialog.class
 de/fuhrpark/ui/FuhrparkUI$FahrzeugTableModel.class

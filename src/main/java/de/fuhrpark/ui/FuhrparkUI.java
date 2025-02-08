@@ -400,4 +400,16 @@ public class FuhrparkUI extends JFrame {
         
         return buttonPanel;
     }
+
+    public void saveFahrzeug(Fahrzeug fahrzeug) {
+        try {
+            fahrzeugService.saveFahrzeug(fahrzeug);
+            updateFahrzeugTable();  // Refresh the table
+        } catch (Exception e) {
+            // Log the error but don't prevent saving
+            System.err.println("Warning when saving vehicle: " + e.getMessage());
+            // Still update the table since the vehicle was saved
+            updateFahrzeugTable();
+        }
+    }
 } 

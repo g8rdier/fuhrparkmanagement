@@ -20,5 +20,7 @@
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/FahrzeugDialog.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/FahrzeugTableModel.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/FuhrparkUI.java
+/Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/ReparaturBuchDialog.java
+/Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/ReparaturBuchTableModel.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/ReparaturDialog.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/ReparaturTableModel.java

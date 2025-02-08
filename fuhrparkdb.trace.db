@@ -28,3 +28,99 @@ INSERT INTO reparaturbuch (kennzeichen, datum, beschreibung, kosten, werkstatt) 
 2025-02-08 04:31:36.922621+01:00 jdbc[7]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
 SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:38:32.287407+01:00 jdbc[7]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:38:33.405032+01:00 jdbc[8]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:38:34.090239+01:00 jdbc[9]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:38:34.286860+01:00 jdbc[10]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:38:34.449785+01:00 jdbc[11]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:40:23.375598+01:00 jdbc[18]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:11.557550+01:00 jdbc[20]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:12.204892+01:00 jdbc[22]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:12.642278+01:00 jdbc[24]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:16.763252+01:00 jdbc[26]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:17.260026+01:00 jdbc[28]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:18.103513+01:00 jdbc[30]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:18.541316+01:00 jdbc[32]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:18.889006+01:00 jdbc[34]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:19.305062+01:00 jdbc[36]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:19.733851+01:00 jdbc[38]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:20.100032+01:00 jdbc[40]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:21.181714+01:00 jdbc[42]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:21.555999+01:00 jdbc[44]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:22.859451+01:00 jdbc[46]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:23.244385+01:00 jdbc[48]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:23.588925+01:00 jdbc[50]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:23.922930+01:00 jdbc[52]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:24.683849+01:00 jdbc[54]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:25.058661+01:00 jdbc[56]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:31.157982+01:00 jdbc[58]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:32.362953+01:00 jdbc[60]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:33.271654+01:00 jdbc[62]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:34.033596+01:00 jdbc[64]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:35.420162+01:00 jdbc[66]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:36.256947+01:00 jdbc[68]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 04:41:36.837192+01:00 jdbc[70]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]

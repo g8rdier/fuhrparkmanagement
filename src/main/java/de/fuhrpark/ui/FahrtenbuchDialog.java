@@ -15,6 +15,7 @@ public class FahrtenbuchDialog extends JDialog {
     private final JTextField kilometerField = new JTextField(20);
     private final JTextField kennzeichenField = new JTextField(20);
     private final JTextField fahrerNameField = new JTextField(20);
+    private final JTextField firmaNameField = new JTextField(20);
     private final JTextField grundField = new JTextField(20);
     private final JComboBox<String> fahrerTypCombo = new JComboBox<>(new String[]{"Privat", "Firma"});
     private FahrtenbuchEintrag result = null;
@@ -56,9 +57,20 @@ public class FahrtenbuchDialog extends JDialog {
         addComponent(mainPanel, new JLabel("Ziel:"), zielOrtField, gbc, 1);
         addComponent(mainPanel, new JLabel("Kilometer:"), kilometerField, gbc, 2);
         
-        // Add new components
+        // Add driver type with listener
         addComponent(mainPanel, new JLabel("Fahrer Typ:"), fahrerTypCombo, gbc, 3);
-        addComponent(mainPanel, new JLabel("Fahrer Name:"), fahrerNameField, gbc, 4);
+        fahrerTypCombo.addActionListener(e -> {
+            boolean isFirma = "Firma".equals(fahrerTypCombo.getSelectedItem());
+            fahrerNameField.setVisible(!isFirma);
+            firmaNameField.setVisible(isFirma);
+        });
+        
+        // Add both name fields
+        JPanel namePanel = new JPanel(new CardLayout());
+        namePanel.add(fahrerNameField, "privat");
+        namePanel.add(firmaNameField, "firma");
+        addComponent(mainPanel, new JLabel("Name:"), namePanel, gbc, 4);
+        
         addComponent(mainPanel, new JLabel("Grund:"), grundField, gbc, 5);
         
         // Pre-fill and disable kennzeichen field
@@ -122,6 +134,9 @@ public class FahrtenbuchDialog extends JDialog {
 
     private FahrtenbuchEintrag createFahrtenbuchEintrag() {
         try {
+            boolean isFirma = "Firma".equals(fahrerTypCombo.getSelectedItem());
+            String name = isFirma ? firmaNameField.getText().trim() : fahrerNameField.getText().trim();
+            
             return new FahrtenbuchEintrag(
                 LocalDate.now(),
                 startOrtField.getText().trim(),
@@ -129,7 +144,7 @@ public class FahrtenbuchDialog extends JDialog {
                 Double.parseDouble(kilometerField.getText().trim()),
                 kennzeichenField.getText().trim(),
                 fahrerTypCombo.getSelectedItem().toString(),
-                fahrerNameField.getText().trim(),
+                name,
                 grundField.getText().trim()
             );
         } catch (NumberFormatException e) {
