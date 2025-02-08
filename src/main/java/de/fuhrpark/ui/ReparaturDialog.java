@@ -5,119 +5,77 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class ReparaturDialog extends JDialog {
+    private JTextField beschreibungField;
+    private JTextField kostenField;
+    private JTextField werkstattField;
+    private JTextField datumField;
     private ReparaturBuchEintrag result = null;
-    private final JTextField beschreibungField;
-    private final JTextField kostenField;
-    private final JTextField werkstattField;
-    private final JSpinner datumSpinner;
-    private final String kennzeichen;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    public ReparaturDialog(Frame owner, String kennzeichen) {
-        super(owner, "Neue Reparatur", true);
-        this.kennzeichen = kennzeichen;
-        
-        // Initialize components
-        this.beschreibungField = new JTextField(30);
-        this.kostenField = new JTextField(10);
-        this.werkstattField = new JTextField(30);
-        
-        SpinnerDateModel dateModel = new SpinnerDateModel();
-        this.datumSpinner = new JSpinner(dateModel);
-        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(datumSpinner, "dd.MM.yyyy");
-        datumSpinner.setEditor(dateEditor);
-        
+    public ReparaturDialog(JFrame parent, String title) {
+        super(parent, title, true);
         initComponents();
     }
 
     private void initComponents() {
-        setLayout(new BorderLayout());
+        setLayout(new GridLayout(5, 2, 5, 5));
         
-        // Input panel
-        JPanel inputPanel = new JPanel(new GridLayout(4, 2, 5, 5));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        inputPanel.add(new JLabel("Beschreibung:"));
-        inputPanel.add(beschreibungField);
-        inputPanel.add(new JLabel("Kosten (€):"));
-        inputPanel.add(kostenField);
-        inputPanel.add(new JLabel("Werkstatt:"));
-        inputPanel.add(werkstattField);
-        inputPanel.add(new JLabel("Datum:"));
-        inputPanel.add(datumSpinner);
+        add(new JLabel("Beschreibung:"));
+        beschreibungField = new JTextField();
+        add(beschreibungField);
 
-        add(inputPanel, BorderLayout.CENTER);
+        add(new JLabel("Kosten (€):"));
+        kostenField = new JTextField();
+        add(kostenField);
 
-        // Button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton saveButton = new JButton("Speichern");
+        add(new JLabel("Werkstatt:"));
+        werkstattField = new JTextField();
+        add(werkstattField);
+
+        add(new JLabel("Datum (TT.MM.JJJJ):"));
+        datumField = new JTextField();
+        datumField.setText(LocalDate.now().format(DATE_FORMATTER));
+        add(datumField);
+
+        JButton okButton = new JButton("Speichern");
+        okButton.addActionListener(e -> saveAndClose());
+        add(okButton);
+
         JButton cancelButton = new JButton("Abbrechen");
+        cancelButton.addActionListener(e -> dispose());
+        add(cancelButton);
 
-        saveButton.addActionListener(e -> {
-            if (validateInput()) {
-                result = createReparaturBuchEintrag();
-                dispose();
-            }
-        });
-
-        cancelButton.addActionListener(e -> {
-            result = null;
-            dispose();
-        });
-
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        // Dialog properties
-        setResizable(false);
         pack();
-        setLocationRelativeTo(getOwner());
+        setLocationRelativeTo(getParent());
     }
 
-    private ReparaturBuchEintrag createReparaturBuchEintrag() {
+    private void saveAndClose() {
         try {
-            double kosten = Double.parseDouble(kostenField.getText().trim().replace(",", "."));
-            java.util.Date date = (java.util.Date) datumSpinner.getValue();
-            LocalDate datum = LocalDate.ofInstant(date.toInstant(), java.time.ZoneId.systemDefault());
+            LocalDate datum = LocalDate.parse(datumField.getText(), DATE_FORMATTER);
+            double kosten = Double.parseDouble(kostenField.getText().replace(",", "."));
             
-            return new ReparaturBuchEintrag(
-                kennzeichen,
+            result = new ReparaturBuchEintrag(
+                datum,
+                beschreibungField.getText(),
                 kosten,
-                beschreibungField.getText().trim(),
-                werkstattField.getText().trim(),
-                datum.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                werkstattField.getText()
             );
-        } catch (NumberFormatException ex) {
-            showError("Bitte geben Sie einen gültigen Kostenbetrag ein.");
-            return null;
+            
+            dispose();
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this,
+                "Ungültiges Datumsformat. Bitte TT.MM.JJJJ verwenden.",
+                "Fehler",
+                JOptionPane.ERROR_MESSAGE);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                "Ungültiges Kostenformat. Bitte eine Zahl eingeben.",
+                "Fehler",
+                JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    private boolean validateInput() {
-        if (beschreibungField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie eine Beschreibung ein.");
-            return false;
-        }
-        if (werkstattField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie eine Werkstatt ein.");
-            return false;
-        }
-        try {
-            Double.parseDouble(kostenField.getText().trim().replace(",", "."));
-        } catch (NumberFormatException ex) {
-            showError("Bitte geben Sie einen gültigen Kostenbetrag ein.");
-            return false;
-        }
-        return true;
-    }
-
-    private void showError(String message) {
-        JOptionPane.showMessageDialog(this,
-            message,
-            "Validierungsfehler",
-            JOptionPane.ERROR_MESSAGE);
     }
 
     public ReparaturBuchEintrag getResult() {

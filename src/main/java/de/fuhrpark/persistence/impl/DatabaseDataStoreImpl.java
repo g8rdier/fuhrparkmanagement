@@ -127,12 +127,6 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public void addReparatur(String kennzeichen, ReparaturBuchEintrag reparatur) {
-        reparaturen.computeIfAbsent(kennzeichen, k -> new ArrayList<>())
-                  .add(reparatur);
-    }
-
-    @Override
     public List<ReparaturBuchEintrag> getReparaturen() {
         List<ReparaturBuchEintrag> alleReparaturen = new ArrayList<>();
         reparaturen.values().forEach(alleReparaturen::addAll);
