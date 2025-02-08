@@ -183,6 +183,12 @@ public class FuhrparkUI extends JFrame {
             return;
         }
 
+        // Check for duplicate license plate
+        if (isLicensePlateExists(licensePlate, -1)) {
+            showError("Ein Fahrzeug mit diesem Kennzeichen existiert bereits.");
+            return;
+        }
+
         // Price validation
         try {
             NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
@@ -227,6 +233,12 @@ public class FuhrparkUI extends JFrame {
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
+            // Check for duplicate license plate, excluding the current entry
+            if (isLicensePlateExists(dialog.getLicensePlate(), selectedIndex)) {
+                showError("Ein Fahrzeug mit diesem Kennzeichen existiert bereits.");
+                return;
+            }
+
             try {
                 NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
                 Number number = format.parse(dialog.getPrice());
@@ -242,7 +254,6 @@ public class FuhrparkUI extends JFrame {
                 String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY)
                     .format(priceValue);
                 
-                // Handle optional model field
                 String modelDisplay = dialog.getModel().trim().isEmpty() ? "-" : dialog.getModel();
                 
                 String newEntry = String.format("%s [%s] %s %s - %s",
@@ -416,5 +427,24 @@ public class FuhrparkUI extends JFrame {
             super.remove(0, getLength());
             super.insertString(0, formatted.toString(), a);
         }
+    }
+
+    private boolean isLicensePlateExists(String licensePlate, int excludeIndex) {
+        for (int i = 0; i < listModel.getSize(); i++) {
+            if (i == excludeIndex) continue; // Skip current item when editing
+            
+            String entry = listModel.getElementAt(i);
+            String existingPlate = extractLicensePlate(entry);
+            if (existingPlate.equalsIgnoreCase(licensePlate)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String extractLicensePlate(String entry) {
+        int start = entry.indexOf('[') + 1;
+        int end = entry.indexOf(']');
+        return entry.substring(start, end).trim();
     }
 } 
