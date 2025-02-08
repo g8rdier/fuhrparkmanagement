@@ -294,7 +294,6 @@ public class FuhrparkUI extends JFrame {
     
     // Helper method to parse vehicle entry for editing
     private VehicleData parseVehicleEntry(String entry) {
-        // Example entry format: "PKW [B-AB 123] VW Golf - 25.000,00 €"
         VehicleData data = new VehicleData();
         
         // Extract type (everything before the first '[')
@@ -318,27 +317,6 @@ public class FuhrparkUI extends JFrame {
         data.setPrice(parts[1].trim());
         
         return data;
-    }
-    
-    // Helper class for vehicle data
-    private static class VehicleData {
-        private String type;
-        private String brand;
-        private String model;
-        private String licensePlate;
-        private String price;
-
-        // Getters and setters
-        public String getType() { return type; }
-        public void setType(String type) { this.type = type; }
-        public String getBrand() { return brand; }
-        public void setBrand(String brand) { this.brand = brand; }
-        public String getModel() { return model; }
-        public void setModel(String model) { this.model = model; }
-        public String getLicensePlate() { return licensePlate; }
-        public void setLicensePlate(String licensePlate) { this.licensePlate = licensePlate; }
-        public String getPrice() { return price; }
-        public void setPrice(String price) { this.price = price; }
     }
     
     public static void main(String[] args) {

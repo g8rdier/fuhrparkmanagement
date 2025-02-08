@@ -11,7 +11,7 @@ public class VehicleEditDialog extends JDialog {
     private final JTextField priceField;
     private boolean confirmed = false;
 
-    public VehicleEditDialog(JFrame parent, FuhrparkUI.VehicleData data) {
+    public VehicleEditDialog(JFrame parent, VehicleData data) {
         super(parent, "Fahrzeug bearbeiten", true);
         
         // Initialize components
