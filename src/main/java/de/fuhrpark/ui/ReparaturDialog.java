@@ -53,14 +53,14 @@ public class ReparaturDialog extends JDialog {
         JButton saveButton = new JButton("Speichern");
         JButton cancelButton = new JButton("Abbrechen");
 
-        saveButton.addActionListener((ActionEvent e) -> {
+        saveButton.addActionListener(_ -> {
             if (validateInput()) {
                 result = createReparaturBuchEintrag();
                 dispose();
             }
         });
 
-        cancelButton.addActionListener((ActionEvent e) -> {
+        cancelButton.addActionListener(_ -> {
             result = null;
             dispose();
         });

@@ -66,7 +66,15 @@ public class FuhrparkUI extends JFrame {
         searchPanel.add(searchButton);
 
         // Add search functionality
-        searchButton.addActionListener(e -> searchFahrzeug());
+        searchButton.addActionListener(_ -> {
+            String kennzeichen = searchField.getText();
+            Fahrzeug fahrzeug = fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
+            updateFahrzeugDetails(fahrzeug);
+            if (fahrzeug != null) {
+                List<ReparaturBuchEintrag> reparaturen = reparaturService.getReparaturenForFahrzeug(kennzeichen);
+                updateReparaturenTable(reparaturen);
+            }
+        });
 
         // Buttons Panel
         JPanel buttonsPanel = new JPanel();
@@ -75,7 +83,9 @@ public class FuhrparkUI extends JFrame {
         
         // Add button functionality
         fahrtenbuchButton.addActionListener(e -> openFahrtenbuch());
-        addReparaturButton.addActionListener(e -> addNewReparatur());
+        addReparaturButton.addActionListener(_ -> {
+            // Add reparatur logic
+        });
         
         buttonsPanel.add(fahrtenbuchButton);
         buttonsPanel.add(addReparaturButton);
