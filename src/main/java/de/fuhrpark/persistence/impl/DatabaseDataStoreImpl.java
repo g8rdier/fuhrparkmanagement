@@ -1,8 +1,6 @@
 package de.fuhrpark.persistence.impl;
 
-import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.FahrtenbuchEintrag;
-import de.fuhrpark.model.ReparaturBuchEintrag;
+import de.fuhrpark.model.*;
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.DatabaseConfig;
 import de.fuhrpark.model.enums.FahrzeugTyp;
@@ -246,34 +244,6 @@ public class DatabaseDataStoreImpl implements DataStore {
     @Override
     public List<Fahrzeug> getFahrzeuge() {
         return getAlleFahrzeuge();  // Always get fresh data from database
-    }
-
-    @Override
-    public List<ReparaturBuchEintrag> getReparaturenForFahrzeug(String kennzeichen) {
-        return getReparaturen(kennzeichen);  // Use the existing method instead of duplicating code
-    }
-
-    @Override
-    public void saveReparatur(ReparaturBuchEintrag eintrag) {
-        String sql = "INSERT INTO reparaturbuch (kennzeichen, datum, beschreibung, kosten, werkstatt) VALUES (?, ?, ?, ?, ?)";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, eintrag.getKennzeichen());
-            stmt.setDate(2, java.sql.Date.valueOf(eintrag.getDatum()));
-            stmt.setString(3, eintrag.getBeschreibung());
-            stmt.setDouble(4, eintrag.getKosten());
-            stmt.setString(5, eintrag.getWerkstatt());
-            
-            stmt.executeUpdate();
-            
-            // Update local cache
-            reparaturen.computeIfAbsent(eintrag.getKennzeichen(), k -> new ArrayList<>())
-                      .add(eintrag);
-        } catch (SQLException e) {
-            throw new RuntimeException("Error saving repair: " + e.getMessage(), e);
-        }
     }
 
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
