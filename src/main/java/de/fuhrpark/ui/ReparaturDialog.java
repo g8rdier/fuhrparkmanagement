@@ -12,9 +12,11 @@ public class ReparaturDialog extends JDialog {
     private final JTextField kostenField;
     private final JTextField werkstattField;
     private final JSpinner datumSpinner;
+    private final String kennzeichen;
 
-    public ReparaturDialog(Frame owner, String title, boolean modal) {
-        super(owner, title, modal);
+    public ReparaturDialog(Frame owner, String kennzeichen) {
+        super(owner, "Neue Reparatur", true);
+        this.kennzeichen = kennzeichen;
         
         // Initialize components
         this.beschreibungField = new JTextField(30);
@@ -52,14 +54,14 @@ public class ReparaturDialog extends JDialog {
         JButton saveButton = new JButton("Speichern");
         JButton cancelButton = new JButton("Abbrechen");
 
-        saveButton.addActionListener(_ -> {
+        saveButton.addActionListener(e -> {
             if (validateInput()) {
                 result = createReparaturBuchEintrag();
                 dispose();
             }
         });
 
-        cancelButton.addActionListener(_ -> {
+        cancelButton.addActionListener(e -> {
             result = null;
             dispose();
         });
@@ -81,11 +83,11 @@ public class ReparaturDialog extends JDialog {
             LocalDate datum = LocalDate.ofInstant(date.toInstant(), java.time.ZoneId.systemDefault());
             
             return new ReparaturBuchEintrag(
-                "KENNZEICHEN",  // You need to add a field for kennzeichen or pass it from somewhere
+                kennzeichen,
                 kosten,
                 beschreibungField.getText().trim(),
                 werkstattField.getText().trim(),
-                datum.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))  // Convert LocalDate to String
+                datum.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
             );
         } catch (NumberFormatException ex) {
             showError("Bitte geben Sie einen gültigen Kostenbetrag ein.");

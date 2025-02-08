@@ -67,7 +67,7 @@ public class FuhrparkUI extends JFrame {
         searchPanel.add(searchButton);
 
         // Add search functionality
-        searchButton.addActionListener(_ -> {
+        searchButton.addActionListener(e -> {
             searchFahrzeug();
         });
 
@@ -78,17 +78,17 @@ public class FuhrparkUI extends JFrame {
         JButton newFahrzeugButton = new JButton("Neues Fahrzeug");
         
         // Add button functionality
-        fahrtenbuchButton.addActionListener(_ -> {
+        fahrtenbuchButton.addActionListener(e -> {
             String kennzeichen = getCurrentKennzeichen();
             if (kennzeichen != null) {
                 FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, kennzeichen, fahrtenbuchService);
                 dialog.setVisible(true);
             }
         });
-        addReparaturButton.addActionListener(_ -> {
-            // Add reparatur logic
+        addReparaturButton.addActionListener(e -> {
+            handleAddReparatur();
         });
-        newFahrzeugButton.addActionListener(_ -> {
+        newFahrzeugButton.addActionListener(e -> {
             FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugService);
             dialog.setVisible(true);
             // After dialog closes, refresh if a new vehicle was added
@@ -118,24 +118,20 @@ public class FuhrparkUI extends JFrame {
 
     private void updateFahrzeugDetails(Fahrzeug fahrzeug) {
         if (fahrzeug != null) {
-            // Use fahrzeugService to get and display vehicle details
             kennzeichenLabel.setText(fahrzeug.getKennzeichen());
-            markeLabel.setText(fahrzeug.getMarke());
+            markeLabel.setText(fahrzeug.getHersteller());
             modellLabel.setText(fahrzeug.getModell());
             typLabel.setText(fahrzeug.getTyp().toString());
             baujahrLabel.setText(String.valueOf(fahrzeug.getBaujahr()));
-            kilometerstandLabel.setText(String.valueOf(fahrzeug.getKilometerstand()));
-            
-            // Use reparaturService to update repairs
+            kilometerstandLabel.setText(String.format("%.0f", fahrzeug.getKilometerstand()));
+
+            // Use services to update tables
             List<ReparaturBuchEintrag> reparaturen = reparaturService.getReparaturenForFahrzeug(fahrzeug.getKennzeichen());
             updateReparaturenTable(reparaturen);
             
-            // Add this to use fahrtenbuchService
             List<FahrtenbuchEintrag> fahrten = fahrtenbuchService.getEintraegeForFahrzeug(fahrzeug.getKennzeichen());
-            // You might want to add a method to display these entries somewhere in your UI
             updateFahrtenList(fahrten);
         } else {
-            // Clear all labels if no vehicle found
             clearLabels();
         }
     }
@@ -168,16 +164,28 @@ public class FuhrparkUI extends JFrame {
         }
     }
 
-    private String getCurrentKennzeichen() {
-        String kennzeichen = searchField.getText().trim();
-        if (kennzeichen.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "Bitte geben Sie zuerst ein Kennzeichen ein.",
-                "Kein Fahrzeug ausgewählt",
-                JOptionPane.ERROR_MESSAGE);
-            return null;
+    private void handleAddReparatur() {
+        String kennzeichen = getCurrentKennzeichen();
+        if (kennzeichen != null) {
+            ReparaturDialog dialog = new ReparaturDialog(this, kennzeichen);
+            dialog.setVisible(true);
+            
+            ReparaturBuchEintrag eintrag = dialog.getResult();
+            if (eintrag != null) {
+                reparaturService.addReparatur(kennzeichen, eintrag);
+                updateFahrzeugDetails(fahrzeugService.getFahrzeug(kennzeichen));
+            }
         }
-        return kennzeichen;
+    }
+
+    private String getCurrentKennzeichen() {
+        Fahrzeug selectedFahrzeug = getCurrentFahrzeug();
+        return selectedFahrzeug != null ? selectedFahrzeug.getKennzeichen() : null;
+    }
+
+    private Fahrzeug getCurrentFahrzeug() {
+        String kennzeichen = searchField.getText();
+        return fahrzeugService.getFahrzeug(kennzeichen);
     }
 
     private void updateFahrtenList(List<FahrtenbuchEintrag> fahrten) {
