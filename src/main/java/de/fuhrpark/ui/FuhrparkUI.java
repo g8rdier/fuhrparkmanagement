@@ -43,7 +43,8 @@ public class FuhrparkUI extends JFrame {
 
     private JButton editButton;
     private JButton deleteButton;
-    private static final String LICENSE_PLATE_PATTERN = "^[A-ZÖÜÄ]{1,3}-[A-Z]{1,2} [1-9][0-9]{0,3}$";
+    private static final String LICENSE_PLATE_PATTERN = 
+        "^[A-ZÄÖÜ]{1,3}-[A-Z]{1,2}\\s[1-9][0-9]{0,3}$";
 
     public FuhrparkUI() {
         setTitle("Fuhrpark Verwaltung");
@@ -227,6 +228,18 @@ public class FuhrparkUI extends JFrame {
     }
     
     private boolean isValidLicensePlate(String licensePlate) {
+        if (licensePlate == null || licensePlate.isEmpty()) {
+            return false;
+        }
+        
+        // Convert to uppercase for validation
+        licensePlate = licensePlate.toUpperCase().trim();
+        
+        // Basic format check
+        if (!licensePlate.contains("-") || !licensePlate.contains(" ")) {
+            return false;
+        }
+        
         return licensePlate.matches(LICENSE_PLATE_PATTERN);
     }
     
@@ -248,9 +261,19 @@ public class FuhrparkUI extends JFrame {
         
         if (!isValidLicensePlate(licensePlate)) {
             JOptionPane.showMessageDialog(this,
-                "Ungültiges Kennzeichen. Format: XX-X 1234 (z.B. B-AB 123)",
-                "Fehler",
+                "Bitte geben Sie ein gültiges Kennzeichen ein.\n\n" +
+                "Format: XXX-XX 1234\n" +
+                "Beispiele:\n" +
+                "• B-AB 123\n" +
+                "• M-XY 4567\n" +
+                "• HH-AB 42\n\n" +
+                "Hinweise:\n" +
+                "• Großbuchstaben werden automatisch verwendet\n" +
+                "• Bindestrich (-) zwischen Stadt und Buchstaben\n" +
+                "• Leerzeichen vor der Nummer",
+                "Ungültiges Kennzeichen",
                 JOptionPane.ERROR_MESSAGE);
+            licensePlateField.requestFocus();
             return;
         }
         
