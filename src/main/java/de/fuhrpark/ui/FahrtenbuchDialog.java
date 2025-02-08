@@ -1,4 +1,4 @@
-package de.fuhrpark.ui;
+package de.fuhrpark.ui.dialog;
 
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.service.base.FahrtenbuchService;
