@@ -172,12 +172,12 @@ public class DatabaseDataStoreImpl implements DataStore {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 ReparaturBuchEintrag eintrag = new ReparaturBuchEintrag(
-                    kennzeichen,
                     rs.getDate("datum").toLocalDate(),
                     rs.getString("beschreibung"),
                     rs.getDouble("kosten"),
                     rs.getString("werkstatt")
                 );
+                eintrag.setKennzeichen(rs.getString("kennzeichen"));
                 reparaturList.add(eintrag);
             }
         } catch (SQLException e) {
