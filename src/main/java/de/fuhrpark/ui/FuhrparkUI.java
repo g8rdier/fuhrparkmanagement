@@ -15,6 +15,7 @@ public class FuhrparkUI extends JFrame {
     private static final String LOCATION_PATTERN = "[A-ZÄÖÜ]{1,3}";
     private static final String LETTERS_PATTERN = "[A-Z]{1,2}";
     private static final String NUMBERS_PATTERN = "[1-9][0-9]{0,3}";
+    private static final double MINIMUM_VEHICLE_PRICE = 500.0; // Minimum 500 euros for any vehicle
     
     // UI Components
     private final JComboBox<String> fahrzeugTypComboBox;
@@ -183,8 +184,10 @@ public class FuhrparkUI extends JFrame {
             Number number = format.parse(priceText);
             double priceValue = number.doubleValue();
             
-            if (priceValue <= 0) {
-                showError("Der Kaufpreis muss größer als 0 sein.");
+            if (priceValue < MINIMUM_VEHICLE_PRICE) {
+                showError("Der Kaufpreis muss mindestens " + 
+                    NumberFormat.getCurrencyInstance(Locale.GERMANY).format(MINIMUM_VEHICLE_PRICE) + 
+                    " betragen.");
                 return;
             }
 
@@ -220,8 +223,10 @@ public class FuhrparkUI extends JFrame {
                 Number number = format.parse(dialog.getPrice());
                 double priceValue = number.doubleValue();
                 
-                if (priceValue <= 0) {
-                    showError("Der Kaufpreis muss größer als 0 sein.");
+                if (priceValue < MINIMUM_VEHICLE_PRICE) {
+                    showError("Der Kaufpreis muss mindestens " + 
+                        NumberFormat.getCurrencyInstance(Locale.GERMANY).format(MINIMUM_VEHICLE_PRICE) + 
+                        " betragen.");
                     return;
                 }
 

@@ -15,6 +15,7 @@
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/FahrtenbuchDialog.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/VehicleEditDialog.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/persistence/DatabaseConfig.java
+/Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/VehicleData.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/service/impl/FahrzeugServiceImpl.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/persistence/DataStore.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/FahrzeugTableModel.java
