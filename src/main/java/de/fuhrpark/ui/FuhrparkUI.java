@@ -81,7 +81,7 @@ public class FuhrparkUI extends JFrame {
         inputPanel.add(new JLabel("Fahrzeugtyp: *"), gbc);
         
         gbc.gridy = 1;
-        inputPanel.add(new JLabel("Marke:"), gbc);
+        inputPanel.add(new JLabel("Marke: *"), gbc);
         
         gbc.gridy = 2;
         inputPanel.add(new JLabel("Modell:"), gbc);
