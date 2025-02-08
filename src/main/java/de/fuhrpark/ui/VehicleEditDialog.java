@@ -24,7 +24,7 @@ public class VehicleEditDialog extends JDialog {
         modelField = new JTextField(model, 20);
         licensePlateField = new JTextField(licensePlate, 20);
         priceField = new JTextField(price, 20);
-        priceField.setDocument(new FuhrparkUI.PriceDocument());
+        priceField.setDocument(new PriceDocument());
         
         initComponents();
         pack();

@@ -24,95 +24,6 @@ public class FuhrparkUI extends JFrame {
     private JButton editButton;
     private JButton deleteButton;
     
-    private static class PlateDocument extends javax.swing.text.PlainDocument {
-        @Override
-        public void insertString(int offs, String str, javax.swing.text.AttributeSet a) 
-                throws javax.swing.text.BadLocationException {
-            if (str == null) return;
-            
-            // Get current content and create new text
-            String currentText = getText(0, getLength());
-            String newText = new StringBuilder(currentText).insert(offs, str.toUpperCase()).toString();
-            
-            // Remove any existing separators
-            String cleaned = newText.replace("-", "").replace(" ", "");
-            
-            // Check maximum length (8 chars without separators)
-            if (cleaned.length() > 8) return;
-            
-            StringBuilder formatted = new StringBuilder();
-            int pos = 0;
-            
-            // Parse district code (1-3 letters)
-            int districtLength = 0;
-            while (pos < cleaned.length() && districtLength < 3 && Character.isLetter(cleaned.charAt(pos))) {
-                formatted.append(cleaned.charAt(pos));
-                pos++;
-                districtLength++;
-            }
-            
-            if (districtLength == 0) return; // Must have at least one letter for district
-            
-            // Add separator if there's more
-            if (pos < cleaned.length()) {
-                formatted.append('-');
-            }
-            
-            // Parse recognition number (optional 1-2 letters)
-            int recognitionLetters = 0;
-            while (pos < cleaned.length() && recognitionLetters < 2 && Character.isLetter(cleaned.charAt(pos))) {
-                formatted.append(cleaned.charAt(pos));
-                pos++;
-                recognitionLetters++;
-            }
-            
-            // Parse numbers (1-4 digits)
-            if (pos < cleaned.length()) {
-                // Add space before numbers if we had recognition letters
-                if (recognitionLetters > 0) {
-                    formatted.append(' ');
-                }
-                
-                // Collect all remaining digits
-                StringBuilder numbers = new StringBuilder();
-                while (pos < cleaned.length() && Character.isDigit(cleaned.charAt(pos))) {
-                    numbers.append(cleaned.charAt(pos));
-                    pos++;
-                }
-                
-                // Check if numbers are valid (no leading zero, max 4 digits)
-                if (numbers.length() > 0 && numbers.charAt(0) != '0' && numbers.length() <= 4) {
-                    formatted.append(numbers);
-                }
-                
-                // Add optional H or E suffix
-                if (pos < cleaned.length() && (cleaned.charAt(pos) == 'H' || cleaned.charAt(pos) == 'E')) {
-                    formatted.append(cleaned.charAt(pos));
-                }
-            }
-            
-            // Replace entire content with formatted text
-            super.remove(0, getLength());
-            super.insertString(0, formatted.toString(), a);
-        }
-    }
-    
-    private static class PriceDocument extends javax.swing.text.PlainDocument {
-        @Override
-        public void insertString(int offs, String str, javax.swing.text.AttributeSet a)
-                throws javax.swing.text.BadLocationException {
-            if (str == null) return;
-            
-            String currentText = getText(0, getLength());
-            String newText = new StringBuilder(currentText).insert(offs, str).toString();
-            
-            // Only allow numbers and one decimal point
-            if (newText.matches("^\\d*\\.?\\d{0,2}$") && newText.length() <= 10) {
-                super.insertString(offs, str, a);
-            }
-        }
-    }
-    
     public static boolean isValidLicensePlate(String licensePlate) {
         if (licensePlate == null || licensePlate.isEmpty()) {
             return false;
@@ -317,7 +228,6 @@ public class FuhrparkUI extends JFrame {
     
     public JTextField createLicensePlateField() {
         JTextField field = new JTextField();
-        field.setDocument(new PlateDocument());
         return field;
     }
     
