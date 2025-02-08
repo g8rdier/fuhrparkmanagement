@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 
 import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.persistence.impl.DatabaseDataStoreImpl;
@@ -16,6 +17,7 @@ import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.impl.PKW;
 import de.fuhrpark.model.impl.LKW;
 import de.fuhrpark.manager.FuhrparkManager;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 
 /**
  * Testet die Funktionalität des FuhrparkManagers
@@ -80,13 +82,31 @@ public class FuhrparkManagerTest {
 
     @Test
     public void testCreateFahrzeug() {
-        // TODO: Implement after setting up mocking
-        assertTrue(true, "Test needs to be implemented");
+        String kennzeichen = "B-TEST 123";
+        String marke = "BMW";
+        String modell = "X5";
+        double preis = 50000.0;
+        
+        Fahrzeug mockPKW = new PKW(marke, modell, kennzeichen, preis);
+        Mockito.when(fahrzeugFactory.erstelleFahrzeug(FahrzeugTyp.PKW, marke, modell, kennzeichen, preis))
+            .thenReturn(mockPKW);
+        
+        Fahrzeug result = manager.createFahrzeug("PKW", kennzeichen, marke, modell, preis);
+        
+        assertNotNull(result);
+        assertEquals(kennzeichen, result.getKennzeichen());
+        assertEquals(marke, result.getMarke());
+        assertEquals(modell, result.getModell());
+        
+        Mockito.verify(fahrzeugService).speichereFahrzeug(mockPKW);
     }
 
     @Test
     public void testDeleteFahrzeug() {
-        // TODO: Implement after setting up mocking
-        assertTrue(true, "Test needs to be implemented");
+        String kennzeichen = "B-TEST 456";
+        
+        manager.deleteFahrzeug(kennzeichen);
+        
+        Mockito.verify(fahrzeugService).loescheFahrzeug(kennzeichen);
     }
 }
