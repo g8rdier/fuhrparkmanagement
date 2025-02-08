@@ -4,8 +4,8 @@ import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
+import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 
