@@ -50,63 +50,72 @@ public class FuhrparkUI extends JFrame {
     private static final String NUMBERS_PATTERN = "[1-9][0-9]{0,3}"; // Erkennungsnummer (Ziffern)
     
     private static class PlateDocument extends javax.swing.text.PlainDocument {
+        private boolean isValidChar(char c, int position, String currentText) {
+            // First 1-3 chars must be letters (location)
+            if (position <= 2) {
+                return Character.isLetter(c);
+            }
+            // Next 1-2 chars must be letters (after the dash)
+            else if (position <= 4) {
+                return Character.isLetter(c);
+            }
+            // Next 1-4 chars must be numbers (after the space)
+            else if (position <= 8) {
+                return Character.isDigit(c);
+            }
+            // Last position can be H or E
+            else if (position == 9) {
+                return c == 'H' || c == 'E';
+            }
+            return false;
+        }
+
         @Override
         public void insertString(int offs, String str, javax.swing.text.AttributeSet a) 
                 throws javax.swing.text.BadLocationException {
             if (str == null) return;
             
-            // Convert input to uppercase
+            // Convert to uppercase
             str = str.toUpperCase();
             
-            // Get current text and create new text
+            // Get current content
             String currentText = getText(0, getLength());
-            StringBuilder newText = new StringBuilder(currentText);
-            newText.insert(offs, str);
+            String newText = new StringBuilder(currentText).insert(offs, str).toString();
             
-            // Clean the text for processing
-            String processed = newText.toString().replace("-", "").replace(" ", "");
+            // Remove formatting for length check
+            String cleaned = newText.replace("-", "").replace(" ", "");
             
-            // Only allow valid characters
-            if (!processed.matches("[A-ZÄÖÜ0-9HE]*")) {
-                return;
-            }
+            // Check maximum length
+            if (cleaned.length() > 9) return; // Max 8 chars + possible H/E
             
-            // Check length (excluding separators)
-            if (processed.length() > 8) {
-                return;
-            }
-            
-            // Format the text
+            // Build formatted text
             StringBuilder formatted = new StringBuilder();
-            int mainPartLength = processed.endsWith("H") || processed.endsWith("E") ? 
-                               processed.length() - 1 : processed.length();
+            int pos = 0;
             
-            // Add characters with proper formatting
-            for (int i = 0; i < processed.length(); i++) {
-                char c = processed.charAt(i);
+            for (char c : cleaned.toCharArray()) {
+                // Validate character at this position
+                if (!isValidChar(c, pos, cleaned)) {
+                    return;
+                }
                 
-                // Handle main part
-                if (i < mainPartLength) {
-                    if (i == 0) {
-                        formatted.append(c);
-                    } else if (i <= 2) {
-                        formatted.append(c);
-                    } else if (i == 3) {
-                        formatted.append('-').append(c);
-                    } else if (i == 4) {
-                        formatted.append(c);
-                    } else if (i == 5) {
-                        formatted.append(' ').append(c);
-                    } else {
-                        formatted.append(c);
-                    }
+                // Add formatting
+                if (pos == 0) {
+                    formatted.append(c);
+                } else if (pos <= 2) {
+                    formatted.append(c);
+                } else if (pos == 3) {
+                    formatted.append('-').append(c);
+                } else if (pos == 4) {
+                    formatted.append(c);
+                } else if (pos == 5) {
+                    formatted.append(' ').append(c);
                 } else {
-                    // Add H or E suffix
                     formatted.append(c);
                 }
+                pos++;
             }
             
-            // Update the document
+            // Update document
             super.remove(0, getLength());
             super.insertString(0, formatted.toString(), a);
         }
