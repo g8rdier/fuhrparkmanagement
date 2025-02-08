@@ -1,6 +1,6 @@
-package de.fuhrpark.ui;
+package de.fuhrpark.ui.model;
 
-import de.fuhrpark.model.Fahrzeug;
+import de.fuhrpark.model.base.Fahrzeug;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 import java.util.ArrayList;
@@ -21,6 +21,9 @@ public class FahrzeugTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int col) {
+        if (row < 0 || row >= fahrzeuge.size()) {
+            throw new IndexOutOfBoundsException("Ungültiger Zeilenindex: " + row);
+        }
         Fahrzeug f = fahrzeuge.get(row);
         switch (col) {
             case 0: return f.getTyp();
@@ -38,17 +41,36 @@ public class FahrzeugTableModel extends AbstractTableModel {
     }
 
     public void addFahrzeug(Fahrzeug fahrzeug) {
+        if (fahrzeug == null) {
+            throw new IllegalArgumentException("Fahrzeug darf nicht null sein");
+        }
         fahrzeuge.add(fahrzeug);
         fireTableRowsInserted(fahrzeuge.size()-1, fahrzeuge.size()-1);
     }
 
     public void updateFahrzeug(int row, Fahrzeug fahrzeug) {
+        if (fahrzeug == null) {
+            throw new IllegalArgumentException("Fahrzeug darf nicht null sein");
+        }
+        if (row < 0 || row >= fahrzeuge.size()) {
+            throw new IndexOutOfBoundsException("Ungültiger Zeilenindex: " + row);
+        }
         fahrzeuge.set(row, fahrzeug);
         fireTableRowsUpdated(row, row);
     }
 
     public void removeFahrzeug(int row) {
+        if (row < 0 || row >= fahrzeuge.size()) {
+            throw new IndexOutOfBoundsException("Ungültiger Zeilenindex: " + row);
+        }
         fahrzeuge.remove(row);
         fireTableRowsDeleted(row, row);
+    }
+
+    public Fahrzeug getFahrzeug(int row) {
+        if (row < 0 || row >= fahrzeuge.size()) {
+            throw new IndexOutOfBoundsException("Ungültiger Zeilenindex: " + row);
+        }
+        return fahrzeuge.get(row);
     }
 } 

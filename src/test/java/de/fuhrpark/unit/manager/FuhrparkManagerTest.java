@@ -1,18 +1,19 @@
-package de.fuhrpark.manager;
+package de.fuhrpark.unit.manager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.fuhrpark.persistence.DataStore;
+import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.persistence.impl.DataStoreImpl;
-import de.fuhrpark.service.FahrzeugService;
+import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
-import de.fuhrpark.model.Fahrzeug;
+import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.PKW;
 import de.fuhrpark.model.LKW;
+import de.fuhrpark.manager.FuhrparkManager;
 
 /**
  * Testet die Funktionalität des FuhrparkManagers
@@ -40,9 +41,9 @@ public class FuhrparkManagerTest {
             true
         );
         
-        assertNotNull(pkw);
-        assertTrue(pkw instanceof PKW);
-        assertEquals("B-TK 1234", pkw.getKennzeichen());
+        assertNotNull(pkw, "Erstelltes PKW sollte nicht null sein");
+        assertTrue(pkw instanceof PKW, "Erstelltes Fahrzeug sollte ein PKW sein");
+        assertEquals("B-TK 1234", pkw.getKennzeichen(), "Kennzeichen stimmt nicht überein");
     }
 
     @Test
@@ -56,9 +57,9 @@ public class FuhrparkManagerTest {
             true
         );
         
-        assertNotNull(lkw);
-        assertTrue(lkw instanceof LKW);
-        assertEquals("B-LK 5678", lkw.getKennzeichen());
+        assertNotNull(lkw, "Erstelltes LKW sollte nicht null sein");
+        assertTrue(lkw instanceof LKW, "Erstelltes Fahrzeug sollte ein LKW sein");
+        assertEquals("B-LK 5678", lkw.getKennzeichen(), "Kennzeichen stimmt nicht überein");
     }
 
     @Test
@@ -67,8 +68,8 @@ public class FuhrparkManagerTest {
         manager.erstelleNeuesFahrzeug("PKW", kennzeichen, "VW", "Golf", 5, true);
         
         Fahrzeug gefunden = service.findeFahrzeugNachKennzeichen(kennzeichen);
-        assertNotNull(gefunden);
-        assertEquals(kennzeichen, gefunden.getKennzeichen());
+        assertNotNull(gefunden, "Gefundenes Fahrzeug sollte nicht null sein");
+        assertEquals(kennzeichen, gefunden.getKennzeichen(), "Kennzeichen stimmt nicht überein");
     }
 
     @Test
@@ -77,6 +78,7 @@ public class FuhrparkManagerTest {
         manager.erstelleNeuesFahrzeug("PKW", kennzeichen, "Audi", "A4", 5, true);
         
         service.loescheFahrzeug(kennzeichen);
-        assertNull(service.findeFahrzeugNachKennzeichen(kennzeichen));
+        assertNull(service.findeFahrzeugNachKennzeichen(kennzeichen), 
+                  "Gelöschtes Fahrzeug sollte nicht mehr findbar sein");
     }
 }
