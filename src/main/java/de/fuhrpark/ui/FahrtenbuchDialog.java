@@ -57,7 +57,7 @@ public class FahrtenbuchDialog extends JDialog {
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
 
-        okButton.addActionListener(e -> {
+        okButton.addActionListener(_ -> {
             if (isInputValid()) {
                 result = createFahrtenbuchEintrag();
                 service.addEintrag(result);

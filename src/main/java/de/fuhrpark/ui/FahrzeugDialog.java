@@ -46,7 +46,7 @@ public class FahrzeugDialog extends JDialog {
         JButton saveButton = new JButton("Speichern");
         JButton cancelButton = new JButton("Abbrechen");
 
-        saveButton.addActionListener(e -> {
+        saveButton.addActionListener(_ -> {
             if (validateInput()) {
                 try {
                     result = new Fahrzeug(
