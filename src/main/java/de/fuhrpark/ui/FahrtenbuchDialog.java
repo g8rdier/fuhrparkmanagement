@@ -1,4 +1,4 @@
-package de.fuhrpark.ui.dialog;
+package de.fuhrpark.ui;
 
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.service.base.FahrtenbuchService;
@@ -54,6 +54,10 @@ public class FahrtenbuchDialog extends JDialog {
     }
 
     private void addNewFahrt() {
-        // TODO: Implement new entry dialog
+        // Implementation for adding new entries will be added later
+        JOptionPane.showMessageDialog(this, 
+            "Neue Fahrt Funktion wird in der nächsten Version implementiert",
+            "Info",
+            JOptionPane.INFORMATION_MESSAGE);
     }
 }

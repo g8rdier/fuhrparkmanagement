@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.persistence.impl.DataStoreImpl;
 import de.fuhrpark.service.base.FahrzeugService;
-import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
+import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.PKW;
@@ -22,12 +22,14 @@ public class FuhrparkManagerTest {
     private FuhrparkManager manager;
     private DataStore dataStore;
     private FahrzeugService service;
+    private FahrzeugFactory factory;
 
     @BeforeEach
     public void setUp() {
         dataStore = new DataStoreImpl();
         service = new FahrzeugServiceImpl(dataStore);
-        manager = new FuhrparkManager(service, FahrzeugFactoryImpl.getInstance());
+        factory = new FahrzeugFactoryImpl();
+        manager = new FuhrparkManager(service, factory);
     }
 
     @Test
