@@ -17,4 +17,5 @@ de/fuhrpark/ui/FahrzeugDialog.class
 de/fuhrpark/service/FahrtenbuchService.class
 de/fuhrpark/ui/FuhrparkUI.class
 de/fuhrpark/persistence/impl/DatabaseDataStoreImpl.class
+de/fuhrpark/ui/VehicleEditDialog.class
 de/fuhrpark/manager/FuhrparkManager.class

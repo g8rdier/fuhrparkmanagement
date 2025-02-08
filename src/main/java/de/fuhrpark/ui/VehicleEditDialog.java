@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class VehicleEditDialog extends JDialog {
+    private final FuhrparkUI parent;
+    private final int editingIndex;
     private JComboBox<String> vehicleTypeCombo;
     private JComboBox<String> brandCombo;
     private JTextField customBrandField;
@@ -11,8 +13,10 @@ public class VehicleEditDialog extends JDialog {
     private JTextField licensePlateField;
     private boolean saveClicked = false;
     
-    public VehicleEditDialog(JFrame parent, String type, String brand, String model, String licensePlate) {
+    public VehicleEditDialog(FuhrparkUI parent, String type, String brand, String model, String licensePlate, int editingIndex) {
         super(parent, "Fahrzeug bearbeiten", true);
+        this.parent = parent;
+        this.editingIndex = editingIndex;
         
         // Create main panel
         JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
@@ -86,7 +90,9 @@ public class VehicleEditDialog extends JDialog {
     
     private boolean validateInput() {
         String licensePlate = licensePlateField.getText().trim().toUpperCase();
-        if (!FuhrparkUI.isValidLicensePlate(licensePlate)) {
+        
+        // First check if it's a valid format
+        if (!parent.isValidLicensePlate(licensePlate)) {
             JOptionPane.showMessageDialog(this,
                 "Bitte geben Sie ein gültiges Kennzeichen ein.\n\n" +
                 "Format: XXX-XX 1234\n" +
@@ -98,6 +104,16 @@ public class VehicleEditDialog extends JDialog {
                 JOptionPane.ERROR_MESSAGE);
             return false;
         }
+
+        // Then check for duplicates
+        if (parent.isLicensePlateInUse(licensePlate, editingIndex)) {
+            JOptionPane.showMessageDialog(this,
+                "Ein Fahrzeug mit diesem Kennzeichen existiert bereits.",
+                "Duplikat Kennzeichen",
+                JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
         return true;
     }
     

@@ -240,6 +240,19 @@ public class FuhrparkUI extends JFrame {
         kilometersField.setText("");
     }
     
+    public boolean isLicensePlateInUse(String licensePlate, int excludeIndex) {
+        for (int i = 0; i < listModel.getSize(); i++) {
+            if (i == excludeIndex) continue; // Skip the current vehicle when editing
+            
+            String vehicle = listModel.getElementAt(i);
+            String existingPlate = vehicle.split("\\[|\\]")[1].trim();
+            if (existingPlate.equalsIgnoreCase(licensePlate)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void addVehicle() {
         String type = (String) vehicleTypeCombo.getSelectedItem();
         String selectedBrand = (String) brandCombo.getSelectedItem();
@@ -263,14 +276,19 @@ public class FuhrparkUI extends JFrame {
                 "Beispiele:\n" +
                 "• B-AB 123\n" +
                 "• M-XY 4567\n" +
-                "• HH-AB 42\n\n" +
-                "Hinweise:\n" +
-                "• Großbuchstaben werden automatisch verwendet\n" +
-                "• Bindestrich (-) zwischen Stadt und Buchstaben\n" +
-                "• Leerzeichen vor der Nummer",
+                "• HH-AB 42",
                 "Ungültiges Kennzeichen",
                 JOptionPane.ERROR_MESSAGE);
             licensePlateField.requestFocus();
+            return;
+        }
+
+        // Check for duplicate license plate
+        if (isLicensePlateInUse(licensePlate, -1)) {
+            JOptionPane.showMessageDialog(this,
+                "Ein Fahrzeug mit diesem Kennzeichen existiert bereits.",
+                "Duplikat Kennzeichen",
+                JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -295,7 +313,7 @@ public class FuhrparkUI extends JFrame {
         String model = brandModel[1];
         
         VehicleEditDialog dialog = new VehicleEditDialog(
-            this, type, brand, model, licensePlate);
+            this, type, brand, model, licensePlate, selectedIndex);
         dialog.setVisible(true);
         
         if (dialog.isSaveClicked()) {
