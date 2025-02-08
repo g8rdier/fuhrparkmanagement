@@ -40,8 +40,13 @@ public class App
             // Create data store
             DataStore dataStore = new DatabaseDataStoreImpl();
             
-            // Create manager with data store
-            FuhrparkManager manager = new FuhrparkManager(dataStore);
+            // Create services
+            FahrzeugService fahrzeugService = new FahrzeugServiceImpl(dataStore);
+            FahrtenbuchService fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
+            ReparaturService reparaturService = new ReparaturServiceImpl(dataStore);
+            
+            // Create manager with services
+            FuhrparkManager manager = new FuhrparkManager(fahrzeugService, fahrtenbuchService, reparaturService);
             
             // Launch UI
             SwingUtilities.invokeLater(() -> {
