@@ -216,7 +216,7 @@ public class FuhrparkUI extends JFrame {
         
         Fahrzeug fahrzeug = fahrzeugService.getFahrzeug(kennzeichen);
         if (fahrzeug != null) {
-            var dialog = new FahrtenbuchDialog(this, "Fahrtenbuch - " + kennzeichen, true, fahrzeug, fahrtenbuchService);
+            var dialog = new FahrtenbuchDialog(this, kennzeichen, fahrtenbuchService);
             dialog.setVisible(true);
         } else {
             System.err.println("Could not find vehicle with kennzeichen: " + kennzeichen);
