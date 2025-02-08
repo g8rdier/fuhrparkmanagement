@@ -39,30 +39,55 @@ public class FuhrparkUI extends JFrame {
             
             // Format the text
             StringBuilder formatted = new StringBuilder();
-            int charCount = 0;
+            int districtEnd = -1;
             
-            for (char c : cleaned.toCharArray()) {
-                // Validate character based on position
-                if (charCount <= 4) {
-                    // First 5 characters must be letters
-                    if (!Character.isLetter(c)) return;
-                } else if (charCount <= 7) {
-                    // Next 3 characters must be numbers
-                    if (!Character.isDigit(c)) return;
-                } else {
-                    // Last character can be H or E
-                    if (c != 'H' && c != 'E') return;
+            // Find the end of the district code (1-3 letters)
+            for (int i = 0; i < cleaned.length() && i < 3; i++) {
+                char c = cleaned.charAt(i);
+                if (!Character.isLetter(c)) {
+                    break;
+                }
+                districtEnd = i;
+            }
+            
+            if (districtEnd == -1) return;
+            
+            // Add district code
+            formatted.append(cleaned.substring(0, districtEnd + 1));
+            
+            // Add separator after district code
+            if (districtEnd + 1 < cleaned.length()) {
+                formatted.append('-');
+            }
+            
+            // Add remaining characters
+            if (districtEnd + 1 < cleaned.length()) {
+                String remaining = cleaned.substring(districtEnd + 1);
+                int letterCount = 0;
+                
+                // Add up to 2 letters
+                for (int i = 0; i < remaining.length() && letterCount < 2; i++) {
+                    char c = remaining.charAt(i);
+                    if (Character.isLetter(c)) {
+                        formatted.append(c);
+                        letterCount++;
+                    } else {
+                        break;
+                    }
                 }
                 
-                // Add the character
-                formatted.append(c);
-                charCount++;
-                
-                // Add separators at the right positions
-                if (charCount == 3 && charCount < cleaned.length()) {
-                    formatted.append('-');
-                } else if (charCount == 5 && charCount < cleaned.length()) {
+                // Add space before numbers if we have numbers
+                if (letterCount > 0 && remaining.length() > letterCount) {
                     formatted.append(' ');
+                }
+                
+                // Add remaining numbers and optional H/E
+                String numbers = remaining.substring(letterCount);
+                if (!numbers.isEmpty()) {
+                    // Validate numbers and H/E suffix
+                    if (numbers.matches("[1-9][0-9]{0,3}[HE]?")) {
+                        formatted.append(numbers);
+                    }
                 }
             }
             
