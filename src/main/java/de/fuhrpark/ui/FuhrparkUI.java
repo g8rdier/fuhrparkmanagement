@@ -5,6 +5,7 @@ import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
+import de.fuhrpark.service.base.FahrtenbuchService;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.manager.FuhrparkManager;
@@ -23,6 +24,7 @@ public class FuhrparkUI extends JFrame {
     private final FuhrparkManager manager;
     private final FahrzeugService fahrzeugService;
     private final FahrzeugFactory fahrzeugFactory;
+    private final FahrtenbuchService fahrtenbuchService;
     private final FahrzeugTableModel tableModel;
     
     // UI Components
@@ -33,10 +35,13 @@ public class FuhrparkUI extends JFrame {
     private final JTextField modellField;
     private final JTextField preisField;
 
-    public FuhrparkUI(FuhrparkManager manager, FahrzeugService service, FahrzeugFactory factory) {
+    public FuhrparkUI(FuhrparkManager manager, FahrzeugService fahrzeugService, 
+                     FahrtenbuchService fahrtenbuchService) {
         this.manager = manager;
-        this.fahrzeugService = service;
-        this.fahrzeugFactory = factory;
+        this.fahrzeugService = fahrzeugService;
+        this.fahrzeugFactory = new FahrzeugFactoryImpl();
+        this.fahrtenbuchService = fahrtenbuchService;
+        this.tableModel = new FahrzeugTableModel();
         
         // Setup UI
         setTitle("Fuhrpark Verwaltung");
@@ -44,7 +49,6 @@ public class FuhrparkUI extends JFrame {
         setLayout(new BorderLayout());
         
         // Initialize components
-        tableModel = new FahrzeugTableModel();
         fahrzeugTable = new JTable(tableModel);
         fahrzeugTypComboBox = new JComboBox<>(FahrzeugTyp.values());
         kennzeichenField = new JTextField(10);
@@ -155,12 +159,13 @@ public class FuhrparkUI extends JFrame {
         int selectedRow = fahrzeugTable.getSelectedRow();
         if (selectedRow >= 0) {
             Fahrzeug fahrzeug = tableModel.getRow(selectedRow);
+            List<FahrtenbuchEintrag> fahrten = 
+                fahrtenbuchService.getFahrtenForFahrzeug(fahrzeug.getKennzeichen());
             
             JDialog dialog = new JDialog(this, "Fahrtenbuch - " + fahrzeug.getKennzeichen(), true);
             dialog.setLayout(new BorderLayout(5, 5));
             
             // Fahrtenliste
-            List<FahrtenbuchEintrag> fahrten = fahrzeugService.getFahrtenForFahrzeug(fahrzeug.getKennzeichen());
             DefaultListModel<String> listModel = new DefaultListModel<>();
             for (FahrtenbuchEintrag fahrt : fahrten) {
                 listModel.addElement(String.format("%s: %s -> %s (%s km)",
@@ -199,7 +204,7 @@ public class FuhrparkUI extends JFrame {
                     );
                     eintrag.setFahrer(fahrerField.getText());
                     
-                    manager.addFahrt(fahrzeug.getKennzeichen(), eintrag);
+                    addFahrt(fahrzeug.getKennzeichen(), eintrag);
                     listModel.addElement(String.format("%s: %s -> %s (%s km)",
                         eintrag.getDatumFormatted(),
                         eintrag.getStart(),
@@ -228,15 +233,19 @@ public class FuhrparkUI extends JFrame {
         }
     }
 
+    private void addFahrt(String kennzeichen, FahrtenbuchEintrag eintrag) {
+        fahrtenbuchService.addFahrt(kennzeichen, eintrag);
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
                 // Create components with proper error handling
                 FahrzeugService service = new FahrzeugServiceImpl();
-                FahrzeugFactory factory = new FahrzeugFactoryImpl();
-                FuhrparkManager manager = new FuhrparkManager(service, factory);
+                FahrtenbuchService fahrtenbuchService = new FahrtenbuchServiceImpl();
+                FuhrparkManager manager = new FuhrparkManager(service, new FahrzeugFactoryImpl());
                 
-                new FuhrparkUI(manager, service, factory).setVisible(true);
+                new FuhrparkUI(manager, service, fahrtenbuchService).setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, 

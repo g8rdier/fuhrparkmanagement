@@ -12,20 +12,22 @@ public class FahrzeugEditDialog extends JDialog {
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
 
-    public FahrzeugEditDialog(JFrame parent, Fahrzeug fahrzeug) {
-        super(parent, "Fahrzeug bearbeiten", true);
+    public FahrzeugEditDialog(Window owner, Fahrzeug fahrzeug) {
+        super(owner, "Fahrzeug bearbeiten", ModalityType.APPLICATION_MODAL);
         this.fahrzeug = fahrzeug;
         
         markeField = new JTextField(20);
         modellField = new JTextField(20);
         preisField = new JTextField(20);
 
-        // Set initial values
+        initComponents();
+        loadFahrzeugData();
+    }
+
+    private void loadFahrzeugData() {
         markeField.setText(fahrzeug.getMarke());
         modellField.setText(fahrzeug.getModell());
         preisField.setText(String.valueOf(fahrzeug.getPreis()));
-
-        initComponents();
     }
 
     private void initComponents() {
@@ -76,7 +78,7 @@ public class FahrzeugEditDialog extends JDialog {
 
         // Configure dialog
         pack();
-        setLocationRelativeTo(parent);
+        setLocationRelativeTo(owner);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
@@ -100,10 +102,15 @@ public class FahrzeugEditDialog extends JDialog {
             return false;
         }
         
-        fahrzeug.setMarke(markeField.getText().trim());
-        fahrzeug.setModell(modellField.getText().trim());
-        fahrzeug.setPreis(Double.parseDouble(preisField.getText().trim()));
-        return true;
+        try {
+            fahrzeug.setMarke(markeField.getText().trim());
+            fahrzeug.setModell(modellField.getText().trim());
+            fahrzeug.setPreis(Double.parseDouble(preisField.getText().trim()));
+            return true;
+        } catch (Exception e) {
+            showError("Fehler beim Speichern: " + e.getMessage());
+            return false;
+        }
     }
 
     private boolean validateInputs() {
