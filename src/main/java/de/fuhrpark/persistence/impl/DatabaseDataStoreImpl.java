@@ -30,28 +30,51 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void saveFahrzeug(Fahrzeug fahrzeug) {
-        String sql = "INSERT INTO fahrzeuge (kennzeichen, marke, modell, typ, baujahr, kilometerstand) " +
-                     "VALUES (?, ?, ?, ?, ?, ?) " +
-                     "ON DUPLICATE KEY UPDATE " +
-                     "marke = VALUES(marke), " +
-                     "modell = VALUES(modell), " +
-                     "typ = VALUES(typ), " +
-                     "baujahr = VALUES(baujahr), " +
-                     "kilometerstand = VALUES(kilometerstand)";
-                     
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, fahrzeug.getKennzeichen());
-            stmt.setString(2, fahrzeug.getMarke());
-            stmt.setString(3, fahrzeug.getModell());
-            stmt.setString(4, fahrzeug.getTyp().toString());
-            stmt.setInt(5, fahrzeug.getBaujahr());
-            stmt.setDouble(6, fahrzeug.getKilometerstand());
-            stmt.executeUpdate();
-            
-            // Also update the local cache
-            fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+        System.out.println("Attempting to save vehicle: " + fahrzeug.getKennzeichen());
+        
+        // First try to find if the vehicle exists
+        String checkSql = "SELECT COUNT(*) FROM fahrzeuge WHERE kennzeichen = ?";
+        String insertSql = "INSERT INTO fahrzeuge (kennzeichen, marke, modell, typ, baujahr, kilometerstand) VALUES (?, ?, ?, ?, ?, ?)";
+        String updateSql = "UPDATE fahrzeuge SET marke = ?, modell = ?, typ = ?, baujahr = ?, kilometerstand = ? WHERE kennzeichen = ?";
+        
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            // Check if vehicle exists
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setString(1, fahrzeug.getKennzeichen());
+                ResultSet rs = checkStmt.executeQuery();
+                rs.next();
+                boolean exists = rs.getInt(1) > 0;
+                
+                // Prepare the appropriate statement
+                PreparedStatement stmt;
+                if (exists) {
+                    stmt = conn.prepareStatement(updateSql);
+                    stmt.setString(1, fahrzeug.getMarke());
+                    stmt.setString(2, fahrzeug.getModell());
+                    stmt.setString(3, fahrzeug.getTyp().toString());
+                    stmt.setInt(4, fahrzeug.getBaujahr());
+                    stmt.setDouble(5, fahrzeug.getKilometerstand());
+                    stmt.setString(6, fahrzeug.getKennzeichen());
+                } else {
+                    stmt = conn.prepareStatement(insertSql);
+                    stmt.setString(1, fahrzeug.getKennzeichen());
+                    stmt.setString(2, fahrzeug.getMarke());
+                    stmt.setString(3, fahrzeug.getModell());
+                    stmt.setString(4, fahrzeug.getTyp().toString());
+                    stmt.setInt(5, fahrzeug.getBaujahr());
+                    stmt.setDouble(6, fahrzeug.getKilometerstand());
+                }
+                
+                // Execute the statement
+                int result = stmt.executeUpdate();
+                System.out.println("Database update successful. Rows affected: " + result);
+                
+                // Update local cache
+                fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+            }
         } catch (SQLException e) {
+            System.err.println("Database error: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error saving vehicle: " + e.getMessage(), e);
         }
     }
