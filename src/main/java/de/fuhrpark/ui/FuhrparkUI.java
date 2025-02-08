@@ -58,51 +58,61 @@ public class FuhrparkUI extends JFrame {
             // Convert to uppercase
             str = str.toUpperCase();
             
-            // Get current content and create new text
+            // Get current content
             String currentText = getText(0, getLength());
             String newText = new StringBuilder(currentText).insert(offs, str).toString();
             
-            // Remove formatting characters for processing
+            // Remove formatting characters for length check
             String cleaned = newText.replace("-", "").replace(" ", "");
             
-            // Check if the input is valid
-            if (!cleaned.matches("[A-ZÄÖÜ]{1,3}[A-Z]{1,2}[0-9]{1,4}[HE]?")) {
-                return;
-            }
+            // Check maximum length (8 chars + possible separators)
+            if (cleaned.length() > 8) return;
             
-            // Format the text
+            // Only allow valid characters
+            if (!str.matches("[A-ZÄÖÜ0-9HE-\\s]+")) return;
+            
+            // Allow the insertion
+            super.insertString(offs, str, a);
+            
+            // After insertion, try to format
+            try {
+                String fullText = getText(0, getLength());
+                String formatted = formatPlate(fullText);
+                if (!formatted.equals(fullText)) {
+                    super.remove(0, getLength());
+                    super.insertString(0, formatted, a);
+                }
+            } catch (Exception e) {
+                // If formatting fails, keep the text as is
+            }
+        }
+        
+        private String formatPlate(String text) {
+            // Remove all formatting first
+            String cleaned = text.replace("-", "").replace(" ", "");
+            if (cleaned.isEmpty()) return "";
+            
             StringBuilder formatted = new StringBuilder();
-            int letterCount = 0;
-            boolean numberStarted = false;
-            boolean suffixAdded = false;
+            int pos = 0;
             
             for (char c : cleaned.toCharArray()) {
-                // Handle location and letter part
-                if (Character.isLetter(c) && !numberStarted && !suffixAdded) {
-                    if (letterCount == 3) {
-                        formatted.append('-');
-                    }
+                if (pos == 0) {
                     formatted.append(c);
-                    letterCount++;
-                }
-                // Handle number part
-                else if (Character.isDigit(c) && !suffixAdded) {
-                    if (!numberStarted) {
-                        formatted.append(' ');
-                        numberStarted = true;
-                    }
+                } else if (pos <= 2) {
+                    formatted.append(c);
+                } else if (pos == 3) {
+                    formatted.append('-').append(c);
+                } else if (pos == 4) {
+                    formatted.append(c);
+                } else if (pos == 5) {
+                    formatted.append(' ').append(c);
+                } else {
                     formatted.append(c);
                 }
-                // Handle H/E suffix
-                else if ((c == 'H' || c == 'E') && numberStarted && !suffixAdded) {
-                    formatted.append(c);
-                    suffixAdded = true;
-                }
+                pos++;
             }
             
-            // Update document
-            super.remove(0, getLength());
-            super.insertString(0, formatted.toString(), a);
+            return formatted.toString();
         }
     }
     
