@@ -1,4 +1,4 @@
-package de.fuhrpark.persistence;
+package de.fuhrpark.persistence.impl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

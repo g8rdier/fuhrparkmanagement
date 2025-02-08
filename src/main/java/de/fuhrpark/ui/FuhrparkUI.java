@@ -116,18 +116,12 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void addNewFahrzeug() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this, manager);
+        FahrzeugDialog dialog = new FahrzeugDialog(this, manager.getFahrzeugFactory());
         dialog.setVisible(true);
         
         Fahrzeug fahrzeug = dialog.getResult();
         if (fahrzeug != null) {
-            manager.createFahrzeug(
-                fahrzeug.getClass().getSimpleName(),
-                fahrzeug.getKennzeichen(),
-                fahrzeug.getMarke(),
-                fahrzeug.getModell(),
-                fahrzeug.getPreis()
-            );
+            manager.speichereFahrzeug(fahrzeug);
             refreshTable();
         }
     }
@@ -242,6 +236,10 @@ public class FuhrparkUI extends JFrame {
 
     private void addFahrt(String kennzeichen, FahrtenbuchEintrag eintrag) {
         fahrtenbuchService.addFahrt(kennzeichen, eintrag);
+    }
+
+    private void initFahrtenbuchService() {
+        this.fahrtenbuchService = new FahrtenbuchServiceImpl(manager.getDataStore());
     }
 
     public static void main(String[] args) {
