@@ -1,10 +1,13 @@
 package de.fuhrpark.service.impl;
 
 import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.service.FahrzeugService;
+import de.fuhrpark.persistence.DataStore;
 import java.util.List;
 
+/**
+ * Implementierung des FahrzeugService
+ */
 public class FahrzeugServiceImpl implements FahrzeugService {
     private final DataStore dataStore;
 
@@ -13,41 +16,27 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     }
 
     @Override
-    public void saveFahrzeug(Fahrzeug fahrzeug) {
-        System.out.println("FahrzeugService: Saving vehicle " + fahrzeug.getKennzeichen());
+    public void speichereFahrzeug(Fahrzeug fahrzeug) {
         dataStore.saveFahrzeug(fahrzeug);
-        System.out.println("FahrzeugService: Vehicle saved successfully");
     }
 
     @Override
-    public void addFahrzeug(Fahrzeug fahrzeug) {
-        saveFahrzeug(fahrzeug); // Delegate to saveFahrzeug
+    public void aktualisiereFahrzeug(Fahrzeug fahrzeug) {
+        dataStore.updateFahrzeug(fahrzeug);
     }
 
     @Override
-    public void updateFahrzeug(Fahrzeug fahrzeug) {
-        saveFahrzeug(fahrzeug); // Delegate to saveFahrzeug
-    }
-
-    @Override
-    public Fahrzeug getFahrzeug(String kennzeichen) {
-        return dataStore.getFahrzeug(kennzeichen);
-    }
-
-    @Override
-    public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
-        return getFahrzeug(kennzeichen); // Delegate to getFahrzeug
-    }
-
-    @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
-        List<Fahrzeug> fahrzeuge = dataStore.getAlleFahrzeuge();
-        System.out.println("FahrzeugService: Retrieved " + fahrzeuge.size() + " vehicles");
-        return fahrzeuge;
-    }
-
-    @Override
-    public void deleteFahrzeug(String kennzeichen) {
+    public void loescheFahrzeug(String kennzeichen) {
         dataStore.deleteFahrzeug(kennzeichen);
+    }
+
+    @Override
+    public Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen) {
+        return dataStore.getFahrzeugByKennzeichen(kennzeichen);
+    }
+
+    @Override
+    public List<Fahrzeug> findeAlleFahrzeuge() {
+        return dataStore.getAlleFahrzeuge();
     }
 }

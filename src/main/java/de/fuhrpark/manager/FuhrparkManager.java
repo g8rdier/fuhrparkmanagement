@@ -1,33 +1,51 @@
 // src/main/java/de/fuhrpark/manager/FuhrparkManager.java
 package de.fuhrpark.manager;
 
+import de.fuhrpark.service.FahrzeugFactory;
+import de.fuhrpark.service.FahrzeugService;
 import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.persistence.DataStore;
 import java.util.List;
 
 /**
- * Verwaltet die Fahrzeuge des Fuhrparks.
+ * Zentrale Verwaltungsklasse für den Fuhrpark.
+ * Implementiert Dependency Injection für Services.
  */
 public class FuhrparkManager {
-    private final DataStore dataStore;
+    private final FahrzeugService fahrzeugService;
+    private final FahrzeugFactory fahrzeugFactory;
 
-    public FuhrparkManager(DataStore dataStore) {
-        this.dataStore = dataStore;
+    /**
+     * Konstruktor mit Dependency Injection
+     */
+    public FuhrparkManager(FahrzeugService fahrzeugService, FahrzeugFactory fahrzeugFactory) {
+        this.fahrzeugService = fahrzeugService;
+        this.fahrzeugFactory = fahrzeugFactory;
+    }
+
+    /**
+     * Erstellt und speichert ein neues Fahrzeug
+     */
+    public Fahrzeug erstelleNeuesFahrzeug(String typ, String kennzeichen, String marke, 
+                                         String modell, Object... zusatzParameter) {
+        Fahrzeug fahrzeug = fahrzeugFactory.erstelleFahrzeug(typ, kennzeichen, marke, 
+                                                            modell, zusatzParameter);
+        fahrzeugService.speichereFahrzeug(fahrzeug);
+        return fahrzeug;
     }
 
     public void addFahrzeug(Fahrzeug fahrzeug) {
-        dataStore.saveFahrzeug(fahrzeug);
+        fahrzeugService.speichereFahrzeug(fahrzeug);
     }
 
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        return dataStore.getFahrzeug(kennzeichen);
+        return fahrzeugService.findeFahrzeugNachKennzeichen(kennzeichen);
     }
 
     public List<Fahrzeug> getAlleFahrzeuge() {
-        return dataStore.getAlleFahrzeuge();
+        return fahrzeugService.findeAlleFahrzeuge();
     }
 
     public void deleteFahrzeug(String kennzeichen) {
-        dataStore.deleteFahrzeug(kennzeichen);
+        fahrzeugService.loescheFahrzeug(kennzeichen);
     }
 }
