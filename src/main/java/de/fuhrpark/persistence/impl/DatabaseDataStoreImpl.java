@@ -5,7 +5,7 @@ import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.ReparaturBuchEintrag;
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.DatabaseConfig;
-import de.fuhrpark.model.FahrzeugTyp;
+import de.fuhrpark.enums.FahrzeugTyp;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class DatabaseDataStoreImpl implements DataStore {
             stmt.setString(3, fahrzeug.getModell());
             stmt.setString(4, fahrzeug.getTyp().name());
             stmt.setInt(5, fahrzeug.getBaujahr());
-            stmt.setInt(6, (int) fahrzeug.getKilometerstand());
+            stmt.setDouble(6, fahrzeug.getKilometerstand());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error saving vehicle", e);
@@ -62,7 +62,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public List<Fahrzeug> getFahrzeuge() {
+    public List<Fahrzeug> getAlleFahrzeuge() {
         String sql = "SELECT * FROM fahrzeuge";
         List<Fahrzeug> fahrzeuge = new ArrayList<>();
         try (Connection conn = DatabaseConfig.getConnection();
@@ -199,7 +199,7 @@ public class DatabaseDataStoreImpl implements DataStore {
             rs.getString("modell"),
             FahrzeugTyp.valueOf(rs.getString("typ")),
             rs.getInt("baujahr"),
-            rs.getInt("kilometerstand")
+            rs.getDouble("kilometerstand")
         );
     }
 }
