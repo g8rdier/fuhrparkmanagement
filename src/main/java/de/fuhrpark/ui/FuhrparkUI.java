@@ -27,6 +27,7 @@ public class FuhrparkUI extends JFrame {
     
     private JButton editButton;
     private JButton deleteButton;
+    private JButton addButton;
     
     public static boolean isValidLicensePlate(String licensePlate) {
         if (licensePlate == null || licensePlate.isEmpty()) {
@@ -63,65 +64,113 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void initComponents() {
-        setLayout(new GridBagLayout());
+        setTitle("Fuhrpark Verwaltung");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // Create main panel with padding
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Input panel
+        JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
+        
+        // Labels
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.0;
+        inputPanel.add(new JLabel("Fahrzeugtyp:"), gbc);
+        
+        gbc.gridy = 1;
+        inputPanel.add(new JLabel("Marke:"), gbc);
+        
+        gbc.gridy = 2;
+        inputPanel.add(new JLabel("Modell:"), gbc);
+        
+        gbc.gridy = 3;
+        inputPanel.add(new JLabel("Kennzeichen:"), gbc);
+        
+        gbc.gridy = 4;
+        inputPanel.add(new JLabel("Kaufpreis (€):"), gbc);
         
         // Input fields
-        addInputField("Fahrzeugtyp:", fahrzeugTypComboBox, gbc, 0);
-        addInputField("Marke:", markeField, gbc, 1);
-        addInputField("Modell:", modelField, gbc, 2);
-        addInputField("Kennzeichen:", licensePlateField, gbc, 3);
-        addInputField("Kaufpreis (€):", priceField, gbc, 4);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        fahrzeugTypComboBox = new JComboBox<>(new String[]{"PKW", "LKW", "Motorrad"});
+        inputPanel.add(fahrzeugTypComboBox, gbc);
         
-        // Buttons panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        gbc.gridy = 1;
+        markeField = new JTextField();
+        inputPanel.add(markeField, gbc);
+        
+        gbc.gridy = 2;
+        modelField = new JTextField();
+        inputPanel.add(modelField, gbc);
+        
+        gbc.gridy = 3;
+        licensePlateField = new JTextField();
+        licensePlateField.setDocument(new LicensePlateDocument());
+        inputPanel.add(licensePlateField, gbc);
+        
+        gbc.gridy = 4;
+        priceField = new JTextField();
+        priceField.setDocument(new PriceDocument());
+        inputPanel.add(priceField, gbc);
+        
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         editButton = new JButton("Bearbeiten");
         deleteButton = new JButton("Löschen");
-        JButton addButton = new JButton("Fahrzeug hinzufügen");
+        addButton = new JButton("Fahrzeug hinzufügen");
         
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(addButton);
         
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(buttonPanel, gbc);
+        // List panel
+        JPanel listPanel = new JPanel(new BorderLayout(0, 5));
+        listPanel.add(new JLabel("Fahrzeuge:"), BorderLayout.NORTH);
         
-        // Vehicle list
-        gbc.gridy = 6;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        
+        listModel = new DefaultListModel<>();
+        vehicleList = new JList<>(listModel);
+        vehicleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(vehicleList);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Fahrzeuge"));
-        add(scrollPane, gbc);
+        scrollPane.setPreferredSize(new Dimension(400, 200));
+        listPanel.add(scrollPane, BorderLayout.CENTER);
         
-        // Add button listeners
+        // Add components to main panel
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(inputPanel, BorderLayout.CENTER);
+        topPanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(listPanel, BorderLayout.CENTER);
+        
+        // Add main panel to frame
+        add(mainPanel);
+        
+        // Add action listeners
         addButton.addActionListener(e -> addVehicle());
         editButton.addActionListener(e -> editVehicle());
         deleteButton.addActionListener(e -> deleteVehicle());
         
-        // Set minimum window size
-        setMinimumSize(new Dimension(400, 500));
-    }
-    
-    private void addInputField(String label, JComponent component, GridBagConstraints gbc, int row) {
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        add(new JLabel(label), gbc);
+        // Initial button state
+        editButton.setEnabled(false);
+        deleteButton.setEnabled(false);
         
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        if (component instanceof JTextField) {
-            ((JTextField) component).setPreferredSize(new Dimension(150, 25));
-        }
-        add(component, gbc);
+        // Add list selection listener
+        vehicleList.addListSelectionListener(e -> {
+            boolean hasSelection = !vehicleList.isSelectionEmpty();
+            editButton.setEnabled(hasSelection);
+            deleteButton.setEnabled(hasSelection);
+        });
+        
+        pack();
+        setLocationRelativeTo(null);
     }
     
     private void addVehicle() {
@@ -147,20 +196,18 @@ public class FuhrparkUI extends JFrame {
 
         // Price validation
         try {
-            // Parse price using German locale to handle dots and commas correctly
             NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
             Number number = format.parse(priceText);
-            double price = number.doubleValue();
+            double priceValue = number.doubleValue();
             
-            if (price <= 0) {
+            if (priceValue <= 0) {
                 showError("Der Kaufpreis muss größer als 0 sein.");
                 return;
             }
 
-            // Format price for display
-            String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY).format(price);
+            String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY)
+                .format(priceValue);
             
-            // Add to list with formatted price
             String vehicleEntry = String.format("%s [%s] %s %s - %s",
                 type, licensePlate, brand, model, formattedPrice);
             listModel.addElement(vehicleEntry);
