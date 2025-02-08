@@ -10,6 +10,7 @@ import java.util.List;
 import de.fuhrpark.service.FahrzeugService;
 import de.fuhrpark.service.FahrtenbuchService;
 import de.fuhrpark.service.ReparaturService;
+import java.util.ArrayList;
 
 public class FuhrparkUI extends JFrame {
     private final JLabel kennzeichenLabel;
@@ -89,12 +90,13 @@ public class FuhrparkUI extends JFrame {
             handleAddReparatur();
         });
         newFahrzeugButton.addActionListener(e -> {
-            FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugService);
+            FahrzeugDialog dialog = new FahrzeugDialog(this, "Neues Fahrzeug", true);
             dialog.setVisible(true);
-            // After dialog closes, refresh if a new vehicle was added
-            String kennzeichen = dialog.getKennzeichen();
-            if (kennzeichen != null && !kennzeichen.isEmpty()) {
-                searchField.setText(kennzeichen);
+            
+            Fahrzeug newFahrzeug = dialog.getResult();
+            if (newFahrzeug != null) {
+                fahrzeugService.addFahrzeug(newFahrzeug);
+                searchField.setText(newFahrzeug.getKennzeichen());
                 searchFahrzeug();
             }
         });
@@ -119,13 +121,13 @@ public class FuhrparkUI extends JFrame {
     private void updateFahrzeugDetails(Fahrzeug fahrzeug) {
         if (fahrzeug != null) {
             kennzeichenLabel.setText(fahrzeug.getKennzeichen());
-            markeLabel.setText(fahrzeug.getHersteller());
+            markeLabel.setText(fahrzeug.getMarke());
             modellLabel.setText(fahrzeug.getModell());
             typLabel.setText(fahrzeug.getTyp().toString());
             baujahrLabel.setText(String.valueOf(fahrzeug.getBaujahr()));
             kilometerstandLabel.setText(String.format("%.0f", fahrzeug.getKilometerstand()));
 
-            // Use services to update tables
+            // Update tables
             List<ReparaturBuchEintrag> reparaturen = reparaturService.getReparaturenForFahrzeug(fahrzeug.getKennzeichen());
             updateReparaturenTable(reparaturen);
             
@@ -143,12 +145,15 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void clearLabels() {
-        kennzeichenLabel.setText("Kennzeichen: ");
-        markeLabel.setText("Marke: ");
-        modellLabel.setText("Modell: ");
-        typLabel.setText("Typ: ");
-        baujahrLabel.setText("Baujahr: ");
-        kilometerstandLabel.setText("Kilometerstand: ");
+        kennzeichenLabel.setText("");
+        markeLabel.setText("");
+        modellLabel.setText("");
+        typLabel.setText("");
+        baujahrLabel.setText("");
+        kilometerstandLabel.setText("");
+        // Clear tables
+        updateReparaturenTable(new ArrayList<>());
+        updateFahrtenList(new ArrayList<>());
     }
 
     public void updateReparaturenTable(List<ReparaturBuchEintrag> reparaturen) {
