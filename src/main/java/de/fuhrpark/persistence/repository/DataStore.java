@@ -16,4 +16,5 @@ public interface DataStore {
     void loescheFahrzeug(String kennzeichen);
     Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen);
     List<Fahrzeug> getAlleFahrzeuge();
+    void aktualisiereFahrzeug(Fahrzeug fahrzeug);
 }

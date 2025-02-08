@@ -9,8 +9,11 @@ import de.fuhrpark.model.enums.FahrzeugTyp;
 public interface Fahrzeug {
     FahrzeugTyp getTyp();
     String getMarke();
+    void setMarke(String marke);
     String getModell();
+    void setModell(String modell);
     String getKennzeichen();
     double getPreis();
+    void setPreis(double preis);
     double berechneAktuellenWert();
 }

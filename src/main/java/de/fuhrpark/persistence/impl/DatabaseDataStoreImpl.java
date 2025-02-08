@@ -28,9 +28,6 @@ public class DatabaseDataStoreImpl implements DataStore {
         if (fahrzeug == null || fahrzeug.getKennzeichen() == null) {
             throw new IllegalArgumentException("Fahrzeug und Kennzeichen dürfen nicht null sein");
         }
-        if (!fahrzeuge.containsKey(fahrzeug.getKennzeichen())) {
-            throw new IllegalArgumentException("Fahrzeug nicht gefunden: " + fahrzeug.getKennzeichen());
-        }
         fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
     }
 

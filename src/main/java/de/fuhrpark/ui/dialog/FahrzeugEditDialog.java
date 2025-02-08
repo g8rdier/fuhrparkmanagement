@@ -11,7 +11,7 @@ public class FahrzeugEditDialog extends JDialog {
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
 
-    public FahrzeugEditDialog(Frame owner, Fahrzeug fahrzeug) {
+    public FahrzeugEditDialog(JFrame owner, Fahrzeug fahrzeug) {
         super(owner, "Fahrzeug bearbeiten", true);
         this.fahrzeug = fahrzeug;
         

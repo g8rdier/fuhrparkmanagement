@@ -116,12 +116,18 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void addNewFahrzeug() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this, manager.getFahrzeugFactory());
+        FahrzeugDialog dialog = new FahrzeugDialog(this, manager);
         dialog.setVisible(true);
         
         Fahrzeug fahrzeug = dialog.getResult();
         if (fahrzeug != null) {
-            manager.speichereFahrzeug(fahrzeug);
+            manager.createFahrzeug(
+                fahrzeug.getClass().getSimpleName(),
+                fahrzeug.getKennzeichen(),
+                fahrzeug.getMarke(),
+                fahrzeug.getModell(),
+                fahrzeug.getPreis()
+            );
             refreshTable();
         }
     }
