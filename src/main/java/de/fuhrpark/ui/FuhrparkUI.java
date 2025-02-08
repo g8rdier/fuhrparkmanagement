@@ -11,111 +11,94 @@ import de.fuhrpark.service.FahrzeugService;
 import de.fuhrpark.service.FahrtenbuchService;
 import de.fuhrpark.service.ReparaturService;
 import java.util.ArrayList;
+import javax.swing.table.AbstractTableModel;
 
 public class FuhrparkUI extends JFrame {
-    private final JLabel kennzeichenLabel;
-    private final JLabel markeLabel;
-    private final JLabel modellLabel;
-    private final JLabel typLabel;
-    private final JLabel baujahrLabel;
-    private final JLabel kilometerstandLabel;
-    private final JTable reparaturenTable;
-    private final JTextField searchField;
     private final FahrzeugService fahrzeugService;
     private final FahrtenbuchService fahrtenbuchService;
     private final ReparaturService reparaturService;
+    
+    // Initialize all UI components
+    private JTextField searchField;
+    private JButton searchButton;
+    private JButton newFahrzeugButton;
+    private JButton fahrtenbuchButton;
+    private JButton addReparaturButton;
+    
+    private JLabel kennzeichenLabel;
+    private JLabel markeLabel;
+    private JLabel modellLabel;
+    private JLabel typLabel;
+    private JLabel baujahrLabel;
+    private JLabel kilometerstandLabel;
+    
+    private JTable fahrzeugTable;
 
-    public FuhrparkUI(FahrzeugService fahrzeugService, 
-                      FahrtenbuchService fahrtenbuchService,
-                      ReparaturService reparaturService) {
+    public FuhrparkUI(FahrzeugService fahrzeugService, FahrtenbuchService fahrtenbuchService, ReparaturService reparaturService) {
+        super("Fuhrpark Verwaltung");
         this.fahrzeugService = fahrzeugService;
         this.fahrtenbuchService = fahrtenbuchService;
         this.reparaturService = reparaturService;
         
-        setTitle("Fuhrpark Verwaltung");
+        initializeComponents();
+        initializeUI();
+    }
+
+    private void initializeComponents() {
+        // Initialize all components
+        searchField = new JTextField(20);
+        searchButton = new JButton("Fahrzeug suchen");
+        newFahrzeugButton = new JButton("Neues Fahrzeug");
+        fahrtenbuchButton = new JButton("Fahrtenbuch öffnen");
+        addReparaturButton = new JButton("Reparatur hinzufügen");
+        
+        kennzeichenLabel = new JLabel("");
+        markeLabel = new JLabel("");
+        modellLabel = new JLabel("");
+        typLabel = new JLabel("");
+        baujahrLabel = new JLabel("");
+        kilometerstandLabel = new JLabel("");
+        
+        fahrzeugTable = new JTable(new FahrzeugTableModel(fahrzeugService.getAlleFahrzeuge()));
+    }
+
+    private void initializeUI() {
+        // Create main split pane
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        
+        // Left panel with vehicle table
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        JScrollPane tableScrollPane = new JScrollPane(fahrzeugTable);
+        leftPanel.add(new JLabel("Fahrzeuge:"), BorderLayout.NORTH);
+        leftPanel.add(tableScrollPane, BorderLayout.CENTER);
+        
+        // Right panel with details and buttons
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(createSearchPanel(), BorderLayout.NORTH);
+        rightPanel.add(createDetailsPanel(), BorderLayout.CENTER);
+        rightPanel.add(createButtonPanel(), BorderLayout.SOUTH);
+
+        splitPane.setLeftComponent(leftPanel);
+        splitPane.setRightComponent(rightPanel);
+        
+        // Add to frame
+        add(splitPane);
+        
+        // Frame settings
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
-
-        // Initialize labels
-        kennzeichenLabel = new JLabel("Kennzeichen: ");
-        markeLabel = new JLabel("Marke: ");
-        modellLabel = new JLabel("Modell: ");
-        typLabel = new JLabel("Typ: ");
-        baujahrLabel = new JLabel("Baujahr: ");
-        kilometerstandLabel = new JLabel("Kilometerstand: ");
-
-        // Details Panel
-        JPanel detailsPanel = new JPanel(new GridLayout(6, 1));
-        detailsPanel.add(kennzeichenLabel);
-        detailsPanel.add(markeLabel);
-        detailsPanel.add(modellLabel);
-        detailsPanel.add(typLabel);
-        detailsPanel.add(baujahrLabel);
-        detailsPanel.add(kilometerstandLabel);
-
-        // Reparaturen Table
-        String[] columnNames = {"Beschreibung", "Kosten", "Werkstatt", "Datum"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-        reparaturenTable = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(reparaturenTable);
-
-        // Search Panel
-        JPanel searchPanel = new JPanel();
-        searchField = new JTextField(15);
-        JButton searchButton = new JButton("Fahrzeug suchen");
-        searchPanel.add(new JLabel("Kennzeichen:"));
-        searchPanel.add(searchField);
-        searchPanel.add(searchButton);
-
-        // Add search functionality
-        searchButton.addActionListener(e -> {
-            searchFahrzeug();
-        });
-
-        // Buttons Panel
-        JPanel buttonsPanel = new JPanel();
-        JButton fahrtenbuchButton = new JButton("Fahrtenbuch öffnen");
-        JButton addReparaturButton = new JButton("Reparatur hinzufügen");
-        JButton newFahrzeugButton = new JButton("Neues Fahrzeug");
-        
-        // Add button functionality
-        fahrtenbuchButton.addActionListener(e -> {
-            String kennzeichen = getCurrentKennzeichen();
-            if (kennzeichen != null) {
-                FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, kennzeichen, fahrtenbuchService);
-                dialog.setVisible(true);
-            }
-        });
-        addReparaturButton.addActionListener(e -> {
-            handleAddReparatur();
-        });
-        newFahrzeugButton.addActionListener(e -> {
-            FahrzeugDialog dialog = new FahrzeugDialog(this, "Neues Fahrzeug", true);
-            dialog.setVisible(true);
-            
-            Fahrzeug newFahrzeug = dialog.getResult();
-            if (newFahrzeug != null) {
-                fahrzeugService.addFahrzeug(newFahrzeug);
-                searchField.setText(newFahrzeug.getKennzeichen());
-                searchFahrzeug();
-            }
-        });
-        
-        buttonsPanel.add(fahrtenbuchButton);
-        buttonsPanel.add(addReparaturButton);
-        buttonsPanel.add(newFahrzeugButton);
-
-        // Layout assembly
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(searchPanel, BorderLayout.NORTH);
-        topPanel.add(detailsPanel, BorderLayout.CENTER);
-        topPanel.add(buttonsPanel, BorderLayout.SOUTH);
-
-        add(topPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-
-        setSize(800, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
+        
+        // Add selection listener to table
+        fahrzeugTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int row = fahrzeugTable.getSelectedRow();
+                if (row >= 0) {
+                    String kennzeichen = (String) fahrzeugTable.getValueAt(row, 0);
+                    updateFahrzeugDetails(fahrzeugService.getFahrzeug(kennzeichen));
+                }
+            }
+        });
     }
 
     private void updateFahrzeugDetails(Fahrzeug fahrzeug) {
@@ -140,8 +123,18 @@ public class FuhrparkUI extends JFrame {
 
     private void searchFahrzeug() {
         String kennzeichen = searchField.getText().trim();
-        Fahrzeug fahrzeug = fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
-        updateFahrzeugDetails(fahrzeug);
+        if (!kennzeichen.isEmpty()) {
+            Fahrzeug fahrzeug = fahrzeugService.getFahrzeug(kennzeichen);
+            if (fahrzeug != null) {
+                updateFahrzeugDetails(fahrzeug);
+                selectFahrzeug(kennzeichen);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Kein Fahrzeug mit diesem Kennzeichen gefunden.",
+                    "Nicht gefunden",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
     }
 
     private void clearLabels() {
@@ -157,7 +150,7 @@ public class FuhrparkUI extends JFrame {
     }
 
     public void updateReparaturenTable(List<ReparaturBuchEintrag> reparaturen) {
-        DefaultTableModel model = (DefaultTableModel) reparaturenTable.getModel();
+        DefaultTableModel model = (DefaultTableModel) fahrzeugTable.getModel();
         model.setRowCount(0);
         for (ReparaturBuchEintrag reparatur : reparaturen) {
             model.addRow(new Object[]{
@@ -196,5 +189,171 @@ public class FuhrparkUI extends JFrame {
     private void updateFahrtenList(List<FahrtenbuchEintrag> fahrten) {
         // Add code here to display the fahrtenbuch entries in your UI
         // For example, you might want to add another JTable or list to show them
+    }
+
+    private class FahrzeugTableModel extends AbstractTableModel {
+        private final List<Fahrzeug> fahrzeuge;
+        private final String[] columnNames = {"Kennzeichen", "Typ", "Hersteller", "Modell", "Baujahr"};
+
+        public FahrzeugTableModel(List<Fahrzeug> fahrzeuge) {
+            this.fahrzeuge = new ArrayList<>(fahrzeuge);
+        }
+
+        @Override
+        public int getRowCount() {
+            return fahrzeuge.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            Fahrzeug fahrzeug = fahrzeuge.get(rowIndex);
+            return switch (columnIndex) {
+                case 0 -> fahrzeug.getKennzeichen();
+                case 1 -> fahrzeug.getTyp();
+                case 2 -> fahrzeug.getMarke();
+                case 3 -> fahrzeug.getModell();
+                case 4 -> fahrzeug.getBaujahr();
+                default -> null;
+            };
+        }
+
+        public void updateData(List<Fahrzeug> newFahrzeuge) {
+            this.fahrzeuge.clear();
+            this.fahrzeuge.addAll(newFahrzeuge);
+            fireTableDataChanged();
+        }
+    }
+
+    private void handleNewFahrzeug() {
+        FahrzeugDialog dialog = new FahrzeugDialog(this, "Neues Fahrzeug", true);
+        dialog.setVisible(true);
+        
+        Fahrzeug newFahrzeug = dialog.getResult();
+        if (newFahrzeug != null) {
+            fahrzeugService.addFahrzeug(newFahrzeug);
+            // Update the table
+            ((FahrzeugTableModel) fahrzeugTable.getModel()).updateData(
+                fahrzeugService.getAlleFahrzeuge()
+            );
+            // Select the new vehicle
+            selectFahrzeug(newFahrzeug.getKennzeichen());
+        }
+    }
+
+    private void selectFahrzeug(String kennzeichen) {
+        for (int i = 0; i < fahrzeugTable.getRowCount(); i++) {
+            if (kennzeichen.equals(fahrzeugTable.getValueAt(i, 0))) {
+                fahrzeugTable.setRowSelectionInterval(i, i);
+                break;
+            }
+        }
+    }
+
+    private JPanel createSearchPanel() {
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchPanel.setBorder(BorderFactory.createTitledBorder("Suche"));
+        
+        searchField = new JTextField(20);
+        searchButton = new JButton("Fahrzeug suchen");
+        searchButton.addActionListener(e -> searchFahrzeug());
+        
+        searchPanel.add(new JLabel("Kennzeichen:"));
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+        
+        return searchPanel;
+    }
+
+    private JPanel createDetailsPanel() {
+        JPanel detailsPanel = new JPanel(new GridBagLayout());
+        detailsPanel.setBorder(BorderFactory.createTitledBorder("Fahrzeug Details"));
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        
+        // Initialize labels
+        kennzeichenLabel = new JLabel("");
+        markeLabel = new JLabel("");
+        modellLabel = new JLabel("");
+        typLabel = new JLabel("");
+        baujahrLabel = new JLabel("");
+        kilometerstandLabel = new JLabel("");
+        
+        // Add components
+        gbc.gridx = 0; gbc.gridy = 0;
+        detailsPanel.add(new JLabel("Kennzeichen:"), gbc);
+        gbc.gridx = 1;
+        detailsPanel.add(kennzeichenLabel, gbc);
+        
+        gbc.gridx = 0; gbc.gridy = 1;
+        detailsPanel.add(new JLabel("Marke:"), gbc);
+        gbc.gridx = 1;
+        detailsPanel.add(markeLabel, gbc);
+        
+        gbc.gridx = 0; gbc.gridy = 2;
+        detailsPanel.add(new JLabel("Modell:"), gbc);
+        gbc.gridx = 1;
+        detailsPanel.add(modellLabel, gbc);
+        
+        gbc.gridx = 0; gbc.gridy = 3;
+        detailsPanel.add(new JLabel("Typ:"), gbc);
+        gbc.gridx = 1;
+        detailsPanel.add(typLabel, gbc);
+        
+        gbc.gridx = 0; gbc.gridy = 4;
+        detailsPanel.add(new JLabel("Baujahr:"), gbc);
+        gbc.gridx = 1;
+        detailsPanel.add(baujahrLabel, gbc);
+        
+        gbc.gridx = 0; gbc.gridy = 5;
+        detailsPanel.add(new JLabel("Kilometerstand:"), gbc);
+        gbc.gridx = 1;
+        detailsPanel.add(kilometerstandLabel, gbc);
+        
+        return detailsPanel;
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        
+        newFahrzeugButton = new JButton("Neues Fahrzeug");
+        fahrtenbuchButton = new JButton("Fahrtenbuch öffnen");
+        addReparaturButton = new JButton("Reparatur hinzufügen");
+        
+        newFahrzeugButton.addActionListener(e -> handleNewFahrzeug());
+        fahrtenbuchButton.addActionListener(e -> handleFahrtenbuch());
+        addReparaturButton.addActionListener(e -> handleAddReparatur());
+        
+        buttonPanel.add(newFahrzeugButton);
+        buttonPanel.add(fahrtenbuchButton);
+        buttonPanel.add(addReparaturButton);
+        
+        return buttonPanel;
+    }
+
+    private void handleFahrtenbuch() {
+        String kennzeichen = getCurrentKennzeichen();
+        if (kennzeichen != null) {
+            FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, kennzeichen, fahrtenbuchService);
+            dialog.setVisible(true);
+            // Refresh the view after dialog closes
+            updateFahrzeugDetails(fahrzeugService.getFahrzeug(kennzeichen));
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Bitte wählen Sie zuerst ein Fahrzeug aus.",
+                "Kein Fahrzeug ausgewählt",
+                JOptionPane.WARNING_MESSAGE);
+        }
     }
 } 
