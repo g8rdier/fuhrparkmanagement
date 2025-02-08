@@ -1,4 +1,4 @@
-package de.fuhrpark.ui;
+package de.fuhrpark.ui.model;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -6,10 +6,10 @@ import javax.swing.text.PlainDocument;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-public class PriceDocument extends PlainDocument {
+public class PreisDocument extends PlainDocument {
     private final NumberFormat format = NumberFormat.getCurrencyInstance(Locale.GERMANY);
     
-    public PriceDocument() {
+    public PreisDocument() {
         format.setGroupingUsed(true);
         format.setMaximumFractionDigits(2);
         format.setMinimumFractionDigits(2);

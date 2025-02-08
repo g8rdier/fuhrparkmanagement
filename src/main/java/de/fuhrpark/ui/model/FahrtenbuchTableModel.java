@@ -1,4 +1,4 @@
-package de.fuhrpark.ui;
+package de.fuhrpark.ui.model;
 
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import javax.swing.table.AbstractTableModel;

@@ -1,29 +1,29 @@
 package de.fuhrpark.ui.model;
 
-public class VehicleData {
-    private String type;
-    private String brand;
-    private String model;
-    private String licensePlate;
-    private String price;
+public class FahrzeugData {
+    private String typ;
+    private String marke;
+    private String modell;
+    private String kennzeichen;
+    private String preis;
 
-    public VehicleData(String type, String brand, String model, String licensePlate, String price) {
-        this.type = type;
-        this.brand = brand;
-        this.model = model;
-        this.licensePlate = licensePlate;
-        this.price = price;
+    public FahrzeugData(String typ, String marke, String modell, String kennzeichen, String preis) {
+        this.typ = typ;
+        this.marke = marke;
+        this.modell = modell;
+        this.kennzeichen = kennzeichen;
+        this.preis = preis;
     }
 
-    public String getType() { return type; }
-    public String getBrand() { return brand; }
-    public String getModel() { return model; }
-    public String getLicensePlate() { return licensePlate; }
-    public String getPrice() { return price; }
+    public String getTyp() { return typ; }
+    public String getMarke() { return marke; }
+    public String getModell() { return modell; }
+    public String getKennzeichen() { return kennzeichen; }
+    public String getPreis() { return preis; }
 
-    public void setType(String type) { this.type = type; }
-    public void setBrand(String brand) { this.brand = brand; }
-    public void setModel(String model) { this.model = model; }
-    public void setLicensePlate(String licensePlate) { this.licensePlate = licensePlate; }
-    public void setPrice(String price) { this.price = price; }
+    public void setTyp(String typ) { this.typ = typ; }
+    public void setMarke(String marke) { this.marke = marke; }
+    public void setModell(String modell) { this.modell = modell; }
+    public void setKennzeichen(String kennzeichen) { this.kennzeichen = kennzeichen; }
+    public void setPreis(String preis) { this.preis = preis; }
 } 
