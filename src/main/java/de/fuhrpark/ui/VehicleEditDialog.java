@@ -92,7 +92,7 @@ public class VehicleEditDialog extends JDialog {
         String licensePlate = licensePlateField.getText().trim().toUpperCase();
         
         // First check if it's a valid format
-        if (!parent.isValidLicensePlate(licensePlate)) {
+        if (!FuhrparkUI.isValidLicensePlate(licensePlate)) {
             JOptionPane.showMessageDialog(this,
                 "Bitte geben Sie ein gültiges Kennzeichen ein.\n\n" +
                 "Format: XXX-XX 1234\n" +
