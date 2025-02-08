@@ -5,7 +5,7 @@ import de.fuhrpark.model.enums.FahrzeugTyp;
 public class PKW extends Fahrzeug {
     
     public PKW(String kennzeichen) {
-        this.kennzeichen = kennzeichen;
+        super(kennzeichen);
     }
 
     @Override
