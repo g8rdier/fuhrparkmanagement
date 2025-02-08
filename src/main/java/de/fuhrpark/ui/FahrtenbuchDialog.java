@@ -1,102 +1,57 @@
-package de.fuhrpark.ui;
+package de.fuhrpark.ui.dialog;
 
 import de.fuhrpark.model.FahrtenbuchEintrag;
-import de.fuhrpark.service.FahrtenbuchService;
+import de.fuhrpark.service.base.FahrtenbuchService;
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 import java.util.List;
 
 public class FahrtenbuchDialog extends JDialog {
     private final FahrtenbuchService fahrtenbuchService;
     private final String kennzeichen;
+    private final DefaultListModel<FahrtenbuchEintrag> listModel;
 
-    public FahrtenbuchDialog(Frame owner, String kennzeichen, FahrtenbuchService fahrtenbuchService) {
-        super(owner, "Fahrtenbuch - " + kennzeichen, true);
+    public FahrtenbuchDialog(Frame owner, FahrtenbuchService service, String kennzeichen) {
+        super(owner, "Fahrtenbuch für " + kennzeichen, true);
+        this.fahrtenbuchService = service;
         this.kennzeichen = kennzeichen;
-        this.fahrtenbuchService = fahrtenbuchService;
+        this.listModel = new DefaultListModel<>();
         
-        initializeUI();
-        pack();
-        setLocationRelativeTo(owner);
+        initComponents();
+        loadFahrten();
     }
 
-    private void initializeUI() {
-        setLayout(new BorderLayout());
+    private void initComponents() {
+        setLayout(new BorderLayout(5, 5));
         
-        // Create table model with data
-        List<FahrtenbuchEintrag> eintraege = fahrtenbuchService.getEintraegeForFahrzeug(kennzeichen);
-        FahrtenbuchTableModel model = new FahrtenbuchTableModel(eintraege);
-        JTable table = new JTable(model);
+        // List of entries
+        JList<FahrtenbuchEintrag> list = new JList<>(listModel);
+        add(new JScrollPane(list), BorderLayout.CENTER);
         
-        // Add table to scroll pane
-        JScrollPane scrollPane = new JScrollPane(table);
-        add(scrollPane, BorderLayout.CENTER);
-        
-        // Add buttons
-        JPanel buttonPanel = new JPanel();
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton addButton = new JButton("Neue Fahrt");
-        addButton.addActionListener(e -> handleAddFahrt());
-        buttonPanel.add(addButton);
+        JButton closeButton = new JButton("Schließen");
         
+        addButton.addActionListener(e -> addNewFahrt());
+        closeButton.addActionListener(e -> dispose());
+        
+        buttonPanel.add(addButton);
+        buttonPanel.add(closeButton);
         add(buttonPanel, BorderLayout.SOUTH);
         
-        // Set dialog size
-        setSize(600, 400);
+        setSize(400, 300);
+        setLocationRelativeTo(getOwner());
     }
 
-    private void handleAddFahrt() {
-        JTextField startOrtField = new JTextField(20);
-        JTextField zielOrtField = new JTextField(20);
-        JTextField kilometerField = new JTextField(10);
-        JTextField fahrerField = new JTextField(20);
-        JTextField grundField = new JTextField(20);
-
-        JPanel panel = new JPanel(new GridLayout(0, 2));
-        panel.add(new JLabel("Start Ort:"));
-        panel.add(startOrtField);
-        panel.add(new JLabel("Ziel Ort:"));
-        panel.add(zielOrtField);
-        panel.add(new JLabel("Kilometer:"));
-        panel.add(kilometerField);
-        panel.add(new JLabel("Fahrer:"));
-        panel.add(fahrerField);
-        panel.add(new JLabel("Grund:"));
-        panel.add(grundField);
-
-        int result = JOptionPane.showConfirmDialog(this, panel, 
-            "Neue Fahrt", JOptionPane.OK_CANCEL_OPTION);
-            
-        if (result == JOptionPane.OK_OPTION) {
-            try {
-                double kilometer = Double.parseDouble(kilometerField.getText());
-                
-                FahrtenbuchEintrag eintrag = new FahrtenbuchEintrag(
-                    LocalDate.now(),
-                    startOrtField.getText(),
-                    zielOrtField.getText(),
-                    kilometer,
-                    kennzeichen,
-                    fahrerField.getText()
-                );
-                eintrag.setGrund(grundField.getText());
-
-                fahrtenbuchService.addFahrt(kennzeichen, eintrag);
-                refreshTable();
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this,
-                    "Bitte geben Sie eine gültige Zahl für die Kilometer ein.",
-                    "Eingabefehler",
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        }
+    private void loadFahrten() {
+        listModel.clear();
+        List<FahrtenbuchEintrag> fahrten = fahrtenbuchService.getEintraegeForFahrzeug(kennzeichen);
+        fahrten.forEach(listModel::addElement);
     }
 
-    private void refreshTable() {
-        // Refresh the table with updated data
-        List<FahrtenbuchEintrag> eintraege = fahrtenbuchService.getEintraegeForFahrzeug(kennzeichen);
-        ((FahrtenbuchTableModel) ((JTable) ((JScrollPane) getContentPane()
-            .getComponent(0)).getViewport().getView()).getModel())
-            .updateData(eintraege);
+    private void addNewFahrt() {
+        // Implementation for adding new entries
+        // This could open another dialog for entry details
     }
 }
