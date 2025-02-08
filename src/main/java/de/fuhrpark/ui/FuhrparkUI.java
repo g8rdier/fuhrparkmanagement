@@ -203,14 +203,20 @@ public class FuhrparkUI extends JFrame {
         String brand = parts[0];
         String model = parts[1];
 
-        // Set fields with current values
-        fahrzeugTypComboBox.setSelectedItem(type);
-        markeField.setText(brand);
-        modelField.setText(model);
-        licensePlateField.setText(plate);
+        VehicleEditDialog dialog = new VehicleEditDialog(this, type, brand, model, plate);
+        dialog.setVisible(true);
 
-        // Remove the old entry
-        listModel.remove(selectedIndex);
+        if (dialog.isApproved()) {
+            String newType = dialog.getSelectedType();
+            String newBrand = dialog.getBrand();
+            String newModel = dialog.getModel();
+            String newPlate = dialog.getLicensePlate();
+
+            // Update list entry
+            String newEntry = String.format("%s [%s] %s %s", 
+                newType, newPlate, newBrand, newModel);
+            listModel.setElementAt(newEntry, selectedIndex);
+        }
     }
     
     private void deleteVehicle() {

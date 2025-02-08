@@ -4,57 +4,62 @@ import javax.swing.*;
 import java.awt.*;
 
 public class VehicleEditDialog extends JDialog {
-    private final FuhrparkUI parent;
-    private final int editingIndex;
-    private JComboBox<String> vehicleTypeCombo;
-    private JTextField customBrandField;
-    private JTextField modelField;
-    private JTextField licensePlateField;
-    private boolean saveClicked = false;
-    
     private static final String[] VEHICLE_TYPES = {"PKW", "LKW"};
     
-    public VehicleEditDialog(FuhrparkUI parent, String type, String brand, String model, String licensePlate, int editingIndex) {
-        super(parent, "Fahrzeug bearbeiten", true);
-        this.parent = parent;
-        this.editingIndex = editingIndex;
+    private final JComboBox<String> typeComboBox;
+    private final JTextField brandField;
+    private final JTextField modelField;
+    private final JTextField licensePlateField;
+    private final FuhrparkUI parent;
+    private boolean approved = false;
+    
+    public VehicleEditDialog(Frame owner, String type, String brand, String model, String licensePlate) {
+        super(owner, "Fahrzeug bearbeiten", true);
+        this.parent = (FuhrparkUI) owner;
         
-        // Create main panel
-        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Initialize components
+        typeComboBox = new JComboBox<>(VEHICLE_TYPES);
+        typeComboBox.setSelectedItem(type);
         
-        // Vehicle type
-        panel.add(new JLabel("Fahrzeugtyp:"));
-        vehicleTypeCombo = new JComboBox<>(VEHICLE_TYPES);
-        vehicleTypeCombo.setSelectedItem(type);
-        panel.add(vehicleTypeCombo);
+        brandField = new JTextField(brand, 20);
+        modelField = new JTextField(model, 20);
+        licensePlateField = new JTextField(licensePlate, 20);
         
-        // Brand
-        panel.add(new JLabel("Marke:"));
-        JPanel brandPanel = new JPanel(new BorderLayout());
-        customBrandField = new JTextField();
+        initComponents();
+        pack();
+        setLocationRelativeTo(owner);
+    }
+    
+    private void initComponents() {
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
         
-        // Set brand
-        if (brand != null && !brand.isEmpty()) {
-            customBrandField.setText(brand);
-            customBrandField.setVisible(true);
-        } else {
-            customBrandField.setVisible(false);
-        }
+        // Add input fields
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        add(new JLabel("Fahrzeugtyp:"), gbc);
+        gbc.gridx = 1;
+        add(typeComboBox, gbc);
         
-        brandPanel.add(customBrandField, BorderLayout.SOUTH);
-        panel.add(brandPanel);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        add(new JLabel("Marke:"), gbc);
+        gbc.gridx = 1;
+        add(brandField, gbc);
         
-        // Model
-        panel.add(new JLabel("Modell:"));
-        modelField = new JTextField(model);
-        panel.add(modelField);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        add(new JLabel("Modell:"), gbc);
+        gbc.gridx = 1;
+        add(modelField, gbc);
         
-        // License plate
-        panel.add(new JLabel("Kennzeichen:"));
-        licensePlateField = parent.createLicensePlateField();
-        licensePlateField.setText(licensePlate);
-        panel.add(licensePlateField);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        add(new JLabel("Kennzeichen:"), gbc);
+        gbc.gridx = 1;
+        add(licensePlateField, gbc);
         
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -63,7 +68,7 @@ public class VehicleEditDialog extends JDialog {
         
         saveButton.addActionListener(e -> {
             if (validateInput()) {
-                saveClicked = true;
+                approved = true;
                 dispose();
             }
         });
@@ -73,54 +78,56 @@ public class VehicleEditDialog extends JDialog {
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
         
-        // Add all to dialog
-        setLayout(new BorderLayout());
-        add(panel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(buttonPanel, gbc);
         
-        pack();
-        setLocationRelativeTo(parent);
+        // Set minimum size
+        setMinimumSize(new Dimension(300, 200));
     }
     
     private boolean validateInput() {
-        String licensePlate = licensePlateField.getText().trim().toUpperCase();
-        
-        // First check if it's a valid format
-        if (!FuhrparkUI.isValidLicensePlate(licensePlate)) {
-            JOptionPane.showMessageDialog(this,
-                "Bitte geben Sie ein gültiges Kennzeichen ein.\n\n" +
-                "Format: XXX-XX 1234\n" +
-                "Beispiele:\n" +
-                "• B-AB 123\n" +
-                "• M-XY 4567\n" +
-                "• HH-AB 42",
-                "Ungültiges Kennzeichen",
-                JOptionPane.ERROR_MESSAGE);
+        if (brandField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie eine Marke ein.");
             return false;
         }
-
-        // Then check for duplicates
-        if (parent.isLicensePlateInUse(licensePlate, editingIndex)) {
-            JOptionPane.showMessageDialog(this,
-                "Ein Fahrzeug mit diesem Kennzeichen existiert bereits.",
-                "Duplikat Kennzeichen",
-                JOptionPane.ERROR_MESSAGE);
+        if (modelField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie ein Modell ein.");
             return false;
         }
-
+        if (!isValidLicensePlate(licensePlateField.getText().trim())) {
+            showError("Bitte geben Sie ein gültiges Kennzeichen ein.");
+            return false;
+        }
         return true;
     }
     
-    public boolean isSaveClicked() {
-        return saveClicked;
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this,
+            message,
+            "Ungültige Eingabe",
+            JOptionPane.ERROR_MESSAGE);
     }
     
-    public String getVehicleType() {
-        return (String) vehicleTypeCombo.getSelectedItem();
+    private boolean isValidLicensePlate(String plate) {
+        // Use the same validation as in FuhrparkUI
+        if (plate == null || plate.isEmpty()) return false;
+        String cleaned = plate.replace("-", "").replace(" ", "").toUpperCase();
+        return cleaned.matches("[A-ZÄÖÜ]{1,3}[A-Z]{1,2}[1-9][0-9]{0,3}[HE]?");
+    }
+    
+    public boolean isApproved() {
+        return approved;
+    }
+    
+    public String getSelectedType() {
+        return (String) typeComboBox.getSelectedItem();
     }
     
     public String getBrand() {
-        return customBrandField.getText().trim();
+        return brandField.getText().trim();
     }
     
     public String getModel() {
@@ -128,6 +135,6 @@ public class VehicleEditDialog extends JDialog {
     }
     
     public String getLicensePlate() {
-        return licensePlateField.getText().trim().toUpperCase();
+        return licensePlateField.getText().trim();
     }
 } 
