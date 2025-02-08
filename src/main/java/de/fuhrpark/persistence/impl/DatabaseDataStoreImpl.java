@@ -97,18 +97,34 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
+        List<Fahrzeug> result = new ArrayList<>();
         String sql = "SELECT * FROM fahrzeuge";
-        List<Fahrzeug> fahrzeuge = new ArrayList<>();
+        
         try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
+            
             while (rs.next()) {
-                fahrzeuge.add(createFahrzeugFromResultSet(rs));
+                Fahrzeug fahrzeug = new Fahrzeug(
+                    rs.getString("kennzeichen"),
+                    rs.getString("marke"),
+                    rs.getString("modell"),
+                    FahrzeugTyp.valueOf(rs.getString("typ")),
+                    rs.getInt("baujahr"),
+                    rs.getDouble("kilometerstand")
+                );
+                result.add(fahrzeug);
+                // Also update the cache
+                fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
             }
+            System.out.println("Database query returned " + result.size() + " vehicles");
+            
         } catch (SQLException e) {
+            System.err.println("Error fetching vehicles: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error fetching vehicles", e);
         }
-        return fahrzeuge;
+        return result;
     }
 
     @Override
@@ -227,7 +243,7 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public List<Fahrzeug> getFahrzeuge() {
-        return getAlleFahrzeuge();
+        return getAlleFahrzeuge();  // Always get fresh data from database
     }
 
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
