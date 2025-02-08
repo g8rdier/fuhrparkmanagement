@@ -37,10 +37,10 @@ public class App
                 return;
             }
             
-            // Create data store and services
+            // Create data store
             DataStore dataStore = new DatabaseDataStoreImpl();
             
-            // Create manager which handles services and UI initialization
+            // Create manager with data store
             FuhrparkManager manager = new FuhrparkManager(dataStore);
             
             // Launch UI
