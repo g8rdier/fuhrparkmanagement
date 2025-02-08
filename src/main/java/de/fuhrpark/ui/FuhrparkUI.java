@@ -37,57 +37,54 @@ public class FuhrparkUI extends JFrame {
             // Check maximum length (8 chars without separators)
             if (cleaned.length() > 8) return;
             
-            // Format the text
             StringBuilder formatted = new StringBuilder();
-            int districtEnd = -1;
+            int pos = 0;
             
-            // Find the end of the district code (1-3 letters)
-            for (int i = 0; i < cleaned.length() && i < 3; i++) {
-                char c = cleaned.charAt(i);
-                if (!Character.isLetter(c)) {
-                    break;
-                }
-                districtEnd = i;
+            // Parse district code (1-3 letters)
+            int districtLength = 0;
+            while (pos < cleaned.length() && districtLength < 3 && Character.isLetter(cleaned.charAt(pos))) {
+                formatted.append(cleaned.charAt(pos));
+                pos++;
+                districtLength++;
             }
             
-            if (districtEnd == -1) return;
+            if (districtLength == 0) return; // Must have at least one letter for district
             
-            // Add district code
-            formatted.append(cleaned.substring(0, districtEnd + 1));
-            
-            // Add separator after district code
-            if (districtEnd + 1 < cleaned.length()) {
+            // Add separator if there's more
+            if (pos < cleaned.length()) {
                 formatted.append('-');
             }
             
-            // Add remaining characters
-            if (districtEnd + 1 < cleaned.length()) {
-                String remaining = cleaned.substring(districtEnd + 1);
-                int letterCount = 0;
-                
-                // Add up to 2 letters
-                for (int i = 0; i < remaining.length() && letterCount < 2; i++) {
-                    char c = remaining.charAt(i);
-                    if (Character.isLetter(c)) {
-                        formatted.append(c);
-                        letterCount++;
-                    } else {
-                        break;
-                    }
-                }
-                
-                // Add space before numbers if we have numbers
-                if (letterCount > 0 && remaining.length() > letterCount) {
+            // Parse recognition number (optional 1-2 letters)
+            int recognitionLetters = 0;
+            while (pos < cleaned.length() && recognitionLetters < 2 && Character.isLetter(cleaned.charAt(pos))) {
+                formatted.append(cleaned.charAt(pos));
+                pos++;
+                recognitionLetters++;
+            }
+            
+            // Parse numbers (1-4 digits)
+            if (pos < cleaned.length()) {
+                // Add space before numbers if we had recognition letters
+                if (recognitionLetters > 0) {
                     formatted.append(' ');
                 }
                 
-                // Add remaining numbers and optional H/E
-                String numbers = remaining.substring(letterCount);
-                if (!numbers.isEmpty()) {
-                    // Validate numbers and H/E suffix
-                    if (numbers.matches("[1-9][0-9]{0,3}[HE]?")) {
-                        formatted.append(numbers);
-                    }
+                // Collect all remaining digits
+                StringBuilder numbers = new StringBuilder();
+                while (pos < cleaned.length() && Character.isDigit(cleaned.charAt(pos))) {
+                    numbers.append(cleaned.charAt(pos));
+                    pos++;
+                }
+                
+                // Check if numbers are valid (no leading zero, max 4 digits)
+                if (numbers.length() > 0 && numbers.charAt(0) != '0' && numbers.length() <= 4) {
+                    formatted.append(numbers);
+                }
+                
+                // Add optional H or E suffix
+                if (pos < cleaned.length() && (cleaned.charAt(pos) == 'H' || cleaned.charAt(pos) == 'E')) {
+                    formatted.append(cleaned.charAt(pos));
                 }
             }
             
