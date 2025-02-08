@@ -82,7 +82,7 @@ public class VehicleEditDialog extends JDialog {
         return confirmed;
     }
 
-    public String getType() {
+    public String getVehicleType() {
         return (String) typeComboBox.getSelectedItem();
     }
 

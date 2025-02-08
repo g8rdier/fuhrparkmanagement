@@ -229,7 +229,7 @@ public class FuhrparkUI extends JFrame {
                     .format(priceValue);
                 
                 String newEntry = String.format("%s [%s] %s %s - %s",
-                    dialog.getType(), dialog.getLicensePlate(), 
+                    dialog.getVehicleType(), dialog.getLicensePlate(), 
                     dialog.getBrand(), dialog.getModel(), formattedPrice);
                 listModel.setElementAt(newEntry, selectedIndex);
                 
