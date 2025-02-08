@@ -55,24 +55,39 @@ public class FuhrparkUI extends JFrame {
                 throws javax.swing.text.BadLocationException {
             if (str == null) return;
             
-            // Convert to uppercase
-            String upper = str.toUpperCase();
+            // Get current content and create new text
+            String currentText = getText(0, getLength());
+            String newText = new StringBuilder(currentText).insert(offs, str.toUpperCase()).toString();
             
-            // Only allow letters, numbers, hyphen, space, and H/E
-            StringBuilder validChars = new StringBuilder();
-            for (char c : upper.toCharArray()) {
-                if (Character.isLetterOrDigit(c) || c == '-' || c == ' ' || c == 'H' || c == 'E') {
-                    validChars.append(c);
+            // Remove any existing separators
+            String cleaned = newText.replace("-", "").replace(" ", "");
+            
+            // Only allow valid characters
+            if (!cleaned.matches("[A-ZÄÖÜ0-9HE]*")) return;
+            
+            // Check maximum length (8 chars without separators)
+            if (cleaned.length() > 8) return;
+            
+            // Format the text
+            StringBuilder formatted = new StringBuilder();
+            int charCount = 0;
+            
+            for (char c : cleaned.toCharArray()) {
+                // Add the character
+                formatted.append(c);
+                charCount++;
+                
+                // Add separators at the right positions
+                if (charCount == 3 && charCount < cleaned.length()) {
+                    formatted.append('-');
+                } else if (charCount == 5 && charCount < cleaned.length()) {
+                    formatted.append(' ');
                 }
             }
             
-            // Get current text length
-            int currentLength = getLength();
-            
-            // Don't allow more than 12 characters (including separators)
-            if (currentLength + validChars.length() <= 12) {
-                super.insertString(offs, validChars.toString(), a);
-            }
+            // Replace entire content with formatted text
+            super.remove(0, getLength());
+            super.insertString(0, formatted.toString(), a);
         }
     }
     
