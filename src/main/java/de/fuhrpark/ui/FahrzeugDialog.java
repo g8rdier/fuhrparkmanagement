@@ -4,6 +4,7 @@ import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.PKW;
 import de.fuhrpark.model.LKW;
 import de.fuhrpark.service.FahrzeugFactory;
+import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,9 +14,11 @@ public class FahrzeugDialog extends JDialog {
     private final JTextField markeField = new JTextField(10);
     private final JTextField modellField = new JTextField(10);
     private final JComboBox<String> typeComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
+    private final FahrzeugFactory fahrzeugFactory;
 
-    public FahrzeugDialog(Frame owner, String title, boolean modal) {
-        super(owner, title, modal);
+    public FahrzeugDialog(Frame owner) {
+        super(owner, "Fahrzeug hinzufügen", true);
+        this.fahrzeugFactory = new FahrzeugFactoryImpl();
         initComponents();
     }
 
@@ -44,7 +47,7 @@ public class FahrzeugDialog extends JDialog {
 
         saveButton.addActionListener(e -> {
             if (validateInput()) {
-                result = createFahrzeug(FahrzeugFactory.getInstance());
+                result = createFahrzeug();
                 dispose();
             }
         });
@@ -74,16 +77,16 @@ public class FahrzeugDialog extends JDialog {
             JOptionPane.ERROR_MESSAGE);
     }
 
-    private Fahrzeug createFahrzeug(FahrzeugFactory factory) {
+    private Fahrzeug createFahrzeug() {
         String typ = (String) typeComboBox.getSelectedItem();
         String kennzeichen = kennzeichenField.getText();
         String marke = markeField.getText();
         String modell = modellField.getText();
 
         if ("PKW".equals(typ)) {
-            return factory.erstelleFahrzeug("PKW", kennzeichen, marke, modell, 5, true);
+            return fahrzeugFactory.erstelleFahrzeug("PKW", kennzeichen, marke, modell, 5, true);
         } else {
-            return factory.erstelleFahrzeug("LKW", kennzeichen, marke, modell, 7.5, false);
+            return fahrzeugFactory.erstelleFahrzeug("LKW", kennzeichen, marke, modell, 7.5, false);
         }
     }
 
