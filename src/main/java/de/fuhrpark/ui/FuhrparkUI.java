@@ -8,7 +8,8 @@ import java.util.Map;
 
 public class FuhrparkUI extends JFrame {
     private JComboBox<String> vehicleTypeCombo;
-    private JTextField brandField;
+    private JComboBox<String> brandCombo;
+    private JTextField customBrandField;
     private JTextField modelField;
     private JTextField licensePlateField;
     private JButton saveButton;
@@ -26,10 +27,6 @@ public class FuhrparkUI extends JFrame {
     
     private Map<String, DefaultListModel<String>> vehicleTrips = new HashMap<>();
 
-    private JComboBox<String> brandCombo;
-    private JTextField customBrandField;
-    private JPanel brandPanel;
-    
     private static final String[] CAR_BRANDS = {
         "Audi",
         "BMW",
@@ -81,29 +78,8 @@ public class FuhrparkUI extends JFrame {
         inputPanel.add(vehicleTypeCombo);
         
         inputPanel.add(new JLabel("Marke:"));
-        brandPanel = new JPanel(new CardLayout());
-        
-        JPanel brandComboPanel = new JPanel(new BorderLayout());
         brandCombo = new JComboBox<>(CAR_BRANDS);
-        brandComboPanel.add(brandCombo);
-        
-        JPanel customBrandPanel = new JPanel(new BorderLayout());
-        customBrandField = new JTextField();
-        customBrandField.setVisible(false);
-        customBrandPanel.add(customBrandField);
-        
-        JPanel combinedBrandPanel = new JPanel(new BorderLayout());
-        combinedBrandPanel.add(brandCombo, BorderLayout.NORTH);
-        combinedBrandPanel.add(customBrandField, BorderLayout.SOUTH);
-        inputPanel.add(combinedBrandPanel);
-        
-        brandCombo.addActionListener(e -> {
-            String selectedBrand = (String) brandCombo.getSelectedItem();
-            customBrandField.setVisible(OTHER_BRAND.equals(selectedBrand));
-            if (!OTHER_BRAND.equals(selectedBrand)) {
-                customBrandField.setText("");
-            }
-        });
+        inputPanel.add(brandCombo);
         
         inputPanel.add(new JLabel("Modell:"));
         modelField = new JTextField();
