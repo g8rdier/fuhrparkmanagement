@@ -43,20 +43,87 @@ public class FuhrparkUI extends JFrame {
 
     private JButton editButton;
     private JButton deleteButton;
+    
+    // Patterns for different license plate parts
+    private static final String LOCATION_PATTERN = "[A-ZÄÖÜ]{1,3}";  // Unterscheidungszeichen
+    private static final String LETTERS_PATTERN = "[A-Z]{1,2}";      // Erkennungsnummer (Buchstaben)
+    private static final String NUMBERS_PATTERN = "[1-9][0-9]{0,3}"; // Erkennungsnummer (Ziffern)
+    private static final String SPECIAL_SUFFIX = "(H|E)?";           // Optional H or E suffix
+
     public static boolean isValidLicensePlate(String licensePlate) {
         if (licensePlate == null || licensePlate.isEmpty()) {
             return false;
         }
         
-        // Convert to uppercase for validation
+        // Convert to uppercase and trim
         licensePlate = licensePlate.toUpperCase().trim();
         
-        // Basic format check
+        // Check for basic format (parts separated by - and space)
         if (!licensePlate.contains("-") || !licensePlate.contains(" ")) {
             return false;
         }
         
-        return licensePlate.matches("^[A-ZÄÖÜ]{1,3}-[A-Z]{1,2}\\s[1-9][0-9]{0,3}$");
+        // Split into parts
+        String[] mainParts = licensePlate.split("-");
+        if (mainParts.length != 2) return false;
+        
+        String location = mainParts[0];
+        String[] numberParts = mainParts[1].split(" ");
+        if (numberParts.length != 2) return false;
+        
+        String letters = numberParts[0];
+        String numbers = numberParts[1];
+        
+        // Special case: Historic or Electric vehicle
+        String numbersPart = numbers;
+        String suffix = "";
+        if (numbers.endsWith("H") || numbers.endsWith("E")) {
+            suffix = numbers.substring(numbers.length() - 1);
+            numbersPart = numbers.substring(0, numbers.length() - 1);
+        }
+        
+        // Validate each part
+        boolean validLocation = location.matches(LOCATION_PATTERN);
+        boolean validLetters = letters.matches(LETTERS_PATTERN);
+        boolean validNumbers = numbersPart.matches(NUMBERS_PATTERN);
+        boolean validSuffix = suffix.matches(SPECIAL_SUFFIX);
+        
+        // Check total length (max 8 characters, excluding separators)
+        int totalLength = location.length() + letters.length() + numbersPart.length() + suffix.length();
+        boolean validLength = totalLength <= 8;
+        
+        if (!validLocation || !validLetters || !validNumbers || !validSuffix || !validLength) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private void showLicensePlateHelp() {
+        JOptionPane.showMessageDialog(this,
+            """
+            Bitte geben Sie ein gültiges Kennzeichen ein.
+            
+            Format: XXX-YY 1234Z
+            
+            • Unterscheidungszeichen (1-3 Buchstaben)
+            • Bindestrich (-)
+            • 1-2 Buchstaben
+            • Leerzeichen
+            • 1-4 Ziffern (keine führende 0)
+            • Optional: H (Historisch) oder E (Elektro)
+            
+            Beispiele:
+            • B-AB 123
+            • M-XY 4567
+            • HH-AB 42
+            • B-AB 123H
+            • M-XX 55E
+            
+            Maximale Länge: 8 Zeichen (ohne Bindestrich/Leerzeichen)
+            """,
+            "Kennzeichen Format",
+            JOptionPane.INFORMATION_MESSAGE);
     }
 
     public FuhrparkUI() {
@@ -270,15 +337,7 @@ public class FuhrparkUI extends JFrame {
         }
         
         if (!isValidLicensePlate(licensePlate)) {
-            JOptionPane.showMessageDialog(this,
-                "Bitte geben Sie ein gültiges Kennzeichen ein.\n\n" +
-                "Format: XXX-XX 1234\n" +
-                "Beispiele:\n" +
-                "• B-AB 123\n" +
-                "• M-XY 4567\n" +
-                "• HH-AB 42",
-                "Ungültiges Kennzeichen",
-                JOptionPane.ERROR_MESSAGE);
+            showLicensePlateHelp();
             licensePlateField.requestFocus();
             return;
         }
