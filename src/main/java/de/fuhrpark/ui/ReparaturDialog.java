@@ -14,9 +14,13 @@ public class ReparaturDialog extends JDialog {
     private JTextField datumField;
     private ReparaturBuchEintrag result = null;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final ReparaturService reparaturService;
+    private final String kennzeichen;
 
-    public ReparaturDialog(JFrame parent, String title) {
-        super(parent, title, true);
+    public ReparaturDialog(Frame owner, String kennzeichen, ReparaturService reparaturService) {
+        super(owner, "Reparatur hinzufügen", true);
+        this.kennzeichen = kennzeichen;
+        this.reparaturService = reparaturService;
         initComponents();
     }
 
@@ -63,6 +67,7 @@ public class ReparaturDialog extends JDialog {
                 werkstattField.getText()
             );
             
+            reparaturService.addReparatur(kennzeichen, reparatur);
             result = reparatur;
             dispose();
         } catch (NumberFormatException e) {
