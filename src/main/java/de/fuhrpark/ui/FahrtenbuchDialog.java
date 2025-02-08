@@ -7,9 +7,10 @@ import java.awt.*;
 import java.time.LocalDate;
 
 public class FahrtenbuchDialog extends JDialog {
-    private final JTable table;
     private final String kennzeichen;
     private final FahrtenbuchService service;
+    private final JTable table;
+    private FahrtenbuchEintrag result;
     private final JTextField startOrtField = new JTextField(20);
     private final JTextField zielOrtField = new JTextField(20);
     private final JTextField kilometerField = new JTextField(20);
@@ -19,29 +20,33 @@ public class FahrtenbuchDialog extends JDialog {
     private final JTextField grundField = new JTextField(20);
     private final JComboBox<String> fahrerTypCombo = new JComboBox<>(new String[]{"Privat", "Firma"});
     private final JPanel namePanel = new JPanel(new CardLayout());
-    private FahrtenbuchEintrag result = null;
 
     public FahrtenbuchDialog(Frame owner, String kennzeichen, FahrtenbuchService service) {
         super(owner, "Fahrtenbuch: " + kennzeichen, true);
         this.kennzeichen = kennzeichen;
         this.service = service;
+        
+        // Create table with data
+        table = new JTable(new FahrtenbuchTableModel(service.getFahrtenForFahrzeug(kennzeichen)));
+        
+        initComponents();
+    }
 
-        // Create toolbar with New button
+    private void initComponents() {
+        setLayout(new BorderLayout());
+
+        // Toolbar with New button
         JToolBar toolBar = new JToolBar();
         JButton newButton = new JButton("Neu");
         newButton.addActionListener(e -> showNewEntryDialog());
         toolBar.add(newButton);
 
-        // Table setup
-        table = new JTable(new FahrtenbuchTableModel(service.getEintraegeForFahrzeug(kennzeichen)));
-        
-        // Layout
-        setLayout(new BorderLayout());
+        // Add components
         add(toolBar, BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
-        
-        setSize(600, 400);
-        setLocationRelativeTo(owner);
+
+        setSize(800, 400);
+        setLocationRelativeTo(getOwner());
     }
 
     private void showNewEntryDialog() {

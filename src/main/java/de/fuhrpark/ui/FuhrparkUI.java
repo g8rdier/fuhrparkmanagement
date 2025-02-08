@@ -75,6 +75,11 @@ public class FuhrparkUI extends JFrame {
         kilometerstandLabel = new JLabel("");
         
         fahrzeugTable = new JTable(new FahrzeugTableModel(fahrzeugService.getAlleFahrzeuge()));
+
+        // Find the Reparaturbuch button and connect it
+        JButton reparaturBuchButton = new JButton("Reparaturbuch");
+        reparaturBuchButton.addActionListener(e -> handleReparaturBuchOeffnen());
+        toolBar.add(reparaturBuchButton);
     }
 
     private void initializeUI() {
