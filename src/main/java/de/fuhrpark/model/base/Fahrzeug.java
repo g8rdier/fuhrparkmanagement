@@ -1,4 +1,4 @@
-package de.fuhrpark.model;
+package de.fuhrpark.model.base;
 
 import de.fuhrpark.model.enums.FahrzeugTyp;
 
