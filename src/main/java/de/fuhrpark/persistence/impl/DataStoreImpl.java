@@ -123,4 +123,9 @@ public class DataStoreImpl implements DataStore {
             throw new RuntimeException("Error loading data from " + filename, e);
         }
     }
+
+    @Override
+    public List<Fahrzeug> getFahrzeuge() {
+        return getAlleFahrzeuge();
+    }
 }

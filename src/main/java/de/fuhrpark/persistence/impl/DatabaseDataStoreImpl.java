@@ -191,6 +191,11 @@ public class DatabaseDataStoreImpl implements DataStore {
         }
     }
 
+    @Override
+    public List<Fahrzeug> getFahrzeuge() {
+        return getAlleFahrzeuge();
+    }
+
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
         return new Fahrzeug(
             rs.getString("kennzeichen"),
