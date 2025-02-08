@@ -41,6 +41,8 @@ public class FahrtenbuchDialog extends JDialog {
 
     private void showNewEntryDialog() {
         JDialog dialog = new JDialog(this, "Neue Fahrt", true);
+        dialog.setLayout(new BorderLayout());
+        
         JPanel mainPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -50,6 +52,10 @@ public class FahrtenbuchDialog extends JDialog {
         addComponent(mainPanel, new JLabel("Start:"), startOrtField, gbc, 0);
         addComponent(mainPanel, new JLabel("Ziel:"), zielOrtField, gbc, 1);
         addComponent(mainPanel, new JLabel("Kilometer:"), kilometerField, gbc, 2);
+        
+        // Pre-fill and disable kennzeichen field
+        kennzeichenField.setText(kennzeichen);
+        kennzeichenField.setEnabled(false);
         addComponent(mainPanel, new JLabel("Kennzeichen:"), kennzeichenField, gbc, 3);
 
         // Button panel
@@ -78,8 +84,8 @@ public class FahrtenbuchDialog extends JDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        add(mainPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        dialog.add(mainPanel, BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.pack();
         dialog.setLocationRelativeTo(this);
