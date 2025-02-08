@@ -38,7 +38,7 @@ public class DatabaseDataStoreImpl implements DataStore {
             stmt.setString(3, fahrzeug.getModell());
             stmt.setString(4, fahrzeug.getTyp().name());
             stmt.setInt(5, fahrzeug.getBaujahr());
-            stmt.setInt(6, fahrzeug.getKilometerstand());
+            stmt.setInt(6, (int) fahrzeug.getKilometerstand());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error saving vehicle", e);
@@ -62,7 +62,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
+    public List<Fahrzeug> getFahrzeuge() {
         String sql = "SELECT * FROM fahrzeuge";
         List<Fahrzeug> fahrzeuge = new ArrayList<>();
         try (Connection conn = DatabaseConfig.getConnection();
@@ -150,17 +150,19 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void deleteFahrzeug(String kennzeichen) {
-        String sql = "DELETE FROM fahrzeuge WHERE kennzeichen = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, kennzeichen);
-            stmt.executeUpdate();
-            
-            // Also delete related repairs
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            // Delete repairs first due to foreign key constraints
             String deleteSql = "DELETE FROM reparaturbuch WHERE kennzeichen = ?";
             try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
                 deleteStmt.setString(1, kennzeichen);
                 deleteStmt.executeUpdate();
+            }
+            
+            // Then delete the vehicle
+            String sql = "DELETE FROM fahrzeuge WHERE kennzeichen = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, kennzeichen);
+                stmt.executeUpdate();
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting vehicle", e);
