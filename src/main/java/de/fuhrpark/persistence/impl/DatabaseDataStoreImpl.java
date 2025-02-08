@@ -5,7 +5,7 @@ import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.ReparaturBuchEintrag;
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.DatabaseConfig;
-import de.fuhrpark.model.FahrzeugTyp;
+import de.fuhrpark.types.FahrzeugTyp;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public List<Fahrzeug> getFahrzeuge() {
+    public List<Fahrzeug> getAlleFahrzeuge() {
         String sql = "SELECT * FROM fahrzeuge";
         List<Fahrzeug> fahrzeuge = new ArrayList<>();
         try (Connection conn = DatabaseConfig.getConnection();
