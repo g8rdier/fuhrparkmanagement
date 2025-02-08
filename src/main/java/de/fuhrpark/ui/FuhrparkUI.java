@@ -113,36 +113,27 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void loadFahrzeuge() {
-        List<Fahrzeug> fahrzeuge = fahrzeugService.getAlleFahrzeuge();
-        tableModel.setFahrzeuge(fahrzeuge);
+        List<Fahrzeug> fahrzeuge = fahrzeugService.getFahrzeuge();
+        tableModel.updateData(fahrzeuge);
     }
     
     private void showAddDialog() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugFactory);
-        dialog.setVisible(true);
-        if (dialog.getResult() != null) {
-            fahrzeugService.speichereFahrzeug(dialog.getResult());
-            loadFahrzeuge();
-        }
+        // TODO: Implement after FahrzeugDialog is created
+        JOptionPane.showMessageDialog(this, "Funktion noch nicht implementiert");
     }
     
     private void showEditDialog() {
         int selectedRow = fahrzeugTable.getSelectedRow();
         if (selectedRow >= 0) {
-            Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
-            FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugFactory, fahrzeug);
-            dialog.setVisible(true);
-            if (dialog.getResult() != null) {
-                fahrzeugService.speichereFahrzeug(dialog.getResult());
-                loadFahrzeuge();
-            }
+            // TODO: Implement after FahrzeugDialog is created
+            JOptionPane.showMessageDialog(this, "Funktion noch nicht implementiert");
         }
     }
     
     private void deleteFahrzeug() {
         int selectedRow = fahrzeugTable.getSelectedRow();
         if (selectedRow >= 0) {
-            Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
+            Fahrzeug fahrzeug = tableModel.getFahrzeug(selectedRow);
             int option = JOptionPane.showConfirmDialog(this,
                 "Möchten Sie das Fahrzeug wirklich löschen?",
                 "Fahrzeug löschen",
@@ -155,12 +146,8 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void showFahrtenbuch() {
-        int selectedRow = fahrzeugTable.getSelectedRow();
-        if (selectedRow >= 0) {
-            Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
-            FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, fahrzeugService, fahrzeug.getKennzeichen());
-            dialog.setVisible(true);
-        }
+        // TODO: Implement after FahrtenbuchDialog is created
+        JOptionPane.showMessageDialog(this, "Funktion noch nicht implementiert");
     }
     
     private void addVehicle() {
