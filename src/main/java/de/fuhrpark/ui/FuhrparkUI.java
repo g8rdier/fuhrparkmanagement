@@ -27,7 +27,7 @@ public class FuhrparkUI extends JFrame {
     
     private Map<String, DefaultListModel<String>> vehicleTrips = new HashMap<>();
 
-    private static final String[] CAR_BRANDS = {
+    public static final String[] CAR_BRANDS = {
         "Audi",
         "BMW",
         "Ford",
@@ -43,8 +43,21 @@ public class FuhrparkUI extends JFrame {
 
     private JButton editButton;
     private JButton deleteButton;
-    private static final String LICENSE_PLATE_PATTERN = 
-        "^[A-ZÄÖÜ]{1,3}-[A-Z]{1,2}\\s[1-9][0-9]{0,3}$";
+    public static boolean isValidLicensePlate(String licensePlate) {
+        if (licensePlate == null || licensePlate.isEmpty()) {
+            return false;
+        }
+        
+        // Convert to uppercase for validation
+        licensePlate = licensePlate.toUpperCase().trim();
+        
+        // Basic format check
+        if (!licensePlate.contains("-") || !licensePlate.contains(" ")) {
+            return false;
+        }
+        
+        return licensePlate.matches("^[A-ZÄÖÜ]{1,3}-[A-Z]{1,2}\\s[1-9][0-9]{0,3}$");
+    }
 
     public FuhrparkUI() {
         setTitle("Fuhrpark Verwaltung");
@@ -227,22 +240,6 @@ public class FuhrparkUI extends JFrame {
         kilometersField.setText("");
     }
     
-    private boolean isValidLicensePlate(String licensePlate) {
-        if (licensePlate == null || licensePlate.isEmpty()) {
-            return false;
-        }
-        
-        // Convert to uppercase for validation
-        licensePlate = licensePlate.toUpperCase().trim();
-        
-        // Basic format check
-        if (!licensePlate.contains("-") || !licensePlate.contains(" ")) {
-            return false;
-        }
-        
-        return licensePlate.matches(LICENSE_PLATE_PATTERN);
-    }
-    
     private void addVehicle() {
         String type = (String) vehicleTypeCombo.getSelectedItem();
         String selectedBrand = (String) brandCombo.getSelectedItem();
@@ -297,22 +294,19 @@ public class FuhrparkUI extends JFrame {
         String brand = brandModel[0];
         String model = brandModel[1];
         
-        vehicleTypeCombo.setSelectedItem(type);
+        VehicleEditDialog dialog = new VehicleEditDialog(
+            this, type, brand, model, licensePlate);
+        dialog.setVisible(true);
         
-        if (java.util.Arrays.asList(CAR_BRANDS).contains(brand)) {
-            brandCombo.setSelectedItem(brand);
-            customBrandField.setText("");
-        } else {
-            brandCombo.setSelectedItem(OTHER_BRAND);
-            customBrandField.setText(brand);
+        if (dialog.isSaveClicked()) {
+            String newVehicleEntry = String.format("%s [%s] %s %s",
+                dialog.getVehicleType(),
+                dialog.getLicensePlate(),
+                dialog.getBrand(),
+                dialog.getModel());
+                
+            listModel.setElementAt(newVehicleEntry, selectedIndex);
         }
-        
-        modelField.setText(model);
-        licensePlateField.setText(licensePlate);
-        
-        listModel.remove(selectedIndex);
-        
-        saveButton.setText("Änderungen speichern");
     }
     
     private void deleteVehicle() {
