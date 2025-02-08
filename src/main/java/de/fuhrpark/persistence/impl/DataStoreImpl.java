@@ -1,7 +1,7 @@
 package de.fuhrpark.persistence.impl;
 
 import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.PKW;
+import de.fuhrpark.persistence.DataStore;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
