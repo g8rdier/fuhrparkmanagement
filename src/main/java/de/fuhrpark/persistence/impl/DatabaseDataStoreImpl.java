@@ -2,8 +2,6 @@ package de.fuhrpark.persistence.impl;
 
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.impl.PKW;
-import de.fuhrpark.model.impl.LKW;
 import de.fuhrpark.persistence.repository.DataStore;
 import java.util.ArrayList;
 import java.util.HashMap;
