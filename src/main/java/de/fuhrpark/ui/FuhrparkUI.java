@@ -300,50 +300,47 @@ public class FuhrparkUI extends JFrame {
         JPanel detailsPanel = new JPanel(new BorderLayout());
         detailsPanel.setBorder(BorderFactory.createTitledBorder("Fahrzeug Details"));
         
+        // Create a panel for the labels using GridBagLayout
+        JPanel labelsPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(5, 5, 5, 5);
         
-        // Initialize labels
-        kennzeichenLabel = new JLabel("");
-        markeLabel = new JLabel("");
-        modellLabel = new JLabel("");
-        typLabel = new JLabel("");
-        baujahrLabel = new JLabel("");
-        kilometerstandLabel = new JLabel("");
-        
-        // Add components
+        // Add components to labelsPanel
         gbc.gridx = 0; gbc.gridy = 0;
-        detailsPanel.add(new JLabel("Kennzeichen:"), gbc);
+        labelsPanel.add(new JLabel("Kennzeichen:"), gbc);
         gbc.gridx = 1;
-        detailsPanel.add(kennzeichenLabel, gbc);
+        labelsPanel.add(kennzeichenLabel, gbc);
         
         gbc.gridx = 0; gbc.gridy = 1;
-        detailsPanel.add(new JLabel("Marke:"), gbc);
+        labelsPanel.add(new JLabel("Marke:"), gbc);
         gbc.gridx = 1;
-        detailsPanel.add(markeLabel, gbc);
+        labelsPanel.add(markeLabel, gbc);
         
         gbc.gridx = 0; gbc.gridy = 2;
-        detailsPanel.add(new JLabel("Modell:"), gbc);
+        labelsPanel.add(new JLabel("Modell:"), gbc);
         gbc.gridx = 1;
-        detailsPanel.add(modellLabel, gbc);
+        labelsPanel.add(modellLabel, gbc);
         
         gbc.gridx = 0; gbc.gridy = 3;
-        detailsPanel.add(new JLabel("Typ:"), gbc);
+        labelsPanel.add(new JLabel("Typ:"), gbc);
         gbc.gridx = 1;
-        detailsPanel.add(typLabel, gbc);
+        labelsPanel.add(typLabel, gbc);
         
         gbc.gridx = 0; gbc.gridy = 4;
-        detailsPanel.add(new JLabel("Baujahr:"), gbc);
+        labelsPanel.add(new JLabel("Baujahr:"), gbc);
         gbc.gridx = 1;
-        detailsPanel.add(baujahrLabel, gbc);
+        labelsPanel.add(baujahrLabel, gbc);
         
         gbc.gridx = 0; gbc.gridy = 5;
-        detailsPanel.add(new JLabel("Kilometerstand:"), gbc);
+        labelsPanel.add(new JLabel("Kilometerstand:"), gbc);
         gbc.gridx = 1;
-        detailsPanel.add(kilometerstandLabel, gbc);
+        labelsPanel.add(kilometerstandLabel, gbc);
         
-        // Add repairs panel to the details section
+        // Add panels with proper BorderLayout constraints
+        detailsPanel.add(labelsPanel, BorderLayout.NORTH);
+        
+        // Add repairs panel
         JPanel reparaturPanel = new JPanel(new BorderLayout());
         reparaturPanel.setBorder(BorderFactory.createTitledBorder("Reparaturen"));
         reparaturPanel.add(new JScrollPane(reparaturTable), BorderLayout.CENTER);
