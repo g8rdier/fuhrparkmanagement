@@ -246,6 +246,53 @@ public class DatabaseDataStoreImpl implements DataStore {
         return getAlleFahrzeuge();  // Always get fresh data from database
     }
 
+    @Override
+    public List<ReparaturBuchEintrag> getReparaturenForFahrzeug(String kennzeichen) {
+        List<ReparaturBuchEintrag> reparaturen = new ArrayList<>();
+        String sql = "SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC";
+        
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, kennzeichen);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ReparaturBuchEintrag eintrag = new ReparaturBuchEintrag(
+                        rs.getDate("datum").toLocalDate(),
+                        rs.getString("beschreibung"),
+                        rs.getDouble("kosten"),
+                        rs.getString("werkstatt")
+                    );
+                    reparaturen.add(eintrag);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching repairs: " + e.getMessage());
+            // Don't throw exception, return empty list instead
+            return new ArrayList<>();
+        }
+        return reparaturen;
+    }
+
+    @Override
+    public void saveReparatur(ReparaturBuchEintrag eintrag) {
+        String sql = "INSERT INTO reparaturbuch (kennzeichen, datum, beschreibung, kosten, werkstatt) VALUES (?, ?, ?, ?, ?)";
+        
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, eintrag.getKennzeichen());
+            stmt.setDate(2, Date.valueOf(eintrag.getDatum()));
+            stmt.setString(3, eintrag.getBeschreibung());
+            stmt.setDouble(4, eintrag.getKosten());
+            stmt.setString(5, eintrag.getWerkstatt());
+            
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error saving repair: " + e.getMessage(), e);
+        }
+    }
+
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
         return new Fahrzeug(
             rs.getString("kennzeichen"),
