@@ -62,7 +62,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public List<Fahrzeug> getFahrzeuge() {
+    public List<Fahrzeug> getAlleFahrzeuge() {
         String sql = "SELECT * FROM fahrzeuge";
         List<Fahrzeug> fahrzeuge = new ArrayList<>();
         try (Connection conn = DatabaseConfig.getConnection();
@@ -128,6 +128,7 @@ public class DatabaseDataStoreImpl implements DataStore {
                     rs.getDouble("kosten"),
                     rs.getString("werkstatt")
                 );
+                eintrag.setKennzeichen(kennzeichen);
                 reparaturen.add(eintrag);
             }
         } catch (SQLException e) {
@@ -154,6 +155,13 @@ public class DatabaseDataStoreImpl implements DataStore {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, kennzeichen);
             stmt.executeUpdate();
+            
+            // Also delete related repairs
+            String deleteSql = "DELETE FROM reparaturbuch WHERE kennzeichen = ?";
+            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+                deleteStmt.setString(1, kennzeichen);
+                deleteStmt.executeUpdate();
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting vehicle", e);
         }
