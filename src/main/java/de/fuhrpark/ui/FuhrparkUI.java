@@ -49,6 +49,7 @@ public class FuhrparkUI extends JFrame {
         modelField = new JTextField();
         licensePlateField = new JTextField();
         priceField = new JTextField();
+        priceField.setDocument(new PriceDocument());
         listModel = new DefaultListModel<>();
         vehicleList = new JList<>(listModel);
         editButton = new JButton("Bearbeiten");
@@ -108,7 +109,6 @@ public class FuhrparkUI extends JFrame {
         inputPanel.add(licensePlateField, gbc);
         
         gbc.gridy = 4;
-        priceField.setDocument(new PriceDocument());
         inputPanel.add(priceField, gbc);
         
         // Button panel
