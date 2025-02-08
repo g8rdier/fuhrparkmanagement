@@ -2,19 +2,12 @@ package de.fuhrpark.ui;
 
 import de.fuhrpark.model.Fahrzeug;
 import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 public class FahrzeugTableModel extends AbstractTableModel {
-    private List<Fahrzeug> fahrzeuge = new ArrayList<>();
-    private final String[] columnNames = {
-        "Kennzeichen", "Hersteller", "Modell", "Typ", "Baujahr", "Kilometerstand"
-    };
-
-    public void setFahrzeuge(List<Fahrzeug> fahrzeuge) {
-        this.fahrzeuge = new ArrayList<>(fahrzeuge);
-        fireTableDataChanged();
-    }
+    private final List<Fahrzeug> fahrzeuge = new ArrayList<>();
+    private final String[] columnNames = {"Typ", "Kennzeichen", "Marke", "Modell", "Preis"};
 
     @Override
     public int getRowCount() {
@@ -27,25 +20,35 @@ public class FahrzeugTableModel extends AbstractTableModel {
     }
 
     @Override
-    public String getColumnName(int column) {
-        return columnNames[column];
+    public Object getValueAt(int row, int col) {
+        Fahrzeug f = fahrzeuge.get(row);
+        switch (col) {
+            case 0: return f.getTyp();
+            case 1: return f.getKennzeichen();
+            case 2: return f.getMarke();
+            case 3: return f.getModell();
+            case 4: return f.getGrundpreis();
+            default: return null;
+        }
     }
 
     @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        Fahrzeug fahrzeug = fahrzeuge.get(rowIndex);
-        return switch (columnIndex) {
-            case 0 -> fahrzeug.getKennzeichen();
-            case 1 -> fahrzeug.getMarke();
-            case 2 -> fahrzeug.getModell();
-            case 3 -> fahrzeug.getTyp();
-            case 4 -> fahrzeug.getBaujahr();
-            case 5 -> fahrzeug.getKilometerstand();
-            default -> null;
-        };
+    public String getColumnName(int col) {
+        return columnNames[col];
     }
 
-    public Fahrzeug getFahrzeugAt(int rowIndex) {
-        return fahrzeuge.get(rowIndex);
+    public void addFahrzeug(Fahrzeug fahrzeug) {
+        fahrzeuge.add(fahrzeug);
+        fireTableRowsInserted(fahrzeuge.size()-1, fahrzeuge.size()-1);
+    }
+
+    public void updateFahrzeug(int row, Fahrzeug fahrzeug) {
+        fahrzeuge.set(row, fahrzeug);
+        fireTableRowsUpdated(row, row);
+    }
+
+    public void removeFahrzeug(int row) {
+        fahrzeuge.remove(row);
+        fireTableRowsDeleted(row, row);
     }
 } 

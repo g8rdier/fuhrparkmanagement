@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * In-Memory Implementierung des DataStore für Testzwecke
+ */
 public class DataStoreImpl implements DataStore {
     private final Map<String, Fahrzeug> fahrzeuge = new HashMap<>();
 
@@ -17,18 +20,23 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public Fahrzeug getFahrzeug(String kennzeichen) {
+    public void updateFahrzeug(Fahrzeug fahrzeug) {
+        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+    }
+
+    @Override
+    public void deleteFahrzeug(String kennzeichen) {
+        fahrzeuge.remove(kennzeichen);
+    }
+
+    @Override
+    public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
         return fahrzeuge.get(kennzeichen);
     }
 
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
         return new ArrayList<>(fahrzeuge.values());
-    }
-
-    @Override
-    public void deleteFahrzeug(String kennzeichen) {
-        fahrzeuge.remove(kennzeichen);
     }
 
     @Override
