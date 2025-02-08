@@ -21,13 +21,9 @@ public class DatabaseConfig {
     }
 
     public static Connection getConnection() throws SQLException {
-        try {
-            Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Database connection established");
-            return conn;
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("H2 Driver not found", e);
-        }
+        Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        System.out.println("Database connection established");
+        return conn;
     }
 
     public static boolean testConnection() {
