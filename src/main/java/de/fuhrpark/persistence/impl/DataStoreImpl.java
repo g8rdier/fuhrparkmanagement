@@ -1,6 +1,7 @@
 package de.fuhrpark.persistence.impl;
 
 import de.fuhrpark.model.Fahrzeug;
+import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.persistence.DataStore;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,5 +29,17 @@ public class DataStoreImpl implements DataStore {
     @Override
     public void deleteFahrzeug(String kennzeichen) {
         fahrzeuge.remove(kennzeichen);
+    }
+
+    @Override
+    public void saveFahrt(String kennzeichen, FahrtenbuchEintrag eintrag) {
+        // For BANF0-2, we'll implement a simple version that just logs
+        System.out.println("DataStoreImpl: Would save fahrt for " + kennzeichen);
+    }
+
+    @Override
+    public List<FahrtenbuchEintrag> getFahrten(String kennzeichen) {
+        // For BANF0-2, return empty list
+        return new ArrayList<FahrtenbuchEintrag>();
     }
 }

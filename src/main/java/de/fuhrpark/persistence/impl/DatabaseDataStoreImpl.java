@@ -2,6 +2,7 @@ package de.fuhrpark.persistence.impl;
 
 import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.PKW;
+import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.persistence.DataStore;
 import java.sql.*;
 import java.util.ArrayList;
@@ -83,6 +84,18 @@ public class DatabaseDataStoreImpl implements DataStore {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete vehicle", e);
         }
+    }
+
+    @Override
+    public void saveFahrt(String kennzeichen, FahrtenbuchEintrag eintrag) {
+        // For BANF0-2, we'll implement a simple version that just logs
+        System.out.println("DatabaseDataStoreImpl: Would save fahrt for " + kennzeichen);
+    }
+
+    @Override
+    public List<FahrtenbuchEintrag> getFahrten(String kennzeichen) {
+        // For BANF0-2, return empty list
+        return new ArrayList<FahrtenbuchEintrag>();
     }
 
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
