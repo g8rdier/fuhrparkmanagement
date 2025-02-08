@@ -287,7 +287,7 @@ public class FuhrparkUI extends JFrame {
         
         searchField = new JTextField(20);
         searchButton = new JButton("Fahrzeug suchen");
-        searchButton.addActionListener(_ -> searchFahrzeug());
+        searchButton.addActionListener(e -> searchFahrzeug());
         
         searchPanel.add(new JLabel("Kennzeichen:"));
         searchPanel.add(searchField);
@@ -359,9 +359,9 @@ public class FuhrparkUI extends JFrame {
         fahrtenbuchButton = new JButton("Fahrtenbuch öffnen");
         addReparaturButton = new JButton("Reparatur hinzufügen");
         
-        newFahrzeugButton.addActionListener(_ -> handleNewFahrzeug());
-        fahrtenbuchButton.addActionListener(_ -> handleFahrtenbuch());
-        addReparaturButton.addActionListener(_ -> handleAddReparatur());
+        newFahrzeugButton.addActionListener(e -> handleNewFahrzeug());
+        fahrtenbuchButton.addActionListener(e -> handleFahrtenbuch());
+        addReparaturButton.addActionListener(e -> handleAddReparatur());
         
         buttonPanel.add(newFahrzeugButton);
         buttonPanel.add(fahrtenbuchButton);
