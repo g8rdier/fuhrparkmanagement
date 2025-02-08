@@ -6,7 +6,7 @@ import de.fuhrpark.service.FahrzeugService;
 import de.fuhrpark.service.FahrtenbuchService;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
-import de.fuhrpark.ui.MainWindow;
+import de.fuhrpark.ui.FuhrparkUI;
 
 public class App {
     public static void main(String[] args) {
@@ -15,8 +15,8 @@ public class App {
         FahrtenbuchService fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
         
         javax.swing.SwingUtilities.invokeLater(() -> {
-            MainWindow window = new MainWindow(fahrzeugService, fahrtenbuchService);
-            window.setVisible(true);
+            FuhrparkUI ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService);
+            ui.setVisible(true);
         });
     }
 }
