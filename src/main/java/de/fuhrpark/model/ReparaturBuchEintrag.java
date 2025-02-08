@@ -4,70 +4,40 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class ReparaturBuchEintrag {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    
+    private Long id;
     private String kennzeichen;
-    private double kosten;
-    private String beschreibung;
-    private String werkstatt;
     private LocalDate datum;
+    private String beschreibung;
+    private double kosten;
+    private String werkstatt;
 
-    public ReparaturBuchEintrag(LocalDate datum, String beschreibung, double kosten, String werkstatt) {
-        this.datum = datum;
-        this.beschreibung = beschreibung;
-        this.kosten = kosten;
-        this.werkstatt = werkstatt;
-    }
-
-    // Alternative constructor for string date input
-    public ReparaturBuchEintrag(String datumStr, String beschreibung, double kosten, String werkstatt) {
-        this.datum = LocalDate.parse(datumStr, DATE_FORMATTER);
-        this.beschreibung = beschreibung;
-        this.kosten = kosten;
-        this.werkstatt = werkstatt;
-    }
-
-    public String getKennzeichen() {
-        return kennzeichen;
-    }
-
-    public void setKennzeichen(String kennzeichen) {
+    public ReparaturBuchEintrag(Long id, String kennzeichen, LocalDate datum, 
+                               String beschreibung, double kosten, String werkstatt) {
+        this.id = id;
         this.kennzeichen = kennzeichen;
-    }
-
-    public double getKosten() {
-        return kosten;
-    }
-
-    public void setKosten(double kosten) {
-        this.kosten = kosten;
-    }
-
-    public String getBeschreibung() {
-        return beschreibung;
-    }
-
-    public void setBeschreibung(String beschreibung) {
+        this.datum = datum;
         this.beschreibung = beschreibung;
-    }
-
-    public String getWerkstatt() {
-        return werkstatt;
-    }
-
-    public void setWerkstatt(String werkstatt) {
+        this.kosten = kosten;
         this.werkstatt = werkstatt;
     }
 
-    public LocalDate getDatum() {
-        return datum;
-    }
+    // Getters
+    public Long getId() { return id; }
+    public String getKennzeichen() { return kennzeichen; }
+    public LocalDate getDatum() { return datum; }
+    public String getBeschreibung() { return beschreibung; }
+    public double getKosten() { return kosten; }
+    public String getWerkstatt() { return werkstatt; }
 
-    public void setDatum(LocalDate datum) {
-        this.datum = datum;
-    }
+    // Setters
+    public void setId(Long id) { this.id = id; }
+    public void setKennzeichen(String kennzeichen) { this.kennzeichen = kennzeichen; }
+    public void setDatum(LocalDate datum) { this.datum = datum; }
+    public void setBeschreibung(String beschreibung) { this.beschreibung = beschreibung; }
+    public void setKosten(double kosten) { this.kosten = kosten; }
+    public void setWerkstatt(String werkstatt) { this.werkstatt = werkstatt; }
 
     public String getDatumFormatted() {
-        return datum.format(DATE_FORMATTER);
+        return datum.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 } 

@@ -46,41 +46,46 @@ public class FahrtenbuchDialog extends JDialog {
     }
 
     private void handleAddFahrt() {
-        // Create input dialog for new entry
-        JTextField startKmField = new JTextField(10);
-        JTextField endKmField = new JTextField(10);
-        JTextField zweckField = new JTextField(20);
+        JTextField startOrtField = new JTextField(20);
+        JTextField zielOrtField = new JTextField(20);
+        JTextField kilometerField = new JTextField(10);
+        JTextField fahrerField = new JTextField(20);
+        JTextField grundField = new JTextField(20);
 
         JPanel panel = new JPanel(new GridLayout(0, 2));
-        panel.add(new JLabel("Start KM:"));
-        panel.add(startKmField);
-        panel.add(new JLabel("End KM:"));
-        panel.add(endKmField);
-        panel.add(new JLabel("Zweck:"));
-        panel.add(zweckField);
+        panel.add(new JLabel("Start Ort:"));
+        panel.add(startOrtField);
+        panel.add(new JLabel("Ziel Ort:"));
+        panel.add(zielOrtField);
+        panel.add(new JLabel("Kilometer:"));
+        panel.add(kilometerField);
+        panel.add(new JLabel("Fahrer:"));
+        panel.add(fahrerField);
+        panel.add(new JLabel("Grund:"));
+        panel.add(grundField);
 
         int result = JOptionPane.showConfirmDialog(this, panel, 
             "Neue Fahrt", JOptionPane.OK_CANCEL_OPTION);
             
         if (result == JOptionPane.OK_OPTION) {
             try {
-                double startKm = Double.parseDouble(startKmField.getText());
-                double endKm = Double.parseDouble(endKmField.getText());
-                String zweck = zweckField.getText();
-
-                FahrtenbuchEintrag eintrag = FahrtenbuchEintrag.builder()
-                    .kennzeichen(kennzeichen)
-                    .datum(LocalDate.now())
-                    .startKilometer(startKm)
-                    .endKilometer(endKm)
-                    .zweck(zweck)
-                    .build();
+                double kilometer = Double.parseDouble(kilometerField.getText());
+                
+                FahrtenbuchEintrag eintrag = new FahrtenbuchEintrag(
+                    LocalDate.now(),
+                    startOrtField.getText(),
+                    zielOrtField.getText(),
+                    kilometer,
+                    kennzeichen,
+                    fahrerField.getText()
+                );
+                eintrag.setGrund(grundField.getText());
 
                 fahrtenbuchService.addFahrt(kennzeichen, eintrag);
                 refreshTable();
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this,
-                    "Bitte geben Sie gültige Zahlen für die Kilometerstände ein.",
+                    "Bitte geben Sie eine gültige Zahl für die Kilometer ein.",
                     "Eingabefehler",
                     JOptionPane.ERROR_MESSAGE);
             }
