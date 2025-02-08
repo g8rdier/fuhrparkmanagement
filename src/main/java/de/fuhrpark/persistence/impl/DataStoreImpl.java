@@ -1,197 +1,92 @@
-package de.fuhrpark.persistence.impl;
+package de.fuhrpark.persistence;
 
 import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.FahrtenbuchEintrag;
-import de.fuhrpark.model.ReparaturBuchEintrag;
-import de.fuhrpark.persistence.DataStore;
-import java.io.*;  // This includes FileNotFoundException
+import de.fuhrpark.model.PKW;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class DataStoreImpl implements DataStore {
-    private Map<String, Fahrzeug> fahrzeuge;
-    private Map<String, List<ReparaturBuchEintrag>> reparaturen;
-    private Map<String, List<FahrtenbuchEintrag>> fahrten;
-    private final String filename;
+public class DatabaseDataStoreImpl implements DataStore {
+    private static final String DB_URL = "jdbc:sqlite:fuhrpark.db";
 
-    public DataStoreImpl(String filename) {
-        this.filename = filename;
-        loadFromFile();
+    public DatabaseDataStoreImpl() {
+        initializeDatabase();
     }
 
-    private void loadFromFile() {
-        try {
-            File file = new File(filename);
-            if (file.exists()) {
-                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Fahrzeug> loadedFahrzeuge = (Map<String, Fahrzeug>) ois.readObject();
-                    @SuppressWarnings("unchecked")
-                    Map<String, List<ReparaturBuchEintrag>> loadedReparaturen = (Map<String, List<ReparaturBuchEintrag>>) ois.readObject();
-                    @SuppressWarnings("unchecked")
-                    Map<String, List<FahrtenbuchEintrag>> loadedFahrten = (Map<String, List<FahrtenbuchEintrag>>) ois.readObject();
-                    
-                    this.fahrzeuge = loadedFahrzeuge;
-                    this.reparaturen = loadedReparaturen;
-                    this.fahrten = loadedFahrten;
-                }
-            } else {
-                this.fahrzeuge = new HashMap<>();
-                this.reparaturen = new HashMap<>();
-                this.fahrten = new HashMap<>();
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error loading data: " + e.getMessage());
-            this.fahrzeuge = new HashMap<>();
-            this.reparaturen = new HashMap<>();
-            this.fahrten = new HashMap<>();
+    private void initializeDatabase() {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("CREATE TABLE IF NOT EXISTS fahrzeuge (" +
+                        "kennzeichen TEXT PRIMARY KEY," +
+                        "typ TEXT NOT NULL)");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    }
-
-    private void saveToFile() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
-            oos.writeObject(fahrzeuge);
-            oos.writeObject(reparaturen);
-            oos.writeObject(fahrten);
-        } catch (IOException e) {
-            System.err.println("Error saving data: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void addFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
-        saveToFile();
-    }
-
-    @Override
-    public void updateFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
-        saveToFile();
     }
 
     @Override
     public void saveFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
-        saveToFile();
-    }
-
-    @Override
-    public void deleteFahrzeug(String kennzeichen) {
-        fahrzeuge.remove(kennzeichen);
-        saveToFile();
+        String sql = "INSERT OR REPLACE INTO fahrzeuge (kennzeichen, typ) VALUES (?, ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, fahrzeug.getKennzeichen());
+            pstmt.setString(2, fahrzeug.getTyp());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        return fahrzeuge.get(kennzeichen);
+        String sql = "SELECT * FROM fahrzeuge WHERE kennzeichen = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, kennzeichen);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return createFahrzeugFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
-        return new ArrayList<>(fahrzeuge.values());
-    }
-
-    @Override
-    public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
-        return fahrzeuge.get(kennzeichen);
-    }
-
-    @Override
-    public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        if (!fahrzeuge.containsKey(eintrag.getKennzeichen())) {
-            throw new IllegalArgumentException("Fahrzeug nicht gefunden: " + eintrag.getKennzeichen());
-        }
-        fahrten.computeIfAbsent(eintrag.getKennzeichen(), k -> new ArrayList<>()).add(eintrag);
-        saveToFile();
-    }
-
-    @Override
-    public List<FahrtenbuchEintrag> getFahrtenbuchEintraege() {
-        List<FahrtenbuchEintrag> alleEintraege = new ArrayList<>();
-        fahrten.values().forEach(alleEintraege::addAll);
-        return alleEintraege;
-    }
-
-    @Override
-    public List<FahrtenbuchEintrag> getFahrtenbuchEintraege(String kennzeichen) {
-        return fahrten.getOrDefault(kennzeichen, new ArrayList<>());
-    }
-
-    @Override
-    public void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag) {
-        String kennzeichen = eintrag.getKennzeichen();
-        reparaturen.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
-        saveToFile();
-    }
-
-    @Override
-    public void saveReparatur(String kennzeichen, ReparaturBuchEintrag reparatur) {
-        reparaturen.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(reparatur);
-        saveToFile();
-    }
-
-    @Override
-    public List<ReparaturBuchEintrag> getReparaturBuchEintraege() {
-        List<ReparaturBuchEintrag> alleEintraege = new ArrayList<>();
-        reparaturen.values().forEach(alleEintraege::addAll);
-        return alleEintraege;
-    }
-
-    @Override
-    public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
-        return reparaturen.getOrDefault(kennzeichen, new ArrayList<>());
-    }
-
-    @Override
-    public List<ReparaturBuchEintrag> getReparaturen() {
-        List<ReparaturBuchEintrag> alleReparaturen = new ArrayList<>();
-        reparaturen.values().forEach(alleEintraege -> alleReparaturen.addAll(alleEintraege));
-        return alleReparaturen;
-    }
-
-    @Override
-    public void save(String filename, Object data) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream(filename))) {
-            oos.writeObject(data);
-        } catch (IOException e) {
-            throw new RuntimeException("Error saving data to " + filename, e);
-        }
-    }
-
-    @Override
-    public Object load(String filename) {
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(filename))) {
-            return ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            // If file doesn't exist yet, return null instead of throwing
-            if (e instanceof FileNotFoundException) {
-                return null;
+        List<Fahrzeug> fahrzeuge = new ArrayList<>();
+        String sql = "SELECT * FROM fahrzeuge";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                fahrzeuge.add(createFahrzeugFromResultSet(rs));
             }
-            throw new RuntimeException("Error loading data from " + filename, e);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return fahrzeuge;
+    }
+
+    @Override
+    public void deleteFahrzeug(String kennzeichen) {
+        String sql = "DELETE FROM fahrzeuge WHERE kennzeichen = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, kennzeichen);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    @Override
-    public List<Fahrzeug> getFahrzeuge() {
-        return getAlleFahrzeuge();
-    }
-
-    @Override
-    public void saveFahrt(String kennzeichen, FahrtenbuchEintrag fahrt) {
-        if (!fahrzeuge.containsKey(kennzeichen)) {
-            throw new IllegalArgumentException("Fahrzeug nicht gefunden: " + kennzeichen);
+    private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
+        String kennzeichen = rs.getString("kennzeichen");
+        String typ = rs.getString("typ");
+        if ("PKW".equals(typ)) {
+            return new PKW(kennzeichen);
         }
-        fahrten.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(fahrt);
-        saveToFile();
-    }
-
-    @Override
-    public List<FahrtenbuchEintrag> getFahrten(String kennzeichen) {
-        return fahrten.getOrDefault(kennzeichen, new ArrayList<>());
+        throw new IllegalStateException("Unknown vehicle type: " + typ);
     }
 }
