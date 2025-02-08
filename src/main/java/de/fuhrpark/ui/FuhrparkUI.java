@@ -424,4 +424,21 @@ public class FuhrparkUI extends JFrame {
     private void refreshFahrzeugTable() {
         // Implementation of refreshFahrzeugTable method
     }
+
+    private void handleReparaturBuchOeffnen() {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Bitte wählen Sie zuerst ein Fahrzeug aus.",
+                "Kein Fahrzeug ausgewählt",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int modelRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
+        String kennzeichen = (String) fahrzeugTable.getModel().getValueAt(modelRow, 0);
+        
+        var dialog = new ReparaturBuchDialog(this, kennzeichen, reparaturService);
+        dialog.setVisible(true);
+    }
 } 

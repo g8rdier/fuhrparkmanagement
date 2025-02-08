@@ -18,6 +18,7 @@ public class FahrtenbuchDialog extends JDialog {
     private final JTextField firmaNameField = new JTextField(20);
     private final JTextField grundField = new JTextField(20);
     private final JComboBox<String> fahrerTypCombo = new JComboBox<>(new String[]{"Privat", "Firma"});
+    private final JPanel namePanel = new JPanel(new CardLayout());
     private FahrtenbuchEintrag result = null;
 
     public FahrtenbuchDialog(Frame owner, String kennzeichen, FahrtenbuchService service) {
@@ -51,34 +52,55 @@ public class FahrtenbuchDialog extends JDialog {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
 
         // Add components
-        addComponent(mainPanel, new JLabel("Start:"), startOrtField, gbc, 0);
-        addComponent(mainPanel, new JLabel("Ziel:"), zielOrtField, gbc, 1);
-        addComponent(mainPanel, new JLabel("Kilometer:"), kilometerField, gbc, 2);
-        
-        // Add driver type with listener
-        addComponent(mainPanel, new JLabel("Fahrer Typ:"), fahrerTypCombo, gbc, 3);
-        fahrerTypCombo.addActionListener(e -> {
-            boolean isFirma = "Firma".equals(fahrerTypCombo.getSelectedItem());
-            fahrerNameField.setVisible(!isFirma);
-            firmaNameField.setVisible(isFirma);
-        });
-        
-        // Add both name fields
-        JPanel namePanel = new JPanel(new CardLayout());
-        namePanel.add(fahrerNameField, "privat");
-        namePanel.add(firmaNameField, "firma");
-        addComponent(mainPanel, new JLabel("Name:"), namePanel, gbc, 4);
-        
-        addComponent(mainPanel, new JLabel("Grund:"), grundField, gbc, 5);
-        
-        // Pre-fill and disable kennzeichen field
-        kennzeichenField.setText(kennzeichen);
-        kennzeichenField.setEnabled(false);
-        addComponent(mainPanel, new JLabel("Kennzeichen:"), kennzeichenField, gbc, 6);
+        mainPanel.add(new JLabel("Start:"), gbc);
+        gbc.gridx = 1;
+        mainPanel.add(startOrtField, gbc);
 
-        // Button panel
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Ziel:"), gbc);
+        gbc.gridx = 1;
+        mainPanel.add(zielOrtField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Kilometer:"), gbc);
+        gbc.gridx = 1;
+        mainPanel.add(kilometerField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Fahrer Typ:"), gbc);
+        gbc.gridx = 1;
+        mainPanel.add(fahrerTypCombo, gbc);
+
+        // Setup name panel with card layout
+        namePanel.add(fahrerNameField, "Privat");
+        namePanel.add(firmaNameField, "Firma");
+
+        fahrerTypCombo.addActionListener(e -> {
+            CardLayout cl = (CardLayout) namePanel.getLayout();
+            cl.show(namePanel, fahrerTypCombo.getSelectedItem().toString());
+        });
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Name:"), gbc);
+        gbc.gridx = 1;
+        mainPanel.add(namePanel, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        mainPanel.add(new JLabel("Grund:"), gbc);
+        gbc.gridx = 1;
+        mainPanel.add(grundField, gbc);
+
+        // Buttons
         JPanel buttonPanel = new JPanel();
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
@@ -86,16 +108,9 @@ public class FahrtenbuchDialog extends JDialog {
         okButton.addActionListener(e -> {
             if (isInputValid()) {
                 result = createFahrtenbuchEintrag();
-                service.addEintrag(result);
-                ((FahrtenbuchTableModel)table.getModel()).updateData(
-                    service.getEintraegeForFahrzeug(kennzeichen)
-                );
-                dialog.dispose();
-            } else {
-                JOptionPane.showMessageDialog(dialog, 
-                    "Bitte füllen Sie alle Felder aus.", 
-                    "Ungültige Eingabe", 
-                    JOptionPane.ERROR_MESSAGE);
+                if (result != null) {
+                    dialog.dispose();
+                }
             }
         });
 
@@ -112,17 +127,6 @@ public class FahrtenbuchDialog extends JDialog {
         dialog.setVisible(true);
     }
 
-    private void addComponent(JPanel panel, JLabel label, JComponent field, 
-                            GridBagConstraints gbc, int row) {
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        panel.add(label, gbc);
-
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(field, gbc);
-    }
-
     private boolean isInputValid() {
         return !startOrtField.getText().trim().isEmpty() &&
                !zielOrtField.getText().trim().isEmpty() &&
@@ -134,9 +138,10 @@ public class FahrtenbuchDialog extends JDialog {
 
     private FahrtenbuchEintrag createFahrtenbuchEintrag() {
         try {
-            boolean isFirma = "Firma".equals(fahrerTypCombo.getSelectedItem());
-            String name = isFirma ? firmaNameField.getText().trim() : fahrerNameField.getText().trim();
-            
+            String selectedName = fahrerTypCombo.getSelectedItem().toString().equals("Privat") 
+                ? fahrerNameField.getText().trim() 
+                : firmaNameField.getText().trim();
+
             return new FahrtenbuchEintrag(
                 LocalDate.now(),
                 startOrtField.getText().trim(),
@@ -144,7 +149,7 @@ public class FahrtenbuchDialog extends JDialog {
                 Double.parseDouble(kilometerField.getText().trim()),
                 kennzeichenField.getText().trim(),
                 fahrerTypCombo.getSelectedItem().toString(),
-                name,
+                selectedName,
                 grundField.getText().trim()
             );
         } catch (NumberFormatException e) {

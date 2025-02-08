@@ -6,7 +6,7 @@ import java.util.List;
 
 public class FahrtenbuchTableModel extends AbstractTableModel {
     private List<FahrtenbuchEintrag> eintraege;
-    private final String[] columnNames = {"Datum", "Start", "Ziel", "Kilometer", "Fahrer"};
+    private final String[] columnNames = {"Fahrer", "Datum", "Start", "Ziel", "Kilometer", "Grund"};
 
     public FahrtenbuchTableModel(List<FahrtenbuchEintrag> eintraege) {
         this.eintraege = eintraege;
@@ -31,11 +31,12 @@ public class FahrtenbuchTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         FahrtenbuchEintrag eintrag = eintraege.get(rowIndex);
         return switch (columnIndex) {
-            case 0 -> eintrag.getDatum();
-            case 1 -> eintrag.getStartOrt();
-            case 2 -> eintrag.getZielOrt();
-            case 3 -> eintrag.getKilometer();
-            case 4 -> eintrag.getFahrer();
+            case 0 -> eintrag.getFahrerName();
+            case 1 -> eintrag.getDatum();
+            case 2 -> eintrag.getStartOrt();
+            case 3 -> eintrag.getZielOrt();
+            case 4 -> String.format("%.1f", eintrag.getKilometer());
+            case 5 -> eintrag.getGrund();
             default -> null;
         };
     }
