@@ -54,7 +54,7 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        fahrtenbuch.computeIfAbsent(eintrag.getKennzeichen(), _ -> new ArrayList<>())
+        fahrtenbuch.computeIfAbsent(eintrag.getKennzeichen(), k -> new ArrayList<>())
                   .add(eintrag);
     }
 
@@ -72,13 +72,13 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag) {
-        reparaturen.computeIfAbsent(eintrag.getKennzeichen(), _ -> new ArrayList<>())
+        reparaturen.computeIfAbsent(eintrag.getKennzeichen(), k -> new ArrayList<>())
                   .add(eintrag);
     }
 
     @Override
     public void saveReparatur(String kennzeichen, ReparaturBuchEintrag eintrag) {
-        reparaturen.computeIfAbsent(kennzeichen, _ -> new ArrayList<>()).add(eintrag);
+        reparaturen.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
     }
 
     @Override

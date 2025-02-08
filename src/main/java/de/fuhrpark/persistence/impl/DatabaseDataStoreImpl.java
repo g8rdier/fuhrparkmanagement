@@ -84,7 +84,7 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        fahrtenbuch.computeIfAbsent(eintrag.getKennzeichen(), _ -> new ArrayList<>())
+        fahrtenbuch.computeIfAbsent(eintrag.getKennzeichen(), k -> new ArrayList<>())
                   .add(eintrag);
     }
 
@@ -102,7 +102,7 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag) {
-        reparaturen.computeIfAbsent(eintrag.getKennzeichen(), _ -> new ArrayList<>())
+        reparaturen.computeIfAbsent(eintrag.getKennzeichen(), k -> new ArrayList<>())
                   .add(eintrag);
     }
 
