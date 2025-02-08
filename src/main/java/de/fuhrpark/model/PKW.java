@@ -5,6 +5,7 @@ import de.fuhrpark.model.enums.FahrzeugTyp;
 public class PKW extends Fahrzeug {
     
     public PKW(String kennzeichen) {
+        super();  // Explicitly call the parent's default constructor
         this.kennzeichen = kennzeichen;
     }
 
