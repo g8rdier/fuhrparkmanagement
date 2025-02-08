@@ -43,9 +43,10 @@ public class VehicleEditDialog extends JDialog {
         addFormField(inputPanel, "Kennzeichen: *", licensePlateField, gbc, 3);
         addFormField(inputPanel, "Kaufpreis (€): *", priceField, gbc, 4);
 
-        // Add required fields note
+        // Add required fields note with smaller font
         JLabel requiredNote = new JLabel("* Pflichtfeld");
         requiredNote.setForeground(Color.RED);
+        requiredNote.setFont(requiredNote.getFont().deriveFont(10.0f));  // Make font smaller
         gbc.gridy = 5;
         gbc.gridx = 0;
         gbc.gridwidth = 2;

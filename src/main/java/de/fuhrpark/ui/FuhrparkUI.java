@@ -153,9 +153,10 @@ public class FuhrparkUI extends JFrame {
             deleteButton.setEnabled(hasSelection);
         });
         
-        // Add a note about required fields
+        // Add a note about required fields with smaller font
         JLabel requiredNote = new JLabel("* Pflichtfeld");
         requiredNote.setForeground(Color.RED);
+        requiredNote.setFont(requiredNote.getFont().deriveFont(10.0f));  // Make font smaller
         gbc.gridy++;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -172,7 +173,11 @@ public class FuhrparkUI extends JFrame {
         String licensePlate = licensePlateField.getText().trim();
         String priceText = priceField.getText().trim();
 
-        // Only validate required fields
+        // Validate required fields
+        if (brand.isEmpty()) {
+            showError("Bitte geben Sie eine Marke ein.");
+            return;
+        }
         if (licensePlate.isEmpty()) {
             showError("Bitte geben Sie ein Kennzeichen ein.");
             return;
