@@ -14,11 +14,14 @@ public class FahrzeugServiceImpl implements FahrzeugService {
 
     @Override
     public void saveFahrzeug(Fahrzeug fahrzeug) {
-        if (getFahrzeugByKennzeichen(fahrzeug.getKennzeichen()) == null) {
-            addFahrzeug(fahrzeug);
-        } else {
-            updateFahrzeug(fahrzeug);
+        System.out.println("FahrzeugService: Saving vehicle " + fahrzeug.getKennzeichen());
+        dataStore.saveFahrzeug(fahrzeug);
+        // Verify save was successful
+        Fahrzeug saved = getFahrzeug(fahrzeug.getKennzeichen());
+        if (saved == null) {
+            throw new RuntimeException("Vehicle was not saved successfully");
         }
+        System.out.println("FahrzeugService: Vehicle saved successfully");
     }
 
     @Override
@@ -38,7 +41,9 @@ public class FahrzeugServiceImpl implements FahrzeugService {
 
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
-        return dataStore.getAlleFahrzeuge();
+        List<Fahrzeug> fahrzeuge = dataStore.getFahrzeuge();
+        System.out.println("FahrzeugService: Retrieved " + fahrzeuge.size() + " vehicles");
+        return fahrzeuge;
     }
 
     @Override
