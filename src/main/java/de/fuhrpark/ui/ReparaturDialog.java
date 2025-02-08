@@ -42,7 +42,7 @@ public class ReparaturDialog extends JDialog {
 
     
         JButton okButton = new JButton("Speichern");
-        okButton.addActionListener(e -> saveAndClose());
+        okButton.addActionListener(e -> handleAddReparatur());
         add(okButton);
 
         JButton cancelButton = new JButton("Abbrechen");
@@ -53,28 +53,22 @@ public class ReparaturDialog extends JDialog {
         setLocationRelativeTo(getParent());
     }
 
-    private void saveAndClose() {
+    private void handleAddReparatur() {
         try {
-            LocalDate datum = LocalDate.parse(datumField.getText(), DATE_FORMATTER);
-            double kosten = Double.parseDouble(kostenField.getText().replace(",", "."));
-            
-            result = new ReparaturBuchEintrag(
+            LocalDate datum = LocalDate.now();
+            ReparaturBuchEintrag reparatur = new ReparaturBuchEintrag(
                 datum,
                 beschreibungField.getText(),
-                kosten,
+                Double.parseDouble(kostenField.getText()),
                 werkstattField.getText()
             );
             
+            result = reparatur;
             dispose();
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this,
-                "Ungültiges Datumsformat. Bitte TT.MM.JJJJ verwenden.",
-                "Fehler",
-                JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this,
-                "Ungültiges Kostenformat. Bitte eine Zahl eingeben.",
-                "Fehler",
+                "Bitte geben Sie einen gültigen Betrag für die Kosten ein.",
+                "Eingabefehler",
                 JOptionPane.ERROR_MESSAGE);
         }
     }

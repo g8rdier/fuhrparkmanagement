@@ -1804,3 +1804,12 @@ SELECT * FROM fahrtenbuch WHERE kennzeichen = ? ORDER BY datum DESC [42122-224]
 2025-02-08 16:28:57.349835+01:00 jdbc[84]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
 SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 16:59:59.448863+01:00 jdbc[86]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 16:59:59.973836+01:00 jdbc[88]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
+2025-02-08 17:00:00.571555+01:00 jdbc[90]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REPARATURBUCH" not found; SQL statement:
+SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC [42102-224]
