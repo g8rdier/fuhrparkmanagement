@@ -1,7 +1,7 @@
 package de.fuhrpark.service.impl;
 
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.enums.FahrzeugTyp;  // Updated import path
+import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.model.impl.PKW;
 import de.fuhrpark.model.impl.LKW;
 import de.fuhrpark.service.base.FahrzeugFactory;
