@@ -1,21 +1,19 @@
 package de.fuhrpark.persistence.repository;
 
-import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.FahrtenbuchEintrag;
+import de.fuhrpark.model.base.Fahrzeug;
 import java.util.List;
 
 /**
  * Interface für die Datenpersistenz
  */
 public interface DataStore {
-    // Fahrzeug methods
-    void saveFahrzeug(Fahrzeug fahrzeug);
-    void updateFahrzeug(Fahrzeug fahrzeug);
-    void deleteFahrzeug(String kennzeichen);
-    Fahrzeug getFahrzeugByKennzeichen(String kennzeichen);
-    List<Fahrzeug> getAlleFahrzeuge();
+    void addFahrtenbuchEintrag(String kennzeichen, FahrtenbuchEintrag eintrag);
+    List<FahrtenbuchEintrag> getFahrtenForFahrzeug(String kennzeichen);
     
-    // Fahrtenbuch methods
-    void saveFahrt(String kennzeichen, FahrtenbuchEintrag eintrag);
-    List<FahrtenbuchEintrag> getFahrten(String kennzeichen);
+    // Fahrzeug methods
+    void speichereFahrzeug(Fahrzeug fahrzeug);
+    void loescheFahrzeug(String kennzeichen);
+    Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen);
+    List<Fahrzeug> getAlleFahrzeuge();
 }
