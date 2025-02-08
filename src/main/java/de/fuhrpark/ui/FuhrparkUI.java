@@ -41,6 +41,10 @@ public class FuhrparkUI extends JFrame {
     
     private static final String OTHER_BRAND = "Other";
 
+    private JButton editButton;
+    private JButton deleteButton;
+    private static final String LICENSE_PLATE_PATTERN = "^[A-ZÖÜÄ]{1,3}-[A-Z]{1,2} [1-9][0-9]{0,3}$";
+
     public FuhrparkUI() {
         setTitle("Fuhrpark Verwaltung");
         setLayout(new BorderLayout(10, 10));
@@ -89,18 +93,38 @@ public class FuhrparkUI extends JFrame {
         licensePlateField = new JTextField();
         inputPanel.add(licensePlateField);
         
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         saveButton = new JButton("Fahrzeug hinzufügen");
+        editButton = new JButton("Bearbeiten");
+        deleteButton = new JButton("Löschen");
+        
         saveButton.addActionListener(e -> addVehicle());
+        editButton.addActionListener(e -> editVehicle());
+        deleteButton.addActionListener(e -> deleteVehicle());
+        
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(saveButton);
+        
         inputPanel.add(new JLabel(""));
-        inputPanel.add(saveButton);
+        inputPanel.add(buttonPanel);
         
         listModel = new DefaultListModel<>();
         vehicleList = new JList<>(listModel);
         JScrollPane scrollPane = new JScrollPane(vehicleList);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Fahrzeuge"));
         
+        vehicleList.addListSelectionListener(e -> {
+            boolean hasSelection = vehicleList.getSelectedIndex() != -1;
+            editButton.setEnabled(hasSelection);
+            deleteButton.setEnabled(hasSelection);
+        });
+        
         panel.add(inputPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
+        
+        editButton.setEnabled(false);
+        deleteButton.setEnabled(false);
         
         return panel;
     }
@@ -202,12 +226,16 @@ public class FuhrparkUI extends JFrame {
         kilometersField.setText("");
     }
     
+    private boolean isValidLicensePlate(String licensePlate) {
+        return licensePlate.matches(LICENSE_PLATE_PATTERN);
+    }
+    
     private void addVehicle() {
         String type = (String) vehicleTypeCombo.getSelectedItem();
         String selectedBrand = (String) brandCombo.getSelectedItem();
         String brand = OTHER_BRAND.equals(selectedBrand) ? customBrandField.getText().trim() : selectedBrand;
         String model = modelField.getText().trim();
-        String licensePlate = licensePlateField.getText().trim();
+        String licensePlate = licensePlateField.getText().trim().toUpperCase();
         
         if (brand.isEmpty() || model.isEmpty() || licensePlate.isEmpty() || 
             (OTHER_BRAND.equals(selectedBrand) && customBrandField.getText().trim().isEmpty())) {
@@ -218,15 +246,74 @@ public class FuhrparkUI extends JFrame {
             return;
         }
         
+        if (!isValidLicensePlate(licensePlate)) {
+            JOptionPane.showMessageDialog(this,
+                "Ungültiges Kennzeichen. Format: XX-X 1234 (z.B. B-AB 123)",
+                "Fehler",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         String vehicleEntry = String.format("%s [%s] %s %s", 
             type, licensePlate, brand, model);
         listModel.addElement(vehicleEntry);
         
+        clearInputFields();
+    }
+    
+    private void editVehicle() {
+        int selectedIndex = vehicleList.getSelectedIndex();
+        if (selectedIndex == -1) return;
+        
+        String vehicleEntry = listModel.getElementAt(selectedIndex);
+        
+        String[] parts = vehicleEntry.split("\\[|\\]");
+        String type = parts[0].trim();
+        String licensePlate = parts[1].trim();
+        String[] brandModel = parts[2].trim().split(" ", 2);
+        String brand = brandModel[0];
+        String model = brandModel[1];
+        
+        vehicleTypeCombo.setSelectedItem(type);
+        
+        if (java.util.Arrays.asList(CAR_BRANDS).contains(brand)) {
+            brandCombo.setSelectedItem(brand);
+            customBrandField.setText("");
+        } else {
+            brandCombo.setSelectedItem(OTHER_BRAND);
+            customBrandField.setText(brand);
+        }
+        
+        modelField.setText(model);
+        licensePlateField.setText(licensePlate);
+        
+        listModel.remove(selectedIndex);
+        
+        saveButton.setText("Änderungen speichern");
+    }
+    
+    private void deleteVehicle() {
+        int selectedIndex = vehicleList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Möchten Sie das ausgewählte Fahrzeug wirklich löschen?",
+                "Fahrzeug löschen",
+                JOptionPane.YES_NO_OPTION);
+                
+            if (confirm == JOptionPane.YES_OPTION) {
+                listModel.remove(selectedIndex);
+                clearInputFields();
+            }
+        }
+    }
+    
+    private void clearInputFields() {
         brandCombo.setSelectedIndex(0);
         customBrandField.setText("");
         customBrandField.setVisible(false);
         modelField.setText("");
         licensePlateField.setText("");
+        saveButton.setText("Fahrzeug hinzufügen");
     }
     
     public static void main(String[] args) {
