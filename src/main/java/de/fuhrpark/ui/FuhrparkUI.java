@@ -170,6 +170,7 @@ public class FuhrparkUI extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
+                // Create components with proper error handling
                 FahrzeugService service = new FahrzeugServiceImpl();
                 FahrzeugFactory factory = new FahrzeugFactoryImpl();
                 FuhrparkManager manager = new FuhrparkManager(service, factory);
