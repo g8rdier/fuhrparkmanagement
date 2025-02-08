@@ -3,7 +3,6 @@ package de.fuhrpark.manager;
 
 import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.ReparaturBuchEintrag;
-import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.service.FahrzeugService;
 import de.fuhrpark.service.FahrtenbuchService;
 import de.fuhrpark.service.ReparaturService;
