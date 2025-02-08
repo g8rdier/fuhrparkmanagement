@@ -3,17 +3,14 @@ package de.fuhrpark.persistence.impl;
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.persistence.repository.DataStore;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * In-Memory Implementierung des DataStore
  */
 public class DataStoreImpl implements DataStore {
     private final Map<String, Fahrzeug> fahrzeuge = new HashMap<>();
+    private final Map<String, List<FahrtenbuchEintrag>> fahrten = new HashMap<>();
 
     @Override
     public void saveFahrzeug(Fahrzeug fahrzeug) {
@@ -40,6 +37,7 @@ public class DataStoreImpl implements DataStore {
             throw new IllegalArgumentException("Kennzeichen darf nicht null sein");
         }
         fahrzeuge.remove(kennzeichen);
+        fahrten.remove(kennzeichen);
     }
 
     @Override
@@ -57,13 +55,17 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public void saveFahrt(String kennzeichen, FahrtenbuchEintrag eintrag) {
-        // For BANF0-2, we'll implement a simple version that just logs
-        System.out.println("DataStoreImpl: Would save fahrt for " + kennzeichen);
+        if (kennzeichen == null || eintrag == null) {
+            throw new IllegalArgumentException("Kennzeichen und Eintrag dürfen nicht null sein");
+        }
+        fahrten.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
     }
 
     @Override
     public List<FahrtenbuchEintrag> getFahrten(String kennzeichen) {
-        // For BANF0-2, return empty list
-        return new ArrayList<FahrtenbuchEintrag>();
+        if (kennzeichen == null) {
+            throw new IllegalArgumentException("Kennzeichen darf nicht null sein");
+        }
+        return fahrten.getOrDefault(kennzeichen, new ArrayList<>());
     }
 }

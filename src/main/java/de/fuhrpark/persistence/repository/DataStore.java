@@ -1,6 +1,6 @@
-package de.fuhrpark.persistence;
+package de.fuhrpark.persistence.repository;
 
-import de.fuhrpark.model.Fahrzeug;
+import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import java.util.List;
 
