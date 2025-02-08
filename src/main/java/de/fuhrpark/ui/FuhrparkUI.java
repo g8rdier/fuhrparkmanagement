@@ -171,7 +171,7 @@ public class FuhrparkUI extends JFrame {
         inputPanel.add(modelField);
         
         inputPanel.add(new JLabel("Kennzeichen:"));
-        licensePlateField = new JTextField();
+        licensePlateField = createLicensePlateField();
         inputPanel.add(licensePlateField);
         
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -408,6 +408,60 @@ public class FuhrparkUI extends JFrame {
         modelField.setText("");
         licensePlateField.setText("");
         saveButton.setText("Fahrzeug hinzufügen");
+    }
+    
+    private JTextField createLicensePlateField() {
+        JTextField field = new JTextField();
+        field.setDocument(new PlateDocument());
+        return field;
+    }
+    
+    // Custom document for license plate formatting
+    private static class PlateDocument extends javax.swing.text.PlainDocument {
+        @Override
+        public void insertString(int offs, String str, javax.swing.text.AttributeSet a) 
+                throws javax.swing.text.BadLocationException {
+            if (str == null) return;
+            
+            String text = getText(0, getLength());
+            String newText = new StringBuilder(text).insert(offs, str.toUpperCase()).toString();
+            
+            // Remove any existing separators for validation
+            String cleaned = newText.replace("-", "").replace(" ", "");
+            
+            // Max length check (8 chars + 2 separators = 10)
+            if (cleaned.length() > 8) return;
+            
+            // Format the text with separators
+            StringBuilder formatted = new StringBuilder();
+            int charCount = 0;
+            
+            for (char c : cleaned.toCharArray()) {
+                if (charCount == 0) {
+                    // First part (location) starts
+                    formatted.append(c);
+                } else if (charCount <= 2) {
+                    // Still in location part
+                    formatted.append(c);
+                } else if (charCount == 3) {
+                    // After location, add separator and start letters
+                    formatted.append('-').append(c);
+                } else if (charCount == 4) {
+                    // Still in letters part
+                    formatted.append(c);
+                } else if (charCount == 5) {
+                    // Before numbers, add space
+                    formatted.append(' ').append(c);
+                } else {
+                    // Rest of the numbers/special suffix
+                    formatted.append(c);
+                }
+                charCount++;
+            }
+            
+            super.remove(0, getLength());
+            super.insertString(0, formatted.toString(), a);
+        }
     }
     
     public static void main(String[] args) {

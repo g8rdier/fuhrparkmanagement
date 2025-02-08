@@ -59,7 +59,8 @@ public class VehicleEditDialog extends JDialog {
         
         // License plate
         panel.add(new JLabel("Kennzeichen:"));
-        licensePlateField = new JTextField(licensePlate);
+        licensePlateField = parent.createLicensePlateField();
+        licensePlateField.setText(licensePlate);
         panel.add(licensePlateField);
         
         // Buttons
