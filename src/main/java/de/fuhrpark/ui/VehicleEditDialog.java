@@ -7,11 +7,12 @@ public class VehicleEditDialog extends JDialog {
     private final FuhrparkUI parent;
     private final int editingIndex;
     private JComboBox<String> vehicleTypeCombo;
-    private JComboBox<String> brandCombo;
     private JTextField customBrandField;
     private JTextField modelField;
     private JTextField licensePlateField;
     private boolean saveClicked = false;
+    
+    private static final String[] VEHICLE_TYPES = {"PKW", "LKW"};
     
     public VehicleEditDialog(FuhrparkUI parent, String type, String brand, String model, String licensePlate, int editingIndex) {
         super(parent, "Fahrzeug bearbeiten", true);
@@ -24,31 +25,23 @@ public class VehicleEditDialog extends JDialog {
         
         // Vehicle type
         panel.add(new JLabel("Fahrzeugtyp:"));
-        vehicleTypeCombo = new JComboBox<>(new String[]{"PKW", "LKW"});
+        vehicleTypeCombo = new JComboBox<>(VEHICLE_TYPES);
         vehicleTypeCombo.setSelectedItem(type);
         panel.add(vehicleTypeCombo);
         
         // Brand
         panel.add(new JLabel("Marke:"));
         JPanel brandPanel = new JPanel(new BorderLayout());
-        brandCombo = new JComboBox<>(FuhrparkUI.CAR_BRANDS);
         customBrandField = new JTextField();
         
         // Set brand
-        if (java.util.Arrays.asList(FuhrparkUI.CAR_BRANDS).contains(brand)) {
-            brandCombo.setSelectedItem(brand);
-            customBrandField.setVisible(false);
-        } else {
-            brandCombo.setSelectedItem("Other");
+        if (brand != null && !brand.isEmpty()) {
             customBrandField.setText(brand);
             customBrandField.setVisible(true);
+        } else {
+            customBrandField.setVisible(false);
         }
         
-        brandCombo.addActionListener(e -> {
-            customBrandField.setVisible("Other".equals(brandCombo.getSelectedItem()));
-        });
-        
-        brandPanel.add(brandCombo, BorderLayout.NORTH);
         brandPanel.add(customBrandField, BorderLayout.SOUTH);
         panel.add(brandPanel);
         
@@ -127,8 +120,7 @@ public class VehicleEditDialog extends JDialog {
     }
     
     public String getBrand() {
-        String selectedBrand = (String) brandCombo.getSelectedItem();
-        return "Other".equals(selectedBrand) ? customBrandField.getText().trim() : selectedBrand;
+        return customBrandField.getText().trim();
     }
     
     public String getModel() {

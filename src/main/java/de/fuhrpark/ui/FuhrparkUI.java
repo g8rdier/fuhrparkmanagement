@@ -240,8 +240,8 @@ public class FuhrparkUI extends JFrame {
         return field;
     }
     
-    // Add method for license plate validation
-    private boolean isLicensePlateInUse(String licensePlate, int excludeIndex) {
+    // Make the method public so VehicleEditDialog can access it
+    public boolean isLicensePlateInUse(String licensePlate, int excludeIndex) {
         for (int i = 0; i < listModel.size(); i++) {
             if (i == excludeIndex) continue;
             String entry = listModel.getElementAt(i);
