@@ -1,5 +1,6 @@
-package de.fuhrpark.ui;
+package de.fuhrpark.ui.dialog;
 
+import de.fuhrpark.ui.model.VehicleData;
 import javax.swing.*;
 import java.awt.*;
 

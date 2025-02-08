@@ -1,7 +1,7 @@
-package de.fuhrpark.ui;
+package de.fuhrpark.ui.dialog;
 
-import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.service.FahrzeugFactory;
+import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import javax.swing.*;
 import java.awt.*;
