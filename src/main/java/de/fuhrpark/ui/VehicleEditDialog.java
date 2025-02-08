@@ -10,9 +10,10 @@ public class VehicleEditDialog extends JDialog {
     private final JTextField brandField;
     private final JTextField modelField;
     private final JTextField licensePlateField;
+    private final JTextField priceField;
     private boolean approved = false;
     
-    public VehicleEditDialog(Frame owner, String type, String brand, String model, String licensePlate) {
+    public VehicleEditDialog(Frame owner, String type, String brand, String model, String licensePlate, String price) {
         super(owner, "Fahrzeug bearbeiten", true);
         
         // Initialize components
@@ -22,6 +23,8 @@ public class VehicleEditDialog extends JDialog {
         brandField = new JTextField(brand, 20);
         modelField = new JTextField(model, 20);
         licensePlateField = new JTextField(licensePlate, 20);
+        priceField = new JTextField(price, 20);
+        priceField.setDocument(new FuhrparkUI.PriceDocument());
         
         initComponents();
         pack();
@@ -59,6 +62,12 @@ public class VehicleEditDialog extends JDialog {
         gbc.gridx = 1;
         add(licensePlateField, gbc);
         
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        add(new JLabel("Kaufpreis (€):"), gbc);
+        gbc.gridx = 1;
+        add(priceField, gbc);
+        
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveButton = new JButton("Speichern");
@@ -77,7 +86,7 @@ public class VehicleEditDialog extends JDialog {
         buttonPanel.add(cancelButton);
         
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         add(buttonPanel, gbc);
@@ -134,5 +143,9 @@ public class VehicleEditDialog extends JDialog {
     
     public String getLicensePlate() {
         return licensePlateField.getText().trim();
+    }
+    
+    public String getPrice() {
+        return priceField.getText().trim();
     }
 } 

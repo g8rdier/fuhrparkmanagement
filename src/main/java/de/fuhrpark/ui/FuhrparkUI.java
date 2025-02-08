@@ -2,6 +2,8 @@ package de.fuhrpark.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class FuhrparkUI extends JFrame {
     // Constants
@@ -15,6 +17,7 @@ public class FuhrparkUI extends JFrame {
     private final JTextField markeField;
     private final JTextField modelField;
     private final JTextField licensePlateField;
+    private final JTextField priceField;
     private final JList<String> vehicleList;
     private final DefaultListModel<String> listModel;
     
@@ -94,6 +97,22 @@ public class FuhrparkUI extends JFrame {
         }
     }
     
+    private static class PriceDocument extends javax.swing.text.PlainDocument {
+        @Override
+        public void insertString(int offs, String str, javax.swing.text.AttributeSet a)
+                throws javax.swing.text.BadLocationException {
+            if (str == null) return;
+            
+            String currentText = getText(0, getLength());
+            String newText = new StringBuilder(currentText).insert(offs, str).toString();
+            
+            // Only allow numbers and one decimal point
+            if (newText.matches("^\\d*\\.?\\d{0,2}$") && newText.length() <= 10) {
+                super.insertString(offs, str, a);
+            }
+        }
+    }
+    
     public static boolean isValidLicensePlate(String licensePlate) {
         if (licensePlate == null || licensePlate.isEmpty()) {
             return false;
@@ -117,6 +136,8 @@ public class FuhrparkUI extends JFrame {
         markeField = new JTextField();
         modelField = new JTextField();
         licensePlateField = createLicensePlateField();
+        priceField = new JTextField();
+        priceField.setDocument(new PriceDocument());
         listModel = new DefaultListModel<>();
         vehicleList = new JList<>(listModel);
         
@@ -136,6 +157,7 @@ public class FuhrparkUI extends JFrame {
         addInputField("Marke:", markeField, gbc, 1);
         addInputField("Modell:", modelField, gbc, 2);
         addInputField("Kennzeichen:", licensePlateField, gbc, 3);
+        addInputField("Kaufpreis (€):", priceField, gbc, 4);
         
         // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -148,13 +170,13 @@ public class FuhrparkUI extends JFrame {
         buttonPanel.add(addButton);
         
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         add(buttonPanel, gbc);
         
         // Vehicle list
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         
@@ -191,6 +213,7 @@ public class FuhrparkUI extends JFrame {
         String brand = markeField.getText().trim();
         String model = modelField.getText().trim();
         String licensePlate = licensePlateField.getText().trim();
+        String price = priceField.getText().trim();
         
         // Validation
         if (brand.isEmpty() || model.isEmpty() || !isValidLicensePlate(licensePlate)) {
@@ -198,12 +221,32 @@ public class FuhrparkUI extends JFrame {
             return;
         }
         
-        // Add to list
-        String vehicleEntry = String.format("%s [%s] %s %s", type, licensePlate, brand, model);
-        listModel.addElement(vehicleEntry);
+        if (price.isEmpty()) {
+            showError("Bitte geben Sie einen Kaufpreis ein.");
+            return;
+        }
         
-        // Clear fields
-        clearFields();
+        try {
+            double priceValue = Double.parseDouble(price);
+            if (priceValue <= 0) {
+                showError("Der Kaufpreis muss größer als 0 sein.");
+                return;
+            }
+            
+            // Format price with two decimal places and thousands separator
+            NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+            String formattedPrice = formatter.format(priceValue);
+            
+            // Add to list with price
+            String vehicleEntry = String.format("%s [%s] %s %s - %s",
+                type, licensePlate, brand, model, formattedPrice);
+            listModel.addElement(vehicleEntry);
+            
+            clearFields();
+            
+        } catch (NumberFormatException e) {
+            showError("Bitte geben Sie einen gültigen Kaufpreis ein.");
+        }
     }
     
     private void editVehicle() {
@@ -217,15 +260,16 @@ public class FuhrparkUI extends JFrame {
         }
 
         String entry = listModel.getElementAt(selectedIndex);
-        // Parse entry (format: "TYPE [PLATE] BRAND MODEL")
+        // Parse entry (format: "TYPE [PLATE] BRAND MODEL - PRICE")
         String type = entry.substring(0, entry.indexOf('[') - 1);
         String plate = entry.substring(entry.indexOf('[') + 1, entry.indexOf(']'));
         String rest = entry.substring(entry.indexOf(']') + 2);
-        String[] parts = rest.split(" ", 2);
+        String[] parts = rest.split(" - ", 2);
         String brand = parts[0];
         String model = parts[1];
+        String price = parts[2];
 
-        VehicleEditDialog dialog = new VehicleEditDialog(this, type, brand, model, plate);
+        VehicleEditDialog dialog = new VehicleEditDialog(this, type, brand, model, plate, price);
         dialog.setVisible(true);
 
         if (dialog.isApproved()) {
@@ -233,10 +277,11 @@ public class FuhrparkUI extends JFrame {
             String newBrand = dialog.getBrand();
             String newModel = dialog.getModel();
             String newPlate = dialog.getLicensePlate();
+            String newPrice = dialog.getPrice();
 
             // Update list entry
-            String newEntry = String.format("%s [%s] %s %s", 
-                newType, newPlate, newBrand, newModel);
+            String newEntry = String.format("%s [%s] %s %s - %s", 
+                newType, newPlate, newBrand, newModel, newPrice);
             listModel.setElementAt(newEntry, selectedIndex);
         }
     }
@@ -252,6 +297,7 @@ public class FuhrparkUI extends JFrame {
         markeField.setText("");
         modelField.setText("");
         licensePlateField.setText("");
+        priceField.setText("");
         fahrzeugTypComboBox.setSelectedIndex(0);
     }
     
@@ -259,6 +305,13 @@ public class FuhrparkUI extends JFrame {
         JOptionPane.showMessageDialog(this,
             "Bitte füllen Sie alle Felder korrekt aus.",
             "Ungültige Eingabe",
+            JOptionPane.ERROR_MESSAGE);
+    }
+    
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this,
+            message,
+            "Fehler",
             JOptionPane.ERROR_MESSAGE);
     }
     
@@ -273,7 +326,7 @@ public class FuhrparkUI extends JFrame {
         for (int i = 0; i < listModel.size(); i++) {
             if (i == excludeIndex) continue;
             String entry = listModel.getElementAt(i);
-            // Extract license plate from entry (format: "TYPE [PLATE] BRAND MODEL")
+            // Extract license plate from entry (format: "TYPE [PLATE] BRAND MODEL - PRICE")
             String plate = entry.substring(entry.indexOf('[') + 1, entry.indexOf(']'));
             if (plate.equals(licensePlate)) {
                 return true;
