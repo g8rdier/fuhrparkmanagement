@@ -3,6 +3,8 @@ package de.fuhrpark.ui;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FuhrparkUI extends JFrame {
     private JComboBox<String> vehicleTypeCombo;
@@ -20,6 +22,9 @@ public class FuhrparkUI extends JFrame {
     private JTextField kilometersField;
     private JList<String> tripsList;
     private DefaultListModel<String> tripsModel;
+    private JLabel selectedVehicleLabel;
+    
+    private Map<String, DefaultListModel<String>> vehicleTrips = new HashMap<>();
 
     public FuhrparkUI() {
         setTitle("Fuhrpark Verwaltung");
@@ -37,13 +42,14 @@ public class FuhrparkUI extends JFrame {
         add(splitPane, BorderLayout.CENTER);
         
         vehicleList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting() && vehicleList.getSelectedIndex() != -1) {
-                logbookPanel.setVisible(true);
+            if (!e.getValueIsAdjusting()) {
+                String selectedVehicle = vehicleList.getSelectedValue();
+                updateLogbookPanel(selectedVehicle);
             }
         });
         
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+        setLocationRelativeTo(null);
     }
     
     private JPanel createVehiclePanel() {
@@ -88,6 +94,10 @@ public class FuhrparkUI extends JFrame {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setBorder(BorderFactory.createTitledBorder("Fahrtenbuch"));
         
+        selectedVehicleLabel = new JLabel("Kein Fahrzeug ausgewählt");
+        selectedVehicleLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        panel.add(selectedVehicleLabel, BorderLayout.NORTH);
+        
         JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
@@ -115,12 +125,66 @@ public class FuhrparkUI extends JFrame {
         tripsModel = new DefaultListModel<>();
         tripsList = new JList<>(tripsModel);
         JScrollPane scrollPane = new JScrollPane(tripsList);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Fahrten"));
         
-        panel.add(inputPanel, BorderLayout.NORTH);
-        panel.add(scrollPane, BorderLayout.CENTER);
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(inputPanel, BorderLayout.NORTH);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        
+        panel.add(centerPanel, BorderLayout.CENTER);
         
         return panel;
+    }
+    
+    private void updateLogbookPanel(String selectedVehicle) {
+        if (selectedVehicle == null) {
+            logbookPanel.setVisible(false);
+            return;
+        }
+        
+        selectedVehicleLabel.setText("Fahrtenbuch für: " + selectedVehicle);
+        
+        tripsModel = vehicleTrips.computeIfAbsent(selectedVehicle, k -> new DefaultListModel<>());
+        tripsList.setModel(tripsModel);
+        
+        logbookPanel.setVisible(true);
+        clearLogbookInputs();
+    }
+    
+    private void addTrip() {
+        String selectedVehicle = vehicleList.getSelectedValue();
+        if (selectedVehicle == null) {
+            JOptionPane.showMessageDialog(this, 
+                "Bitte wählen Sie zuerst ein Fahrzeug aus.", 
+                "Fehler", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String date = dateField.getText().trim();
+        String driver = driverField.getText().trim();
+        String reason = reasonField.getText().trim();
+        String kilometers = kilometersField.getText().trim();
+        
+        if (driver.isEmpty() || reason.isEmpty() || kilometers.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Bitte alle Felder ausfüllen", 
+                "Fehler", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String tripEntry = String.format("%s: %s - %s (%s km)", 
+            date, driver, reason, kilometers);
+        tripsModel.addElement(tripEntry);
+        
+        clearLogbookInputs();
+    }
+    
+    private void clearLogbookInputs() {
+        dateField.setText(LocalDate.now().toString());
+        driverField.setText("");
+        reasonField.setText("");
+        kilometersField.setText("");
     }
     
     private void addVehicle() {
@@ -144,29 +208,6 @@ public class FuhrparkUI extends JFrame {
         brandField.setText("");
         modelField.setText("");
         licensePlateField.setText("");
-    }
-    
-    private void addTrip() {
-        String date = dateField.getText().trim();
-        String driver = driverField.getText().trim();
-        String reason = reasonField.getText().trim();
-        String kilometers = kilometersField.getText().trim();
-        
-        if (driver.isEmpty() || reason.isEmpty() || kilometers.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Bitte alle Felder ausfüllen", 
-                "Fehler", 
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        String tripEntry = String.format("%s: %s - %s (%s km)", 
-            date, driver, reason, kilometers);
-        tripsModel.addElement(tripEntry);
-        
-        driverField.setText("");
-        reasonField.setText("");
-        kilometersField.setText("");
     }
     
     public static void main(String[] args) {
