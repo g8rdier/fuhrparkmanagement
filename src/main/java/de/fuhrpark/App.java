@@ -10,6 +10,7 @@ import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.ReparaturServiceImpl;
 import de.fuhrpark.ui.FuhrparkUI;
+import de.fuhrpark.manager.FuhrparkManager;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -38,14 +39,13 @@ public class App
             
             // Create data store and services
             DataStore dataStore = new DatabaseDataStoreImpl();
-            FahrzeugService fahrzeugService = new FahrzeugServiceImpl(dataStore);
-            FahrtenbuchService fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
-            ReparaturService reparaturService = new ReparaturServiceImpl(dataStore);
-
+            
+            // Create manager which handles services and UI initialization
+            FuhrparkManager manager = new FuhrparkManager(dataStore);
+            
             // Launch UI
             SwingUtilities.invokeLater(() -> {
-                FuhrparkUI ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService, reparaturService);
-                ui.setVisible(true);
+                manager.start();
             });
         } catch (Exception e) {
             e.printStackTrace();
