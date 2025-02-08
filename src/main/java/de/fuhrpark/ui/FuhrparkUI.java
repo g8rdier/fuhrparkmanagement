@@ -429,13 +429,21 @@ public class FuhrparkUI extends JFrame {
             // Remove any existing separators for validation
             String cleaned = newText.replace("-", "").replace(" ", "");
             
-            // Max length check (8 chars + 2 separators = 10)
-            if (cleaned.length() > 8) return;
+            // Check if it ends with H or E
+            String suffix = "";
+            if (cleaned.endsWith("H") || cleaned.endsWith("E")) {
+                suffix = cleaned.substring(cleaned.length() - 1);
+                cleaned = cleaned.substring(0, cleaned.length() - 1);
+            }
+            
+            // Max length check (8 chars including suffix, but excluding separators)
+            if (cleaned.length() + suffix.length() > 8) return;
             
             // Format the text with separators
             StringBuilder formatted = new StringBuilder();
             int charCount = 0;
             
+            // Add the main part (location, letters, numbers)
             for (char c : cleaned.toCharArray()) {
                 if (charCount == 0) {
                     // First part (location) starts
@@ -453,10 +461,15 @@ public class FuhrparkUI extends JFrame {
                     // Before numbers, add space
                     formatted.append(' ').append(c);
                 } else {
-                    // Rest of the numbers/special suffix
+                    // Rest of the numbers
                     formatted.append(c);
                 }
                 charCount++;
+            }
+            
+            // Add the suffix if present
+            if (!suffix.isEmpty()) {
+                formatted.append(suffix);
             }
             
             super.remove(0, getLength());
