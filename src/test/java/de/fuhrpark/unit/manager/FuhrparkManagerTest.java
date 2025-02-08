@@ -1,23 +1,20 @@
 package de.fuhrpark.unit.manager;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Mockito;
 
-import de.fuhrpark.persistence.repository.DataStore;
-import de.fuhrpark.persistence.impl.DatabaseDataStoreImpl;
-import de.fuhrpark.service.base.FahrzeugService;
-import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.service.impl.FahrzeugServiceImpl;
-import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.impl.PKW;
 import de.fuhrpark.model.impl.LKW;
-import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.model.enums.FahrzeugTyp;
+import de.fuhrpark.service.base.FahrzeugService;
+import de.fuhrpark.service.base.FahrzeugFactory;
+import de.fuhrpark.manager.FuhrparkManager;
 
 /**
  * Testet die Funktionalität des FuhrparkManagers
@@ -88,7 +85,7 @@ public class FuhrparkManagerTest {
         double preis = 50000.0;
         
         Fahrzeug mockPKW = new PKW(marke, modell, kennzeichen, preis);
-        Mockito.when(fahrzeugFactory.erstelleFahrzeug(FahrzeugTyp.PKW, marke, modell, kennzeichen, preis))
+        when(fahrzeugFactory.erstelleFahrzeug(FahrzeugTyp.PKW, marke, modell, kennzeichen, preis))
             .thenReturn(mockPKW);
         
         Fahrzeug result = manager.createFahrzeug("PKW", kennzeichen, marke, modell, preis);
@@ -98,7 +95,7 @@ public class FuhrparkManagerTest {
         assertEquals(marke, result.getMarke());
         assertEquals(modell, result.getModell());
         
-        Mockito.verify(fahrzeugService).speichereFahrzeug(mockPKW);
+        verify(fahrzeugService).speichereFahrzeug(mockPKW);
     }
 
     @Test
@@ -107,6 +104,6 @@ public class FuhrparkManagerTest {
         
         manager.deleteFahrzeug(kennzeichen);
         
-        Mockito.verify(fahrzeugService).loescheFahrzeug(kennzeichen);
+        verify(fahrzeugService).loescheFahrzeug(kennzeichen);
     }
 }
