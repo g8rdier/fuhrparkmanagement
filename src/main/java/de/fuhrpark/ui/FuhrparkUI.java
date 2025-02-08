@@ -62,9 +62,6 @@ public class FuhrparkUI extends JFrame {
             // Remove any existing separators
             String cleaned = newText.replace("-", "").replace(" ", "");
             
-            // Only allow valid characters
-            if (!cleaned.matches("[A-ZÄÖÜ0-9HE]*")) return;
-            
             // Check maximum length (8 chars without separators)
             if (cleaned.length() > 8) return;
             
@@ -73,6 +70,18 @@ public class FuhrparkUI extends JFrame {
             int charCount = 0;
             
             for (char c : cleaned.toCharArray()) {
+                // Validate character based on position
+                if (charCount <= 4) {
+                    // First 5 characters must be letters
+                    if (!Character.isLetter(c)) return;
+                } else if (charCount <= 7) {
+                    // Next 3 characters must be numbers
+                    if (!Character.isDigit(c)) return;
+                } else {
+                    // Last character can be H or E
+                    if (c != 'H' && c != 'E') return;
+                }
+                
                 // Add the character
                 formatted.append(c);
                 charCount++;
