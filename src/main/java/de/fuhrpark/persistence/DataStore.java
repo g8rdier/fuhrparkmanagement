@@ -27,4 +27,7 @@ public interface DataStore {
     
     void save(String filename, Object data);
     Object load(String filename);
+
+    void saveFahrt(String kennzeichen, FahrtenbuchEintrag fahrt);
+    List<FahrtenbuchEintrag> getFahrten(String kennzeichen);
 }

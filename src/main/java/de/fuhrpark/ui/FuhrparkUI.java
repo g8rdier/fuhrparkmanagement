@@ -38,11 +38,13 @@ public class FuhrparkUI extends JFrame {
 
     private final JToolBar toolBar = new JToolBar();
 
-    public FuhrparkUI(FahrzeugService fahrzeugService, FahrtenbuchService fahrtenbuchService, ReparaturService reparaturService) {
+    public FuhrparkUI(FahrzeugService fahrzeugService, 
+                     ReparaturService reparaturService,
+                     FahrtenbuchService fahrtenbuchService) {
         super("Fuhrpark Verwaltung");
         this.fahrzeugService = fahrzeugService;
-        this.fahrtenbuchService = fahrtenbuchService;
         this.reparaturService = reparaturService;
+        this.fahrtenbuchService = fahrtenbuchService;
         
         // Initialize repair table model
         reparaturTableModel = new DefaultTableModel(
@@ -57,16 +59,19 @@ public class FuhrparkUI extends JFrame {
         
         reparaturTable = new JTable(reparaturTableModel);
         
-        initializeComponents();
         initializeUI();
     }
 
-    private void initializeComponents() {
+    private void initializeUI() {
         setLayout(new BorderLayout());
         
         // Configure toolbar
         toolBar.setFloatable(false);
         
+        JButton fahrtenbuchButton = new JButton("Fahrtenbuch");
+        fahrtenbuchButton.addActionListener(e -> handleFahrtenbuchOeffnen());
+        toolBar.add(fahrtenbuchButton);
+
         JButton reparaturBuchButton = new JButton("Reparaturbuch");
         reparaturBuchButton.addActionListener(e -> handleReparaturBuchOeffnen());
         toolBar.add(reparaturBuchButton);
@@ -224,19 +229,11 @@ public class FuhrparkUI extends JFrame {
             return;
         }
         
-        // Convert view index to model index in case table is sorted
         int modelRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
         String kennzeichen = (String) fahrzeugTable.getModel().getValueAt(modelRow, 0);
         
-        System.out.println("Opening Fahrtenbuch for: " + kennzeichen);
-        
-        Fahrzeug fahrzeug = fahrzeugService.getFahrzeug(kennzeichen);
-        if (fahrzeug != null) {
-            var dialog = new FahrtenbuchDialog(this, kennzeichen, fahrtenbuchService);
-            dialog.setVisible(true);
-        } else {
-            System.err.println("Could not find vehicle with kennzeichen: " + kennzeichen);
-        }
+        var dialog = new FahrtenbuchDialog(this, kennzeichen, fahrtenbuchService);
+        dialog.setVisible(true);
     }
 
     private void updateFahrtenList(List<FahrtenbuchEintrag> fahrten) {

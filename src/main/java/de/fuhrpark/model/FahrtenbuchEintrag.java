@@ -1,6 +1,7 @@
 package de.fuhrpark.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class FahrtenbuchEintrag {
     private LocalDate datum;
@@ -63,4 +64,12 @@ public class FahrtenbuchEintrag {
     public void setFahrerTyp(String fahrerTyp) { this.fahrerTyp = fahrerTyp; }
     public void setFahrerName(String fahrerName) { this.fahrerName = fahrerName; }
     public void setGrund(String grund) { this.grund = grund; }
+
+    public void setKennzeichen(String kennzeichen) {
+        this.kennzeichen = kennzeichen;
+    }
+
+    public String getDatumFormatted() {
+        return datum.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    }
 } 
