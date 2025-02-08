@@ -43,11 +43,6 @@ public class DataStoreImpl implements DataStore {
     }
 
     @Override
-    public List<Fahrzeug> getFahrzeuge() {
-        return new ArrayList<>(fahrzeuge.values());
-    }
-
-    @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
         return new ArrayList<>(fahrzeuge.values());
     }
@@ -83,7 +78,10 @@ public class DataStoreImpl implements DataStore {
 
     @Override
     public void saveReparatur(String kennzeichen, ReparaturBuchEintrag eintrag) {
-        reparaturen.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
+        if (!reparaturen.containsKey(kennzeichen)) {
+            reparaturen.put(kennzeichen, new ArrayList<>());
+        }
+        reparaturen.get(kennzeichen).add(eintrag);
     }
 
     @Override
