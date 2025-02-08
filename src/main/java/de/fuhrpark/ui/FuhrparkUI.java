@@ -50,26 +50,6 @@ public class FuhrparkUI extends JFrame {
     private static final String NUMBERS_PATTERN = "[1-9][0-9]{0,3}"; // Erkennungsnummer (Ziffern)
     
     private static class PlateDocument extends javax.swing.text.PlainDocument {
-        private boolean isValidChar(char c, int position, String currentText) {
-            // First 1-3 chars must be letters (location)
-            if (position <= 2) {
-                return Character.isLetter(c);
-            }
-            // Next 1-2 chars must be letters (after the dash)
-            else if (position <= 4) {
-                return Character.isLetter(c);
-            }
-            // Next 1-4 chars must be numbers (after the space)
-            else if (position <= 8) {
-                return Character.isDigit(c);
-            }
-            // Last position can be H or E
-            else if (position == 9) {
-                return c == 'H' || c == 'E';
-            }
-            return false;
-        }
-
         @Override
         public void insertString(int offs, String str, javax.swing.text.AttributeSet a) 
                 throws javax.swing.text.BadLocationException {
@@ -78,41 +58,46 @@ public class FuhrparkUI extends JFrame {
             // Convert to uppercase
             str = str.toUpperCase();
             
-            // Get current content
+            // Get current content and create new text
             String currentText = getText(0, getLength());
             String newText = new StringBuilder(currentText).insert(offs, str).toString();
             
-            // Remove formatting for length check
+            // Remove formatting characters for processing
             String cleaned = newText.replace("-", "").replace(" ", "");
             
-            // Check maximum length
-            if (cleaned.length() > 9) return; // Max 8 chars + possible H/E
+            // Check if the input is valid
+            if (!cleaned.matches("[A-ZÄÖÜ]{1,3}[A-Z]{1,2}[0-9]{1,4}[HE]?")) {
+                return;
+            }
             
-            // Build formatted text
+            // Format the text
             StringBuilder formatted = new StringBuilder();
-            int pos = 0;
+            int letterCount = 0;
+            boolean numberStarted = false;
+            boolean suffixAdded = false;
             
             for (char c : cleaned.toCharArray()) {
-                // Validate character at this position
-                if (!isValidChar(c, pos, cleaned)) {
-                    return;
+                // Handle location and letter part
+                if (Character.isLetter(c) && !numberStarted && !suffixAdded) {
+                    if (letterCount == 3) {
+                        formatted.append('-');
+                    }
+                    formatted.append(c);
+                    letterCount++;
                 }
-                
-                // Add formatting
-                if (pos == 0) {
-                    formatted.append(c);
-                } else if (pos <= 2) {
-                    formatted.append(c);
-                } else if (pos == 3) {
-                    formatted.append('-').append(c);
-                } else if (pos == 4) {
-                    formatted.append(c);
-                } else if (pos == 5) {
-                    formatted.append(' ').append(c);
-                } else {
+                // Handle number part
+                else if (Character.isDigit(c) && !suffixAdded) {
+                    if (!numberStarted) {
+                        formatted.append(' ');
+                        numberStarted = true;
+                    }
                     formatted.append(c);
                 }
-                pos++;
+                // Handle H/E suffix
+                else if ((c == 'H' || c == 'E') && numberStarted && !suffixAdded) {
+                    formatted.append(c);
+                    suffixAdded = true;
+                }
             }
             
             // Update document
