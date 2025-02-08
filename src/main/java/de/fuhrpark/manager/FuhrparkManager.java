@@ -2,54 +2,32 @@
 package de.fuhrpark.manager;
 
 import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.ReparaturBuchEintrag;
-import de.fuhrpark.service.FahrzeugService;
-import de.fuhrpark.service.FahrtenbuchService;
-import de.fuhrpark.service.ReparaturService;
-import de.fuhrpark.ui.FuhrparkUI;
-import de.fuhrpark.ui.FahrtenbuchDialog;
+import de.fuhrpark.persistence.DataStore;
+import java.util.List;
 
 /**
  * Verwaltet die Fahrzeuge des Fuhrparks.
  */
 public class FuhrparkManager {
-    private final FahrzeugService fahrzeugService;
-    private final FahrtenbuchService fahrtenbuchService;
-    private final ReparaturService reparaturService;
-    private final FuhrparkUI ui;
+    private final DataStore dataStore;
 
-    public FuhrparkManager(FahrzeugService fahrzeugService, 
-                          FahrtenbuchService fahrtenbuchService,
-                          ReparaturService reparaturService) {
-        this.fahrzeugService = fahrzeugService;
-        this.fahrtenbuchService = fahrtenbuchService;
-        this.reparaturService = reparaturService;
-        this.ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService, reparaturService);
+    public FuhrparkManager(DataStore dataStore) {
+        this.dataStore = dataStore;
     }
 
     public void addFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.saveFahrzeug(fahrzeug);
-    }
-
-    public void addReparatur(String kennzeichen, ReparaturBuchEintrag reparatur) {
-        reparaturService.addReparatur(kennzeichen, reparatur);
+        dataStore.saveFahrzeug(fahrzeug);
     }
 
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        return fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
+        return dataStore.getFahrzeug(kennzeichen);
+    }
+
+    public List<Fahrzeug> getAlleFahrzeuge() {
+        return dataStore.getAlleFahrzeuge();
     }
 
     public void deleteFahrzeug(String kennzeichen) {
-        fahrzeugService.deleteFahrzeug(kennzeichen);
-    }
-
-    public void showFahrtenbuch(String kennzeichen) {
-        FahrtenbuchDialog dialog = new FahrtenbuchDialog(ui, kennzeichen, fahrtenbuchService);
-        dialog.setLocationRelativeTo(ui);
-        dialog.setVisible(true);
-    }
-
-    public void start() {
-        ui.setVisible(true);
+        dataStore.deleteFahrzeug(kennzeichen);
     }
 }

@@ -6,6 +6,7 @@ import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.impl.DataStoreImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FuhrparkManagerTest {
@@ -37,10 +38,10 @@ public class FuhrparkManagerTest {
         manager.addFahrzeug(pkw1);
         manager.addFahrzeug(pkw2);
         
-        var fahrzeuge = manager.getAlleFahrzeuge();
+        List<Fahrzeug> fahrzeuge = manager.getAlleFahrzeuge();
         assertEquals(2, fahrzeuge.size());
-        assertTrue(fahrzeuge.stream().anyMatch(f -> f.getKennzeichen().equals("B-AA 123")));
-        assertTrue(fahrzeuge.stream().anyMatch(f -> f.getKennzeichen().equals("B-BB 456")));
+        assertTrue(fahrzeuge.stream().map(Fahrzeug::getKennzeichen).anyMatch(k -> k.equals("B-AA 123")));
+        assertTrue(fahrzeuge.stream().map(Fahrzeug::getKennzeichen).anyMatch(k -> k.equals("B-BB 456")));
     }
 
     @Test
