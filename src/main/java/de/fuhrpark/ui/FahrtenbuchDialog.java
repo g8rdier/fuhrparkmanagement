@@ -46,6 +46,52 @@ public class FahrtenbuchDialog extends JDialog {
     }
 
     private void handleAddFahrt() {
-        // TODO: Implement add functionality
+        // Create input dialog for new entry
+        JTextField startKmField = new JTextField(10);
+        JTextField endKmField = new JTextField(10);
+        JTextField zweckField = new JTextField(20);
+
+        JPanel panel = new JPanel(new GridLayout(0, 2));
+        panel.add(new JLabel("Start KM:"));
+        panel.add(startKmField);
+        panel.add(new JLabel("End KM:"));
+        panel.add(endKmField);
+        panel.add(new JLabel("Zweck:"));
+        panel.add(zweckField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, 
+            "Neue Fahrt", JOptionPane.OK_CANCEL_OPTION);
+            
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                double startKm = Double.parseDouble(startKmField.getText());
+                double endKm = Double.parseDouble(endKmField.getText());
+                String zweck = zweckField.getText();
+
+                FahrtenbuchEintrag eintrag = FahrtenbuchEintrag.builder()
+                    .kennzeichen(kennzeichen)
+                    .datum(LocalDate.now())
+                    .startKilometer(startKm)
+                    .endKilometer(endKm)
+                    .zweck(zweck)
+                    .build();
+
+                fahrtenbuchService.addFahrt(kennzeichen, eintrag);
+                refreshTable();
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this,
+                    "Bitte geben Sie gültige Zahlen für die Kilometerstände ein.",
+                    "Eingabefehler",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void refreshTable() {
+        // Refresh the table with updated data
+        List<FahrtenbuchEintrag> eintraege = fahrtenbuchService.getEintraegeForFahrzeug(kennzeichen);
+        ((FahrtenbuchTableModel) ((JTable) ((JScrollPane) getContentPane()
+            .getComponent(0)).getViewport().getView()).getModel())
+            .updateData(eintraege);
     }
 }
