@@ -44,7 +44,7 @@ public class FuhrparkUI extends JFrame {
     private JButton editButton;
     private JButton deleteButton;
     
-    // Patterns for different license plate parts
+    // Remove the unused pattern fields
     private static final String LOCATION_PATTERN = "[A-ZÄÖÜ]{1,3}";  // Unterscheidungszeichen
     private static final String LETTERS_PATTERN = "[A-Z]{1,2}";      // Erkennungsnummer (Buchstaben)
     private static final String NUMBERS_PATTERN = "[1-9][0-9]{0,3}"; // Erkennungsnummer (Ziffern)
@@ -84,8 +84,9 @@ public class FuhrparkUI extends JFrame {
         // Basic format check (with flexible separators)
         String cleaned = licensePlate.replace("-", "").replace(" ", "").toUpperCase();
         
-        // Check for valid format: 1-3 letters, 1-2 letters, 1-4 numbers, optional H/E
-        return cleaned.matches("[A-ZÄÖÜ]{1,3}[A-Z]{1,2}[1-9][0-9]{0,3}[HE]?");
+        // Use the defined patterns for validation
+        String fullPattern = LOCATION_PATTERN + LETTERS_PATTERN + NUMBERS_PATTERN + "[HE]?";
+        return cleaned.matches(fullPattern);
     }
     
     private void showLicensePlateHelp() {
