@@ -1,15 +1,18 @@
-package de.fuhrpark.persistence;
+package de.fuhrpark.persistence.impl;
 
 import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.PKW;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
-public class DatabaseDataStoreImpl implements DataStore {
+public class DataStoreImpl implements DataStore {
     private static final String DB_URL = "jdbc:sqlite:fuhrpark.db";
+    private final Map<String, Fahrzeug> fahrzeuge = new HashMap<>();
 
-    public DatabaseDataStoreImpl() {
+    public DataStoreImpl() {
         initializeDatabase();
     }
 
@@ -26,59 +29,22 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void saveFahrzeug(Fahrzeug fahrzeug) {
-        String sql = "INSERT OR REPLACE INTO fahrzeuge (kennzeichen, typ) VALUES (?, ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, fahrzeug.getKennzeichen());
-            pstmt.setString(2, fahrzeug.getTyp());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
     }
 
     @Override
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        String sql = "SELECT * FROM fahrzeuge WHERE kennzeichen = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, kennzeichen);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return createFahrzeugFromResultSet(rs);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return fahrzeuge.get(kennzeichen);
     }
 
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
-        List<Fahrzeug> fahrzeuge = new ArrayList<>();
-        String sql = "SELECT * FROM fahrzeuge";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                fahrzeuge.add(createFahrzeugFromResultSet(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return fahrzeuge;
+        return new ArrayList<>(fahrzeuge.values());
     }
 
     @Override
     public void deleteFahrzeug(String kennzeichen) {
-        String sql = "DELETE FROM fahrzeuge WHERE kennzeichen = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, kennzeichen);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        fahrzeuge.remove(kennzeichen);
     }
 
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
