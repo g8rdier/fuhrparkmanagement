@@ -1,13 +1,22 @@
 package de.fuhrpark.ui.model;
 
-import de.fuhrpark.model.base.Fahrzeug;
 import javax.swing.table.AbstractTableModel;
-import java.util.List;
+import de.fuhrpark.model.base.Fahrzeug;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FahrzeugTableModel extends AbstractTableModel {
-    private final List<Fahrzeug> fahrzeuge = new ArrayList<>();
+    private List<Fahrzeug> fahrzeuge = new ArrayList<>();
     private final String[] columnNames = {"Typ", "Kennzeichen", "Marke", "Modell", "Preis"};
+
+    public void setData(List<Fahrzeug> fahrzeuge) {
+        this.fahrzeuge = new ArrayList<>(fahrzeuge);
+        fireTableDataChanged();
+    }
+
+    public Fahrzeug getRow(int rowIndex) {
+        return fahrzeuge.get(rowIndex);
+    }
 
     @Override
     public int getRowCount() {
@@ -20,24 +29,21 @@ public class FahrzeugTableModel extends AbstractTableModel {
     }
 
     @Override
-    public Object getValueAt(int row, int col) {
-        if (row < 0 || row >= fahrzeuge.size()) {
-            throw new IndexOutOfBoundsException("Ungültiger Zeilenindex: " + row);
-        }
-        Fahrzeug f = fahrzeuge.get(row);
-        switch (col) {
-            case 0: return f.getTyp();
-            case 1: return f.getKennzeichen();
-            case 2: return f.getMarke();
-            case 3: return f.getModell();
-            case 4: return f.getGrundpreis();
-            default: return null;
-        }
+    public String getColumnName(int column) {
+        return columnNames[column];
     }
 
     @Override
-    public String getColumnName(int col) {
-        return columnNames[col];
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Fahrzeug fahrzeug = fahrzeuge.get(rowIndex);
+        return switch (columnIndex) {
+            case 0 -> fahrzeug.getTyp();
+            case 1 -> fahrzeug.getKennzeichen();
+            case 2 -> fahrzeug.getMarke();
+            case 3 -> fahrzeug.getModell();
+            case 4 -> fahrzeug.getPreis();
+            default -> null;
+        };
     }
 
     public void addFahrzeug(Fahrzeug fahrzeug) {

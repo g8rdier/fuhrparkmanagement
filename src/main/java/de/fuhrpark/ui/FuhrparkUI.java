@@ -9,28 +9,26 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.text.ParseException;
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.ui.dialog.VehicleEditDialog;
-import de.fuhrpark.ui.model.VehicleData;
+import de.fuhrpark.ui.model.FahrzeugData;
 import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.service.base.FahrzeugService;
-import de.fuhrpark.ui.dialog.FahrzeugDialog;
-import de.fuhrpark.ui.dialog.FahrtenbuchDialog;
-import de.fuhrpark.ui.model.FahrzeugData;
-import de.fuhrpark.ui.model.PreisDocument;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import java.util.List;
+import de.fuhrpark.service.impl.FahrzeugServiceImpl;
+import de.fuhrpark.model.base.FahrzeugTyp;
+import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 
 public class FuhrparkUI extends JFrame {
     // Constants
-    private static final String[] VEHICLE_TYPES = {"PKW", "LKW"};
+    private static final FahrzeugTyp[] VEHICLE_TYPES = FahrzeugTyp.values();
     private static final String LOCATION_PATTERN = "[A-ZÄÖÜ]{1,3}";
     private static final String LETTERS_PATTERN = "[A-Z]{1,2}";
     private static final String NUMBERS_PATTERN = "[1-9][0-9]{0,3}";
     private static final double MINIMUM_VEHICLE_PRICE = 500.0; // Minimum 500 euros for any vehicle
     
     // UI Components
-    private final JComboBox<String> fahrzeugTypComboBox;
+    private final JComboBox<FahrzeugTyp> fahrzeugTypComboBox;
     private final JTextField markeField;
     private final JTextField modelField;
     private final JTextField licensePlateField;
@@ -118,16 +116,11 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void showAddDialog() {
-        // TODO: Implement after FahrzeugDialog is created
         JOptionPane.showMessageDialog(this, "Funktion noch nicht implementiert");
     }
     
     private void showEditDialog() {
-        int selectedRow = fahrzeugTable.getSelectedRow();
-        if (selectedRow >= 0) {
-            // TODO: Implement after FahrzeugDialog is created
-            JOptionPane.showMessageDialog(this, "Funktion noch nicht implementiert");
-        }
+        JOptionPane.showMessageDialog(this, "Funktion noch nicht implementiert");
     }
     
     private void deleteFahrzeug() {
@@ -146,7 +139,6 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void showFahrtenbuch() {
-        // TODO: Implement after FahrtenbuchDialog is created
         JOptionPane.showMessageDialog(this, "Funktion noch nicht implementiert");
     }
     
@@ -341,7 +333,11 @@ public class FuhrparkUI extends JFrame {
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new FuhrparkUI().setVisible(true);
+            FahrzeugService service = new FahrzeugServiceImpl();
+            FahrzeugFactory factory = new FahrzeugFactoryImpl();
+            FuhrparkManager manager = new FuhrparkManager(service);
+            
+            new FuhrparkUI(manager, service, factory).setVisible(true);
         });
     }
     
@@ -430,5 +426,36 @@ public class FuhrparkUI extends JFrame {
         int start = entry.indexOf('[') + 1;
         int end = entry.indexOf(']');
         return entry.substring(start, end).trim();
+    }
+
+    private static class PriceDocument extends PlainDocument {
+        @Override
+        public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+            if (str == null) return;
+            
+            // Only allow digits and comma/dot for decimals
+            String filtered = str.replaceAll("[^0-9,.]", "");
+            super.insertString(offs, filtered, a);
+        }
+    }
+
+    private static class VehicleData {
+        private String type;
+        private String licensePlate;
+        private String brand;
+        private String model;
+        private String price;
+
+        // Getters and setters
+        public String getType() { return type; }
+        public void setType(String type) { this.type = type; }
+        public String getLicensePlate() { return licensePlate; }
+        public void setLicensePlate(String licensePlate) { this.licensePlate = licensePlate; }
+        public String getBrand() { return brand; }
+        public void setBrand(String brand) { this.brand = brand; }
+        public String getModel() { return model; }
+        public void setModel(String model) { this.model = model; }
+        public String getPrice() { return price; }
+        public void setPrice(String price) { this.price = price; }
     }
 } 

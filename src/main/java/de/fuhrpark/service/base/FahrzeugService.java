@@ -8,9 +8,9 @@ import java.util.List;
  * Definiert grundlegende Operationen für Fahrzeuge.
  */
 public interface FahrzeugService {
-    void speichereFahrzeug(Fahrzeug fahrzeug);
-    void aktualisiereFahrzeug(Fahrzeug fahrzeug);
-    void loescheFahrzeug(String kennzeichen);
+    List<Fahrzeug> getAlleFahrzeuge();
     Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen);
-    List<Fahrzeug> findeAlleFahrzeuge();
+    void speichereFahrzeug(Fahrzeug fahrzeug);
+    void loescheFahrzeug(String kennzeichen);
+    void aktualisiereFahrzeug(Fahrzeug fahrzeug);
 }

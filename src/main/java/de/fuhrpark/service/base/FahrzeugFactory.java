@@ -1,6 +1,7 @@
 package de.fuhrpark.service.base;
 
 import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.model.base.FahrzeugTyp;
 
 /**
  * Interface für die Fahrzeug-Fabrik.
@@ -10,6 +11,5 @@ public interface FahrzeugFactory {
     /**
      * Erstellt ein neues Fahrzeug basierend auf den übergebenen Parametern
      */
-    Fahrzeug erstelleFahrzeug(String typ, String kennzeichen, String marke, String modell, 
-                             Object... zusatzParameter);
+    Fahrzeug erstelleFahrzeug(FahrzeugTyp typ, String marke, String modell, String kennzeichen, double preis);
 } 
