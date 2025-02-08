@@ -36,7 +36,7 @@ public class DatabaseDataStoreImpl implements DataStore {
             stmt.setString(1, fahrzeug.getKennzeichen());
             stmt.setString(2, fahrzeug.getMarke());
             stmt.setString(3, fahrzeug.getModell());
-            stmt.setString(4, fahrzeug.getTyp().toString());
+            stmt.setString(4, fahrzeug.getTyp().name());
             stmt.setInt(5, fahrzeug.getBaujahr());
             stmt.setInt(6, fahrzeug.getKilometerstand());
             stmt.executeUpdate();
@@ -63,11 +63,6 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public List<Fahrzeug> getFahrzeuge() {
-        return new ArrayList<>(fahrzeuge.values());
-    }
-
-    @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
         String sql = "SELECT * FROM fahrzeuge";
         List<Fahrzeug> fahrzeuge = new ArrayList<>();
         try (Connection conn = DatabaseConfig.getConnection();
