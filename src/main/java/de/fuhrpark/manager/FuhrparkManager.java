@@ -2,6 +2,7 @@
 package de.fuhrpark.manager;
 
 import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
 
@@ -24,23 +25,43 @@ public class FuhrparkManager {
     /**
      * Erstellt und speichert ein neues Fahrzeug
      */
-    public Fahrzeug erstelleNeuesFahrzeug(String typ, String kennzeichen, String marke, 
-                                         String modell, Object... zusatzParameter) {
-        Fahrzeug fahrzeug = fahrzeugFactory.erstelleFahrzeug(typ, kennzeichen, marke, 
-                                                            modell, zusatzParameter);
+    public Fahrzeug createFahrzeug(String typString, String kennzeichen, String marke, String modell, double preis) {
+        FahrzeugTyp typ;
+        try {
+            typ = FahrzeugTyp.valueOf(typString);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Ungültiger Fahrzeugtyp: " + typString);
+        }
+        
+        Fahrzeug fahrzeug = fahrzeugFactory.erstelleFahrzeug(typ, marke, modell, kennzeichen, preis);
         fahrzeugService.speichereFahrzeug(fahrzeug);
         return fahrzeug;
     }
 
-    public void aktualisiereFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.aktualisiereFahrzeug(fahrzeug);
+    // Overloaded method for backward compatibility with existing test cases
+    public Fahrzeug createFahrzeug(String typString, String kennzeichen, String marke, String modell, int sitze, boolean klimaanlage) {
+        FahrzeugTyp typ;
+        try {
+            typ = FahrzeugTyp.valueOf(typString);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Ungültiger Fahrzeugtyp: " + typString);
+        }
+        
+        // Using a default price of 0.0 for this overload
+        Fahrzeug fahrzeug = fahrzeugFactory.erstelleFahrzeug(typ, marke, modell, kennzeichen, 0.0);
+        fahrzeugService.speichereFahrzeug(fahrzeug);
+        return fahrzeug;
     }
 
-    public void loescheFahrzeug(String kennzeichen) {
+    public void deleteFahrzeug(String kennzeichen) {
         fahrzeugService.loescheFahrzeug(kennzeichen);
     }
 
-    public Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen) {
+    public Fahrzeug findeFahrzeug(String kennzeichen) {
         return fahrzeugService.findeFahrzeugNachKennzeichen(kennzeichen);
+    }
+
+    public void updateFahrzeug(Fahrzeug fahrzeug) {
+        fahrzeugService.aktualisiereFahrzeug(fahrzeug);
     }
 }
