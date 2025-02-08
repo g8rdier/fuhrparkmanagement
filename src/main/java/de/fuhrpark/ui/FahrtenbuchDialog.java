@@ -13,6 +13,9 @@ public class FahrtenbuchDialog extends JDialog {
 
     public FahrtenbuchDialog(Frame owner, FahrtenbuchService service, String kennzeichen) {
         super(owner, "Fahrtenbuch für " + kennzeichen, true);
+        if (service == null || kennzeichen == null) {
+            throw new IllegalArgumentException("Service und Kennzeichen dürfen nicht null sein");
+        }
         this.fahrtenbuchService = service;
         this.kennzeichen = kennzeichen;
         this.listModel = new DefaultListModel<>();
@@ -46,12 +49,11 @@ public class FahrtenbuchDialog extends JDialog {
 
     private void loadFahrten() {
         listModel.clear();
-        List<FahrtenbuchEintrag> fahrten = fahrtenbuchService.getEintraegeForFahrzeug(kennzeichen);
+        List<FahrtenbuchEintrag> fahrten = fahrtenbuchService.getFahrtenForFahrzeug(kennzeichen);
         fahrten.forEach(listModel::addElement);
     }
 
     private void addNewFahrt() {
-        // Implementation for adding new entries
-        // This could open another dialog for entry details
+        // TODO: Implement new entry dialog
     }
 }
