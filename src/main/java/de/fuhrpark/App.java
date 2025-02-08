@@ -60,7 +60,7 @@ public class App
             System.out.println("Database connection test successful");
 
             // First try to establish connection
-            try (var _ = DatabaseConfig.getConnection()) {
+            try (var conn = DatabaseConfig.getConnection()) {
                 System.out.println("Database connection established successfully");
             } catch (Exception e) {
                 throw new RuntimeException("Could not connect to database", e);
