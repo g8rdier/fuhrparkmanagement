@@ -39,12 +39,12 @@ public class FuhrparkUI extends JFrame {
     private final JToolBar toolBar = new JToolBar();
 
     public FuhrparkUI(FahrzeugService fahrzeugService, 
-                     ReparaturService reparaturService,
-                     FahrtenbuchService fahrtenbuchService) {
+                     FahrtenbuchService fahrtenbuchService,
+                     ReparaturService reparaturService) {
         super("Fuhrpark Verwaltung");
         this.fahrzeugService = fahrzeugService;
-        this.reparaturService = reparaturService;
         this.fahrtenbuchService = fahrtenbuchService;
+        this.reparaturService = reparaturService;
         
         // Initialize repair table model
         reparaturTableModel = new DefaultTableModel(
@@ -60,6 +60,7 @@ public class FuhrparkUI extends JFrame {
         reparaturTable = new JTable(reparaturTableModel);
         
         initializeUI();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void initializeUI() {
@@ -110,7 +111,6 @@ public class FuhrparkUI extends JFrame {
         add(splitPane);
         
         // Frame settings
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
         setLocationRelativeTo(null);
         

@@ -9,7 +9,6 @@ import de.fuhrpark.service.ReparaturService;
 import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.ReparaturServiceImpl;
-import de.fuhrpark.ui.FuhrparkUI;
 import de.fuhrpark.manager.FuhrparkManager;
 
 import javax.swing.JOptionPane;
