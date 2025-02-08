@@ -1,94 +1,54 @@
 package de.fuhrpark.manager;
 
 import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.ReparaturBuchEintrag;
-import de.fuhrpark.model.enums.FahrzeugTyp;
-import de.fuhrpark.service.FahrzeugService;
-import de.fuhrpark.service.FahrtenbuchService;
-import de.fuhrpark.service.ReparaturService;
+import de.fuhrpark.model.PKW;
+import de.fuhrpark.persistence.DataStore;
+import de.fuhrpark.persistence.impl.DataStoreImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FuhrparkManagerTest {
     private FuhrparkManager manager;
-    private FahrzeugService fahrzeugService;
-    private FahrtenbuchService fahrtenbuchService;
-    private ReparaturService reparaturService;
+    private DataStore dataStore;
 
     @BeforeEach
     void setUp() {
-        fahrzeugService = mock(FahrzeugService.class);
-        fahrtenbuchService = mock(FahrtenbuchService.class);
-        reparaturService = mock(ReparaturService.class);
-        manager = new FuhrparkManager(fahrzeugService, fahrtenbuchService, reparaturService);
+        dataStore = new DataStoreImpl();
+        manager = new FuhrparkManager(dataStore);
     }
 
     @Test
-    void testAddFahrzeug() {
-        // Given
-        Fahrzeug testFahrzeug = new Fahrzeug(
-            "B-AB 123",
-            "BMW",
-            "320i",
-            FahrzeugTyp.PKW,
-            2020,
-            50000.0
-        );
-
-        // When
-        manager.addFahrzeug(testFahrzeug);
-
-        // Then
-        verify(fahrzeugService).saveFahrzeug(testFahrzeug);
+    void testAddAndGetFahrzeug() {
+        Fahrzeug pkw = new PKW("B-AA 123");
+        manager.addFahrzeug(pkw);
+        
+        Fahrzeug retrieved = manager.getFahrzeug("B-AA 123");
+        assertNotNull(retrieved);
+        assertEquals("B-AA 123", retrieved.getKennzeichen());
+        assertEquals("PKW", retrieved.getTyp());
     }
 
     @Test
-    void testAddReparatur() {
-        // Given
-        String kennzeichen = "TEST-123";
-        ReparaturBuchEintrag reparatur = mock(ReparaturBuchEintrag.class);
-
-        // When
-        manager.addReparatur(kennzeichen, reparatur);
-
-        // Then
-        verify(reparaturService).addReparatur(kennzeichen, reparatur);
-    }
-
-    @Test
-    void testGetFahrzeug() {
-        // Given
-        String kennzeichen = "B-AB 123";
-        Fahrzeug expectedFahrzeug = new Fahrzeug(
-            kennzeichen,
-            "BMW",
-            "320i",
-            FahrzeugTyp.PKW,
-            2020,
-            50000.0
-        );
-        when(fahrzeugService.getFahrzeugByKennzeichen(kennzeichen)).thenReturn(expectedFahrzeug);
-
-        // When
-        Fahrzeug result = manager.getFahrzeug(kennzeichen);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(kennzeichen, result.getKennzeichen());
-        verify(fahrzeugService).getFahrzeugByKennzeichen(kennzeichen);
+    void testGetAlleFahrzeuge() {
+        Fahrzeug pkw1 = new PKW("B-AA 123");
+        Fahrzeug pkw2 = new PKW("B-BB 456");
+        
+        manager.addFahrzeug(pkw1);
+        manager.addFahrzeug(pkw2);
+        
+        var fahrzeuge = manager.getAlleFahrzeuge();
+        assertEquals(2, fahrzeuge.size());
+        assertTrue(fahrzeuge.stream().anyMatch(f -> f.getKennzeichen().equals("B-AA 123")));
+        assertTrue(fahrzeuge.stream().anyMatch(f -> f.getKennzeichen().equals("B-BB 456")));
     }
 
     @Test
     void testDeleteFahrzeug() {
-        // Given
-        String kennzeichen = "B-AB 123";
-
-        // When
-        manager.deleteFahrzeug(kennzeichen);
-
-        // Then
-        verify(fahrzeugService).deleteFahrzeug(kennzeichen);
+        Fahrzeug pkw = new PKW("B-AA 123");
+        manager.addFahrzeug(pkw);
+        
+        manager.deleteFahrzeug("B-AA 123");
+        assertNull(manager.getFahrzeug("B-AA 123"));
     }
 }
