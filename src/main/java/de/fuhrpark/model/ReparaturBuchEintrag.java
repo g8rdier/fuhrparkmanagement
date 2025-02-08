@@ -10,7 +10,7 @@ public class ReparaturBuchEintrag {
     private final double kosten;
     private final String beschreibung;
     private final String werkstatt;
-    private final LocalDate datum;
+    private LocalDate datum;
 
     public ReparaturBuchEintrag(String kennzeichen, double kosten, String beschreibung, String werkstatt, String datumStr) {
         this.kennzeichen = kennzeichen;
@@ -42,5 +42,21 @@ public class ReparaturBuchEintrag {
 
     public String getDatumFormatted() {
         return datum.format(DATE_FORMATTER);
+    }
+
+    public void setDatum(LocalDate datum) {
+        this.datum = datum;
+    }
+
+    public void setBeschreibung(String beschreibung) {
+        this.beschreibung = beschreibung;
+    }
+
+    public void setKosten(double kosten) {
+        this.kosten = kosten;
+    }
+
+    public void setWerkstatt(String werkstatt) {
+        this.werkstatt = werkstatt;
     }
 } 

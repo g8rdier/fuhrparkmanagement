@@ -6,6 +6,7 @@
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/model/enums/FahrzeugTyp.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/model/enums/ReparaturTyp.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/persistence/DataStore.java
+/Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/persistence/DatabaseConfig.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/persistence/impl/DataStoreImpl.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/persistence/impl/DatabaseDataStoreImpl.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/service/FahrtenbuchService.java

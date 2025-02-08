@@ -3,12 +3,16 @@ package de.fuhrpark.persistence.impl;
 import de.fuhrpark.model.Fahrzeug;
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.ReparaturBuchEintrag;
+import de.fuhrpark.persistence.DataStore;
+import de.fuhrpark.persistence.DatabaseConfig;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DatabaseDataStoreImpl extends DataStoreImpl {
+public class DatabaseDataStoreImpl implements DataStore {
     private final Map<String, Fahrzeug> fahrzeuge = new HashMap<>();
     private final Map<String, List<FahrtenbuchEintrag>> fahrtenbuch = new HashMap<>();
     private final Map<String, List<ReparaturBuchEintrag>> reparaturen = new HashMap<>();
@@ -81,17 +85,38 @@ public class DatabaseDataStoreImpl extends DataStoreImpl {
 
     @Override
     public List<ReparaturBuchEintrag> getReparaturen(String kennzeichen) {
-        return reparaturen.getOrDefault(kennzeichen, new ArrayList<>());
+        String sql = "SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC";
+        List<ReparaturBuchEintrag> reparaturen = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, kennzeichen);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                ReparaturBuchEintrag eintrag = new ReparaturBuchEintrag(
+                    rs.getDate("datum").toLocalDate(),
+                    rs.getString("beschreibung"),
+                    rs.getDouble("kosten"),
+                    rs.getString("werkstatt")
+                );
+                reparaturen.add(eintrag);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching repairs", e);
+        }
+        return reparaturen;
     }
 
     @Override
     public void save(String filename, Object data) {
-        super.save(filename, data);
+        // Implementation needed
     }
 
     @Override
     public Object load(String filename) {
-        return super.load(filename);
+        // Implementation needed
+        return null; // Placeholder return, actual implementation needed
     }
 
     @Override
@@ -111,5 +136,21 @@ public class DatabaseDataStoreImpl extends DataStoreImpl {
         List<ReparaturBuchEintrag> alleReparaturen = new ArrayList<>();
         reparaturen.values().forEach(alleReparaturen::addAll);
         return alleReparaturen;
+    }
+
+    @Override
+    public void saveReparatur(String kennzeichen, ReparaturBuchEintrag eintrag) {
+        String sql = "INSERT INTO reparaturbuch (kennzeichen, datum, beschreibung, kosten, werkstatt) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, kennzeichen);
+            stmt.setDate(2, Date.valueOf(eintrag.getDatum()));
+            stmt.setString(3, eintrag.getBeschreibung());
+            stmt.setDouble(4, eintrag.getKosten());
+            stmt.setString(5, eintrag.getWerkstatt());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error saving repair", e);
+        }
     }
 }

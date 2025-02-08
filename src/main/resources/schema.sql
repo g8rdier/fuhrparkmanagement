@@ -1,31 +1,32 @@
-CREATE DATABASE IF NOT EXISTS fuhrpark;
-USE fuhrpark;
+DROP TABLE IF EXISTS reparaturbuch;
+DROP TABLE IF EXISTS fahrtenbuch;
+DROP TABLE IF EXISTS fahrzeuge;
 
-CREATE TABLE IF NOT EXISTS fahrzeuge (
+CREATE TABLE fahrzeuge (
     kennzeichen VARCHAR(20) PRIMARY KEY,
-    marke VARCHAR(50) NOT NULL,
-    modell VARCHAR(50) NOT NULL,
-    typ VARCHAR(20) NOT NULL,
-    baujahr INT,
+    marke VARCHAR(50),
+    modell VARCHAR(50),
+    typ VARCHAR(20),
+    baujahr INTEGER,
     kilometerstand DOUBLE
 );
 
-CREATE TABLE IF NOT EXISTS fahrtenbuch (
-    id IDENTITY PRIMARY KEY,
-    datum DATE NOT NULL,
-    start_ort VARCHAR(100) NOT NULL,
-    ziel_ort VARCHAR(100) NOT NULL,
-    kilometer DOUBLE NOT NULL,
-    kennzeichen VARCHAR(20) NOT NULL,
+CREATE TABLE fahrtenbuch (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    kennzeichen VARCHAR(20),
+    datum DATE,
+    start_ort VARCHAR(100),
+    ziel_ort VARCHAR(100),
+    kilometer DOUBLE,
     FOREIGN KEY (kennzeichen) REFERENCES fahrzeuge(kennzeichen)
 );
 
-CREATE TABLE IF NOT EXISTS reparaturbuch (
-    id IDENTITY PRIMARY KEY,
-    datum DATE NOT NULL,
-    beschreibung TEXT,
-    kosten DOUBLE NOT NULL,
-    kennzeichen VARCHAR(20) NOT NULL,
-    werkstatt VARCHAR(100) NOT NULL,
+CREATE TABLE reparaturbuch (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    kennzeichen VARCHAR(20),
+    datum DATE,
+    beschreibung VARCHAR(500),
+    kosten DOUBLE,
+    werkstatt VARCHAR(100),
     FOREIGN KEY (kennzeichen) REFERENCES fahrzeuge(kennzeichen)
 ); 
