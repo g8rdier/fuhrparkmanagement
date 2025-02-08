@@ -4,148 +4,101 @@ import javax.swing.*;
 import java.awt.*;
 
 public class VehicleEditDialog extends JDialog {
-    private static final String[] VEHICLE_TYPES = {"PKW", "LKW"};
-    
     private final JComboBox<String> typeComboBox;
     private final JTextField brandField;
     private final JTextField modelField;
     private final JTextField licensePlateField;
     private final JTextField priceField;
-    private boolean approved = false;
-    
-    public VehicleEditDialog(Frame owner, String type, String brand, String model, String licensePlate, String price) {
-        super(owner, "Fahrzeug bearbeiten", true);
+    private boolean confirmed = false;
+
+    public VehicleEditDialog(JFrame parent, FuhrparkUI.VehicleData data) {
+        super(parent, "Fahrzeug bearbeiten", true);
         
         // Initialize components
-        typeComboBox = new JComboBox<>(VEHICLE_TYPES);
-        typeComboBox.setSelectedItem(type);
+        typeComboBox = new JComboBox<>(new String[]{"PKW", "LKW", "Motorrad"});
+        brandField = new JTextField(20);
+        modelField = new JTextField(20);
+        licensePlateField = new JTextField(20);
+        priceField = new JTextField(20);
+
+        // Set initial values
+        typeComboBox.setSelectedItem(data.getType());
+        brandField.setText(data.getBrand());
+        modelField.setText(data.getModel());
+        licensePlateField.setText(data.getLicensePlate());
+        priceField.setText(data.getPrice());
+
+        // Layout
+        setLayout(new BorderLayout(10, 10));
         
-        brandField = new JTextField(brand, 20);
-        modelField = new JTextField(model, 20);
-        licensePlateField = new JTextField(licensePlate, 20);
-        priceField = new JTextField(price, 20);
-        priceField.setDocument(new PriceDocument());
-        
-        initComponents();
-        pack();
-        setLocationRelativeTo(owner);
-    }
-    
-    private void initComponents() {
-        setLayout(new GridBagLayout());
+        JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
-        
-        // Add input fields
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        add(new JLabel("Fahrzeugtyp:"), gbc);
-        gbc.gridx = 1;
-        add(typeComboBox, gbc);
-        
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        add(new JLabel("Marke:"), gbc);
-        gbc.gridx = 1;
-        add(brandField, gbc);
-        
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        add(new JLabel("Modell:"), gbc);
-        gbc.gridx = 1;
-        add(modelField, gbc);
-        
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        add(new JLabel("Kennzeichen:"), gbc);
-        gbc.gridx = 1;
-        add(licensePlateField, gbc);
-        
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        add(new JLabel("Kaufpreis (€):"), gbc);
-        gbc.gridx = 1;
-        add(priceField, gbc);
-        
-        // Buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton saveButton = new JButton("Speichern");
-        JButton cancelButton = new JButton("Abbrechen");
-        
-        saveButton.addActionListener(e -> {
-            if (validateInput()) {
-                approved = true;
-                dispose();
-            }
-        });
-        
-        cancelButton.addActionListener(e -> dispose());
-        
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-        
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(buttonPanel, gbc);
-        
-        // Set minimum size
-        setMinimumSize(new Dimension(300, 200));
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        // Add components
+        addFormField(inputPanel, "Fahrzeugtyp:", typeComboBox, gbc, 0);
+        addFormField(inputPanel, "Marke:", brandField, gbc, 1);
+        addFormField(inputPanel, "Modell:", modelField, gbc, 2);
+        addFormField(inputPanel, "Kennzeichen:", licensePlateField, gbc, 3);
+        addFormField(inputPanel, "Kaufpreis (€):", priceField, gbc, 4);
+
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton okButton = new JButton("OK");
+        JButton cancelButton = new JButton("Abbrechen");
+
+        okButton.addActionListener(e -> {
+            confirmed = true;
+            dispose();
+        });
+        cancelButton.addActionListener(e -> dispose());
+
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
+
+        // Add panels to dialog
+        add(inputPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Configure dialog
+        pack();
+        setLocationRelativeTo(parent);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
-    
-    private boolean validateInput() {
-        if (brandField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie eine Marke ein.");
-            return false;
-        }
-        if (modelField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie ein Modell ein.");
-            return false;
-        }
-        if (!isValidLicensePlate(licensePlateField.getText().trim())) {
-            showError("Bitte geben Sie ein gültiges Kennzeichen ein.");
-            return false;
-        }
-        return true;
+
+    private void addFormField(JPanel panel, String label, JComponent field, GridBagConstraints gbc, int row) {
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.0;
+        panel.add(new JLabel(label), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        panel.add(field, gbc);
     }
-    
-    private void showError(String message) {
-        JOptionPane.showMessageDialog(this,
-            message,
-            "Ungültige Eingabe",
-            JOptionPane.ERROR_MESSAGE);
+
+    public boolean isConfirmed() {
+        return confirmed;
     }
-    
-    private boolean isValidLicensePlate(String plate) {
-        // Use the same validation as in FuhrparkUI
-        if (plate == null || plate.isEmpty()) return false;
-        String cleaned = plate.replace("-", "").replace(" ", "").toUpperCase();
-        return cleaned.matches("[A-ZÄÖÜ]{1,3}[A-Z]{1,2}[1-9][0-9]{0,3}[HE]?");
-    }
-    
-    public boolean isApproved() {
-        return approved;
-    }
-    
-    public String getSelectedType() {
+
+    public String getType() {
         return (String) typeComboBox.getSelectedItem();
     }
-    
+
     public String getBrand() {
-        return brandField.getText().trim();
+        return brandField.getText();
     }
-    
+
     public String getModel() {
-        return modelField.getText().trim();
+        return modelField.getText();
     }
-    
+
     public String getLicensePlate() {
-        return licensePlateField.getText().trim();
+        return licensePlateField.getText();
     }
-    
+
     public String getPrice() {
-        return priceField.getText().trim();
+        return priceField.getText();
     }
 } 
