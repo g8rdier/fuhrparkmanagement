@@ -242,11 +242,14 @@ public class FuhrparkUI extends JFrame {
                 String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY)
                     .format(priceValue);
                 
+                // Handle optional model field
+                String modelDisplay = dialog.getModel().trim().isEmpty() ? "-" : dialog.getModel();
+                
                 String newEntry = String.format("%s [%s] %s %s - %s",
                     dialog.getVehicleType(), dialog.getLicensePlate(), 
-                    dialog.getBrand(), dialog.getModel(), formattedPrice);
+                    dialog.getBrand(), modelDisplay, formattedPrice);
+                    
                 listModel.setElementAt(newEntry, selectedIndex);
-                
             } catch (ParseException e) {
                 showError("Bitte geben Sie einen gültigen Kaufpreis ein.");
             }
@@ -322,13 +325,21 @@ public class FuhrparkUI extends JFrame {
         // Extract remaining parts
         String[] parts = entry.substring(plateEnd + 1).split("-");
         
-        // Extract brand and model
-        String[] brandModel = parts[0].trim().split(" ", 2);
+        // Extract brand and model, handling the case where model is "-"
+        String brandModelPart = parts[0].trim();
+        String[] brandModel = brandModelPart.split(" ", 2);
         data.setBrand(brandModel[0].trim());
-        data.setModel(brandModel[1].trim());
         
-        // Extract price
-        data.setPrice(parts[1].trim());
+        // Handle model: if it's "-" or not present, set as empty string
+        if (brandModel.length > 1) {
+            String model = brandModel[1].trim();
+            data.setModel(model.equals("-") ? "" : model);
+        } else {
+            data.setModel("");
+        }
+        
+        // Extract price (last part)
+        data.setPrice(parts[parts.length - 1].trim());
         
         return data;
     }
