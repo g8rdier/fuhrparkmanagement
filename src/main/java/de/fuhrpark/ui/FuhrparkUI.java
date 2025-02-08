@@ -8,6 +8,10 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.text.ParseException;
+import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.ui.dialog.VehicleEditDialog;
+import de.fuhrpark.ui.model.VehicleData;
+import de.fuhrpark.manager.FuhrparkManager;
 
 public class FuhrparkUI extends JFrame {
     // Constants
@@ -29,6 +33,9 @@ public class FuhrparkUI extends JFrame {
     private final JButton deleteButton;
     private final JButton addButton;
     
+    private final FuhrparkManager manager;
+    private final JTable fahrzeugTable;
+    
     public static boolean isValidLicensePlate(String licensePlate) {
         if (licensePlate == null || licensePlate.isEmpty()) {
             return false;
@@ -42,7 +49,14 @@ public class FuhrparkUI extends JFrame {
         return cleaned.matches(fullPattern);
     }
     
-    public FuhrparkUI() {
+    public FuhrparkUI(FuhrparkManager manager) {
+        super("Fuhrpark Verwaltung");
+        if (manager == null) {
+            throw new IllegalArgumentException("Manager darf nicht null sein");
+        }
+        this.manager = manager;
+        this.fahrzeugTable = new JTable();
+        
         // Initialize all fields in constructor before calling initComponents
         fahrzeugTypComboBox = new JComboBox<>(VEHICLE_TYPES);
         markeField = new JTextField();
@@ -60,110 +74,46 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void initComponents() {
-        setTitle("Fuhrpark Verwaltung");
+        setLayout(new BorderLayout());
+        
+        // Main content
+        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
+        add(scrollPane, BorderLayout.CENTER);
+        
+        // Toolbar
+        JToolBar toolbar = new JToolBar();
+        toolbar.setFloatable(false);
+        
+        JButton addButton = new JButton("Hinzufügen");
+        JButton editButton = new JButton("Bearbeiten");
+        JButton deleteButton = new JButton("Löschen");
+        
+        addButton.addActionListener(e -> showAddDialog());
+        editButton.addActionListener(e -> showEditDialog());
+        deleteButton.addActionListener(e -> deleteSelectedVehicle());
+        
+        toolbar.add(addButton);
+        toolbar.add(editButton);
+        toolbar.add(deleteButton);
+        
+        add(toolbar, BorderLayout.NORTH);
+        
+        // Configure frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        // Create main panel with padding
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        // Input panel
-        JPanel inputPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        
-        // Labels with required field marker (*)
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.0;
-        inputPanel.add(new JLabel("Fahrzeugtyp: *"), gbc);
-        
-        gbc.gridy = 1;
-        inputPanel.add(new JLabel("Marke: *"), gbc);
-        
-        gbc.gridy = 2;
-        inputPanel.add(new JLabel("Modell:"), gbc);
-        
-        gbc.gridy = 3;
-        inputPanel.add(new JLabel("Kennzeichen: *"), gbc);
-        
-        gbc.gridy = 4;
-        inputPanel.add(new JLabel("Kaufpreis (€): *"), gbc);
-        
-        // Input fields
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        inputPanel.add(fahrzeugTypComboBox, gbc);
-        
-        gbc.gridy = 1;
-        inputPanel.add(markeField, gbc);
-        
-        gbc.gridy = 2;
-        inputPanel.add(modelField, gbc);
-        
-        gbc.gridy = 3;
-        licensePlateField.setDocument(new LicensePlateDocument());
-        inputPanel.add(licensePlateField, gbc);
-        
-        gbc.gridy = 4;
-        inputPanel.add(priceField, gbc);
-        
-        // Button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(addButton);
-        
-        // List panel
-        JPanel listPanel = new JPanel(new BorderLayout(0, 5));
-        listPanel.add(new JLabel("Fahrzeuge:"), BorderLayout.NORTH);
-        
-        vehicleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane scrollPane = new JScrollPane(vehicleList);
-        scrollPane.setPreferredSize(new Dimension(400, 200));
-        listPanel.add(scrollPane, BorderLayout.CENTER);
-        
-        // Add components to main panel
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(inputPanel, BorderLayout.CENTER);
-        topPanel.add(buttonPanel, BorderLayout.SOUTH);
-        
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(listPanel, BorderLayout.CENTER);
-        
-        // Add main panel to frame
-        add(mainPanel);
-        
-        // Add action listeners
-        addButton.addActionListener(e -> addVehicle());
-        editButton.addActionListener(e -> editVehicle());
-        deleteButton.addActionListener(e -> deleteVehicle());
-        
-        // Initial button state
-        editButton.setEnabled(false);
-        deleteButton.setEnabled(false);
-        
-        // Add list selection listener
-        vehicleList.addListSelectionListener(e -> {
-            boolean hasSelection = !vehicleList.isSelectionEmpty();
-            editButton.setEnabled(hasSelection);
-            deleteButton.setEnabled(hasSelection);
-        });
-        
-        // Add a note about required fields with smaller font
-        JLabel requiredNote = new JLabel("* Pflichtfeld");
-        requiredNote.setForeground(Color.RED);
-        requiredNote.setFont(requiredNote.getFont().deriveFont(10.0f));  // Make font smaller
-        gbc.gridy++;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        inputPanel.add(requiredNote, gbc);
-        
-        pack();
+        setSize(800, 600);
         setLocationRelativeTo(null);
+    }
+    
+    private void showAddDialog() {
+        // TODO: Implement add dialog
+    }
+    
+    private void showEditDialog() {
+        // TODO: Implement edit dialog
+    }
+    
+    private void deleteSelectedVehicle() {
+        // TODO: Implement delete functionality
     }
     
     private void addVehicle() {
