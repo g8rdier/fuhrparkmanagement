@@ -22,12 +22,11 @@ public class FuhrparkUI extends JFrame {
     private final JTextField modelField;
     private final JTextField licensePlateField;
     private final JTextField priceField;
-    private final JList<String> vehicleList;
     private final DefaultListModel<String> listModel;
-    
-    private JButton editButton;
-    private JButton deleteButton;
-    private JButton addButton;
+    private final JList<String> vehicleList;
+    private final JButton editButton;
+    private final JButton deleteButton;
+    private final JButton addButton;
     
     public static boolean isValidLicensePlate(String licensePlate) {
         if (licensePlate == null || licensePlate.isEmpty()) {
@@ -43,24 +42,19 @@ public class FuhrparkUI extends JFrame {
     }
     
     public FuhrparkUI() {
-        // Basic window setup
-        setTitle("Fuhrpark Verwaltung");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        // Initialize components
-        fahrzeugTypComboBox = new JComboBox<>(VEHICLE_TYPES);
+        // Initialize all fields in constructor before calling initComponents
+        fahrzeugTypComboBox = new JComboBox<>(new String[]{"PKW", "LKW", "Motorrad"});
         markeField = new JTextField();
         modelField = new JTextField();
         licensePlateField = new JTextField();
-        licensePlateField.setDocument(new LicensePlateDocument());
         priceField = new JTextField();
-        priceField.setDocument(new PriceDocument());
         listModel = new DefaultListModel<>();
         vehicleList = new JList<>(listModel);
-        
+        editButton = new JButton("Bearbeiten");
+        deleteButton = new JButton("Löschen");
+        addButton = new JButton("Fahrzeug hinzufügen");
+
         initComponents();
-        pack();
-        setLocationRelativeTo(null);
     }
     
     private void initComponents() {
@@ -100,33 +94,24 @@ public class FuhrparkUI extends JFrame {
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
-        fahrzeugTypComboBox = new JComboBox<>(new String[]{"PKW", "LKW", "Motorrad"});
         inputPanel.add(fahrzeugTypComboBox, gbc);
         
         gbc.gridy = 1;
-        markeField = new JTextField();
         inputPanel.add(markeField, gbc);
         
         gbc.gridy = 2;
-        modelField = new JTextField();
         inputPanel.add(modelField, gbc);
         
         gbc.gridy = 3;
-        licensePlateField = new JTextField();
         licensePlateField.setDocument(new LicensePlateDocument());
         inputPanel.add(licensePlateField, gbc);
         
         gbc.gridy = 4;
-        priceField = new JTextField();
         priceField.setDocument(new PriceDocument());
         inputPanel.add(priceField, gbc);
         
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        editButton = new JButton("Bearbeiten");
-        deleteButton = new JButton("Löschen");
-        addButton = new JButton("Fahrzeug hinzufügen");
-        
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(addButton);
@@ -135,8 +120,6 @@ public class FuhrparkUI extends JFrame {
         JPanel listPanel = new JPanel(new BorderLayout(0, 5));
         listPanel.add(new JLabel("Fahrzeuge:"), BorderLayout.NORTH);
         
-        listModel = new DefaultListModel<>();
-        vehicleList = new JList<>(listModel);
         vehicleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(vehicleList);
         scrollPane.setPreferredSize(new Dimension(400, 200));
