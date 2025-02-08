@@ -24,7 +24,7 @@ public class FuhrparkManager {
         this.fahrzeugService = fahrzeugService;
         this.fahrtenbuchService = fahrtenbuchService;
         this.reparaturService = reparaturService;
-        this.ui = new FuhrparkUI();
+        this.ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService, reparaturService);
     }
 
     public void addFahrzeug(Fahrzeug fahrzeug) {

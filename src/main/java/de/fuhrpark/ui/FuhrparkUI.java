@@ -6,6 +6,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
+import de.fuhrpark.service.FahrzeugService;
+import de.fuhrpark.service.FahrtenbuchService;
+import de.fuhrpark.service.ReparaturService;
 
 public class FuhrparkUI extends JFrame {
     private final JLabel kennzeichenLabel;
@@ -15,8 +18,17 @@ public class FuhrparkUI extends JFrame {
     private final JLabel baujahrlabel;
     private final JLabel kilometerstandLabel;
     private final JTable reparaturenTable;
+    private final FahrzeugService fahrzeugService;
+    private final FahrtenbuchService fahrtenbuchService;
+    private final ReparaturService reparaturService;
 
-    public FuhrparkUI() {
+    public FuhrparkUI(FahrzeugService fahrzeugService, 
+                      FahrtenbuchService fahrtenbuchService,
+                      ReparaturService reparaturService) {
+        this.fahrzeugService = fahrzeugService;
+        this.fahrtenbuchService = fahrtenbuchService;
+        this.reparaturService = reparaturService;
+        
         setTitle("Fuhrpark Verwaltung");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -44,11 +56,48 @@ public class FuhrparkUI extends JFrame {
         reparaturenTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(reparaturenTable);
 
-        // Add components to frame
-        add(detailsPanel, BorderLayout.NORTH);
+        // Add a search panel
+        JPanel searchPanel = new JPanel();
+        JTextField searchField = new JTextField(15);
+        JButton searchButton = new JButton("Fahrzeug suchen");
+        searchPanel.add(new JLabel("Kennzeichen:"));
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+
+        searchButton.addActionListener(e -> {
+            String kennzeichen = searchField.getText();
+            Fahrzeug fahrzeug = fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
+            updateFahrzeugDetails(fahrzeug);
+            if (fahrzeug != null) {
+                List<ReparaturBuchEintrag> reparaturen = reparaturService.getReparaturen(kennzeichen);
+                updateReparaturenTable(reparaturen);
+            }
+        });
+
+        // Create buttons panel
+        JPanel buttonsPanel = new JPanel();
+        JButton fahrtenbuchButton = new JButton("Fahrtenbuch öffnen");
+        fahrtenbuchButton.addActionListener(e -> {
+            String kennzeichen = searchField.getText();
+            if (!kennzeichen.isEmpty()) {
+                FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, kennzeichen, fahrtenbuchService);
+                dialog.setLocationRelativeTo(this);
+                dialog.setVisible(true);
+            }
+        });
+        buttonsPanel.add(fahrtenbuchButton);
+
+        // Add all panels to the frame
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(searchPanel, BorderLayout.NORTH);
+        topPanel.add(detailsPanel, BorderLayout.CENTER);
+        topPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
 
-        pack();
+        // Set a reasonable initial size
+        setSize(800, 600);
         setLocationRelativeTo(null);
     }
 

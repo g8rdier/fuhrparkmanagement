@@ -2,6 +2,9 @@ package de.fuhrpark;
 
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.impl.DatabaseDataStoreImpl;
+import de.fuhrpark.service.FahrzeugService;
+import de.fuhrpark.service.FahrtenbuchService;
+import de.fuhrpark.service.ReparaturService;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
 import de.fuhrpark.service.impl.ReparaturServiceImpl;
@@ -17,9 +20,9 @@ public class App
     {
         DataStore dataStore = new DatabaseDataStoreImpl();
         
-        var fahrzeugService = new FahrzeugServiceImpl(dataStore);
-        var fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
-        var reparaturService = new ReparaturServiceImpl(dataStore);
+        FahrzeugService fahrzeugService = new FahrzeugServiceImpl(dataStore);
+        FahrtenbuchService fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
+        ReparaturService reparaturService = new ReparaturServiceImpl(dataStore);
         
         var ui = new FuhrparkUI(fahrzeugService, fahrtenbuchService, reparaturService);
         
