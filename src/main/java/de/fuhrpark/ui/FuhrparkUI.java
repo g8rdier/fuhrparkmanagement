@@ -150,15 +150,15 @@ public class FuhrparkUI extends JFrame {
             // Parse price using German locale to handle dots and commas correctly
             NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
             Number number = format.parse(priceText);
-            double priceValue = number.doubleValue();
+            double price = number.doubleValue();
             
-            if (priceValue <= 0) {
+            if (price <= 0) {
                 showError("Der Kaufpreis muss größer als 0 sein.");
                 return;
             }
 
             // Format price for display
-            String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY).format(priceValue);
+            String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY).format(price);
             
             // Add to list with formatted price
             String vehicleEntry = String.format("%s [%s] %s %s - %s",
