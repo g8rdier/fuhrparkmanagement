@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class FuhrparkUI extends JFrame {
     private JComboBox<String> vehicleTypeCombo;
-    private JComboBox<String> brandCombo;
+    private JTextField brandCombo;
     private JTextField customBrandField;
     private JTextField modelField;
     private JTextField licensePlateField;
@@ -175,7 +175,7 @@ public class FuhrparkUI extends JFrame {
         inputPanel.add(vehicleTypeCombo);
         
         inputPanel.add(new JLabel("Marke:"));
-        brandCombo = new JComboBox<>(CAR_BRANDS);
+        brandCombo = new JTextField();
         inputPanel.add(brandCombo);
         
         inputPanel.add(new JLabel("Modell:"));
@@ -334,13 +334,11 @@ public class FuhrparkUI extends JFrame {
 
     private void addVehicle() {
         String type = (String) vehicleTypeCombo.getSelectedItem();
-        String selectedBrand = (String) brandCombo.getSelectedItem();
-        String brand = OTHER_BRAND.equals(selectedBrand) ? customBrandField.getText().trim() : selectedBrand;
+        String brand = brandCombo.getText().trim();
         String model = modelField.getText().trim();
         String licensePlate = licensePlateField.getText().trim();
         
-        if (brand.isEmpty() || model.isEmpty() || licensePlate.isEmpty() || 
-            (OTHER_BRAND.equals(selectedBrand) && customBrandField.getText().trim().isEmpty())) {
+        if (brand.isEmpty() || model.isEmpty() || licensePlate.isEmpty()) {
             JOptionPane.showMessageDialog(this, 
                 "Bitte alle Felder ausfüllen", 
                 "Fehler", 
@@ -414,9 +412,7 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void clearInputFields() {
-        brandCombo.setSelectedIndex(0);
-        customBrandField.setText("");
-        customBrandField.setVisible(false);
+        brandCombo.setText("");
         modelField.setText("");
         licensePlateField.setText("");
         saveButton.setText("Fahrzeug hinzufügen");
