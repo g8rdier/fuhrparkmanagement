@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Locale;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 public class FuhrparkUI extends JFrame {
     // Constants
@@ -46,7 +49,8 @@ public class FuhrparkUI extends JFrame {
         fahrzeugTypComboBox = new JComboBox<>(VEHICLE_TYPES);
         markeField = new JTextField();
         modelField = new JTextField();
-        licensePlateField = createLicensePlateField();
+        licensePlateField = new JTextField();
+        licensePlateField.setDocument(new LicensePlateDocument());
         priceField = new JTextField();
         priceField.setDocument(new PriceDocument());
         listModel = new DefaultListModel<>();
@@ -228,6 +232,7 @@ public class FuhrparkUI extends JFrame {
     
     public JTextField createLicensePlateField() {
         JTextField field = new JTextField();
+        field.setDocument(new LicensePlateDocument());
         return field;
     }
     
@@ -249,5 +254,73 @@ public class FuhrparkUI extends JFrame {
         SwingUtilities.invokeLater(() -> {
             new FuhrparkUI().setVisible(true);
         });
+    }
+    
+    private static class LicensePlateDocument extends PlainDocument {
+        @Override
+        public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+            if (str == null) return;
+            
+            String currentText = getText(0, getLength());
+            String newText = new StringBuilder(currentText).insert(offs, str.toUpperCase()).toString();
+            
+            // Remove all spaces and dashes for validation
+            String cleaned = newText.replace("-", "").replace(" ", "");
+            
+            // Maximum length check (including separators)
+            if (cleaned.length() > 8) return;
+            
+            StringBuilder formatted = new StringBuilder();
+            int pos = 0;
+            
+            // District code (1-3 letters)
+            while (pos < cleaned.length() && pos < 3 && Character.isLetter(cleaned.charAt(pos))) {
+                formatted.append(cleaned.charAt(pos));
+                pos++;
+            }
+            
+            if (pos == 0) return; // Must have at least one letter
+            
+            // Add separator if there's more
+            if (pos < cleaned.length()) {
+                formatted.append('-');
+            }
+            
+            // Recognition letters (1-2 letters)
+            int letterCount = 0;
+            while (pos < cleaned.length() && letterCount < 2 && Character.isLetter(cleaned.charAt(pos))) {
+                formatted.append(cleaned.charAt(pos));
+                pos++;
+                letterCount++;
+            }
+            
+            // Numbers (1-4 digits)
+            if (pos < cleaned.length()) {
+                // Add space before numbers if we had recognition letters
+                if (letterCount > 0) {
+                    formatted.append(' ');
+                }
+                
+                StringBuilder numbers = new StringBuilder();
+                while (pos < cleaned.length() && Character.isDigit(cleaned.charAt(pos))) {
+                    numbers.append(cleaned.charAt(pos));
+                    pos++;
+                }
+                
+                // Check if numbers are valid (1-4 digits, no leading zero)
+                if (numbers.length() > 0 && numbers.charAt(0) != '0' && numbers.length() <= 4) {
+                    formatted.append(numbers);
+                    
+                    // Optional H or E suffix
+                    if (pos < cleaned.length() && (cleaned.charAt(pos) == 'H' || cleaned.charAt(pos) == 'E')) {
+                        formatted.append(cleaned.charAt(pos));
+                    }
+                }
+            }
+            
+            // Replace entire content with formatted text
+            super.remove(0, getLength());
+            super.insertString(0, formatted.toString(), a);
+        }
     }
 } 

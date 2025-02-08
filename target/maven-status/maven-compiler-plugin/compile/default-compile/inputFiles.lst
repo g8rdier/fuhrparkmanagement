@@ -1,5 +1,6 @@
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/model/Fahrzeug.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/model/PKW.java
+/Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/PriceDocument.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/model/FahrtenbuchEintrag.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/persistence/impl/DataStoreImpl.java
 /Users/gregorkobilarov/fuhrpark/fuhrpark/src/main/java/de/fuhrpark/ui/FahrtenbuchTableModel.java

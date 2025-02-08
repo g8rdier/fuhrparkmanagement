@@ -11,12 +11,12 @@ de/fuhrpark/service/impl/FahrzeugServiceImpl.class
 de/fuhrpark/persistence/DataStore.class
 de/fuhrpark/model/enums/FahrzeugTyp.class
 de/fuhrpark/model/PKW.class
+de/fuhrpark/ui/PriceDocument.class
 de/fuhrpark/model/FahrtenbuchEintrag.class
 de/fuhrpark/App.class
 de/fuhrpark/ui/FahrzeugDialog.class
 de/fuhrpark/service/FahrtenbuchService.class
 de/fuhrpark/ui/FuhrparkUI.class
 de/fuhrpark/persistence/impl/DatabaseDataStoreImpl.class
-de/fuhrpark/ui/FuhrparkUI$PlateDocument.class
 de/fuhrpark/ui/VehicleEditDialog.class
 de/fuhrpark/manager/FuhrparkManager.class
