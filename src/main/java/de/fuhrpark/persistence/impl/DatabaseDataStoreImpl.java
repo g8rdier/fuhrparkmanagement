@@ -40,7 +40,7 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        String sql = "SELECT * FROM fahrzeuge WHERE kennzeichen = ?";
+        String sql = "SELECT kennzeichen, typ FROM fahrzeuge WHERE kennzeichen = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, kennzeichen);
@@ -57,7 +57,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     @Override
     public List<Fahrzeug> getAlleFahrzeuge() {
         List<Fahrzeug> fahrzeuge = new ArrayList<>();
-        String sql = "SELECT * FROM fahrzeuge";
+        String sql = "SELECT kennzeichen, typ FROM fahrzeuge";
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -84,10 +84,6 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
         String kennzeichen = rs.getString("kennzeichen");
-        String typ = rs.getString("typ");
-        if ("PKW".equals(typ)) {
-            return new PKW(kennzeichen);
-        }
-        throw new IllegalStateException("Unknown vehicle type: " + typ);
+        return new PKW(kennzeichen); // For now, we only support PKW
     }
 }
