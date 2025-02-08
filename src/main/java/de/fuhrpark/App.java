@@ -2,12 +2,21 @@ package de.fuhrpark;
 
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.impl.DataStoreImpl;
+import de.fuhrpark.service.FahrzeugService;
+import de.fuhrpark.service.FahrtenbuchService;
+import de.fuhrpark.service.impl.FahrzeugServiceImpl;
+import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
+import de.fuhrpark.ui.MainWindow;
 
 public class App {
     public static void main(String[] args) {
         DataStore dataStore = new DataStoreImpl();
+        FahrzeugService fahrzeugService = new FahrzeugServiceImpl(dataStore);
+        FahrtenbuchService fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
         
-        // TODO: Add correct UI initialization once we know the proper class
-        System.out.println("Services initialized successfully");
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            MainWindow window = new MainWindow(fahrzeugService, fahrtenbuchService);
+            window.setVisible(true);
+        });
     }
 }
