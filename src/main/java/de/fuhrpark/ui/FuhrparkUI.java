@@ -75,6 +75,7 @@ public class FuhrparkUI extends JFrame {
         JPanel buttonsPanel = new JPanel();
         JButton fahrtenbuchButton = new JButton("Fahrtenbuch öffnen");
         JButton addReparaturButton = new JButton("Reparatur hinzufügen");
+        JButton newFahrzeugButton = new JButton("Neues Fahrzeug");
         
         // Add button functionality
         fahrtenbuchButton.addActionListener(_ -> {
@@ -87,9 +88,20 @@ public class FuhrparkUI extends JFrame {
         addReparaturButton.addActionListener(_ -> {
             // Add reparatur logic
         });
+        newFahrzeugButton.addActionListener(_ -> {
+            FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugService);
+            dialog.setVisible(true);
+            // After dialog closes, refresh if a new vehicle was added
+            String kennzeichen = dialog.getKennzeichen();
+            if (kennzeichen != null && !kennzeichen.isEmpty()) {
+                searchField.setText(kennzeichen);
+                searchFahrzeug();
+            }
+        });
         
         buttonsPanel.add(fahrtenbuchButton);
         buttonsPanel.add(addReparaturButton);
+        buttonsPanel.add(newFahrzeugButton);
 
         // Layout assembly
         JPanel topPanel = new JPanel(new BorderLayout());
