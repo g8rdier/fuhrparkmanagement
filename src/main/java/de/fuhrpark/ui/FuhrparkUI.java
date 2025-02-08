@@ -7,6 +7,7 @@ import java.util.Locale;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
+import java.text.ParseException;
 
 public class FuhrparkUI extends JFrame {
     // Constants
@@ -128,39 +129,47 @@ public class FuhrparkUI extends JFrame {
         String brand = markeField.getText().trim();
         String model = modelField.getText().trim();
         String licensePlate = licensePlateField.getText().trim();
-        String price = priceField.getText().trim();
-        
-        // Validation
-        if (brand.isEmpty() || model.isEmpty() || !isValidLicensePlate(licensePlate)) {
-            showValidationError();
+        String priceText = priceField.getText().trim();
+
+        // Basic validation
+        if (brand.isEmpty()) {
+            showError("Bitte geben Sie eine Marke ein.");
             return;
         }
-        
-        if (price.isEmpty()) {
-            showError("Bitte geben Sie einen Kaufpreis ein.");
+        if (model.isEmpty()) {
+            showError("Bitte geben Sie ein Modell ein.");
             return;
         }
-        
+        if (licensePlate.isEmpty()) {
+            showError("Bitte geben Sie ein Kennzeichen ein.");
+            return;
+        }
+
+        // Price validation
         try {
-            double priceValue = Double.parseDouble(price);
-            if (priceValue <= 0) {
+            // Parse price using German locale to handle dots and commas correctly
+            NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
+            Number number = format.parse(priceText);
+            double price = number.doubleValue();
+            
+            if (price <= 0) {
                 showError("Der Kaufpreis muss größer als 0 sein.");
                 return;
             }
+
+            // Format price for display
+            String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY).format(price);
             
-            // Format price with two decimal places and thousands separator
-            NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.GERMANY);
-            String formattedPrice = formatter.format(priceValue);
-            
-            // Add to list with price
+            // Add to list with formatted price
             String vehicleEntry = String.format("%s [%s] %s %s - %s",
                 type, licensePlate, brand, model, formattedPrice);
             listModel.addElement(vehicleEntry);
             
             clearFields();
             
-        } catch (NumberFormatException e) {
+        } catch (ParseException e) {
             showError("Bitte geben Sie einen gültigen Kaufpreis ein.");
+            return;
         }
     }
     
@@ -188,16 +197,27 @@ public class FuhrparkUI extends JFrame {
         dialog.setVisible(true);
 
         if (dialog.isApproved()) {
-            String newType = dialog.getSelectedType();
-            String newBrand = dialog.getBrand();
-            String newModel = dialog.getModel();
-            String newPlate = dialog.getLicensePlate();
-            String newPrice = dialog.getPrice();
+            try {
+                NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
+                Number number = format.parse(dialog.getPrice());
+                double price = number.doubleValue();
+                
+                if (price <= 0) {
+                    showError("Der Kaufpreis muss größer als 0 sein.");
+                    return;
+                }
 
-            // Update list entry
-            String newEntry = String.format("%s [%s] %s %s - %s", 
-                newType, newPlate, newBrand, newModel, newPrice);
-            listModel.setElementAt(newEntry, selectedIndex);
+                String formattedPrice = NumberFormat.getCurrencyInstance(Locale.GERMANY).format(price);
+                
+                String newEntry = String.format("%s [%s] %s %s - %s",
+                    dialog.getType(), dialog.getLicensePlate(), 
+                    dialog.getBrand(), dialog.getModel(), formattedPrice);
+                listModel.setElementAt(newEntry, selectedIndex);
+                
+            } catch (ParseException e) {
+                showError("Bitte geben Sie einen gültigen Kaufpreis ein.");
+                return;
+            }
         }
     }
     

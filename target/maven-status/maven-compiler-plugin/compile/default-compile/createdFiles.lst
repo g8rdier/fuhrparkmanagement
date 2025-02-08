@@ -11,6 +11,7 @@ de/fuhrpark/service/impl/FahrzeugServiceImpl.class
 de/fuhrpark/persistence/DataStore.class
 de/fuhrpark/model/enums/FahrzeugTyp.class
 de/fuhrpark/model/PKW.class
+de/fuhrpark/ui/FuhrparkUI$LicensePlateDocument.class
 de/fuhrpark/ui/PriceDocument.class
 de/fuhrpark/model/FahrtenbuchEintrag.class
 de/fuhrpark/App.class

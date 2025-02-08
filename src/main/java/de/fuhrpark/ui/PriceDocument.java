@@ -7,7 +7,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class PriceDocument extends PlainDocument {
-    private final NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
+    private final NumberFormat format = NumberFormat.getCurrencyInstance(Locale.GERMANY);
     
     public PriceDocument() {
         format.setGroupingUsed(true);
@@ -19,8 +19,8 @@ public class PriceDocument extends PlainDocument {
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
         if (str == null) return;
         
-        // Only allow digits and comma
-        String newStr = str.replaceAll("[^0-9,]", "");
+        // Only allow digits, comma, and dot
+        String newStr = str.replaceAll("[^0-9,.]", "");
         if (newStr.isEmpty()) return;
         
         String currentText = getText(0, getLength());
@@ -29,19 +29,30 @@ public class PriceDocument extends PlainDocument {
         String proposedResult = beforeOffset + newStr + afterOffset;
         
         // Remove all formatting
-        proposedResult = proposedResult.replace(".", "").replace(",", ".");
+        String cleaned = proposedResult.replace(".", "").replace(",", ".");
         
         try {
-            // Try to parse the number
-            double value = Double.parseDouble(proposedResult);
-            if (value > 999999999.99) return; // Limit to reasonable amount
-            
-            // Format the entire text
-            String formatted = format.format(value);
-            
-            // Replace entire content
-            super.remove(0, getLength());
-            super.insertString(0, formatted, a);
+            // Allow partial input (like single digits)
+            if (cleaned.matches("^\\d*\\.?\\d{0,2}$")) {
+                // If it's just a decimal point, add a leading zero
+                if (cleaned.equals(".")) cleaned = "0.";
+                
+                double value = cleaned.isEmpty() ? 0 : Double.parseDouble(cleaned);
+                if (value <= 999999999.99) {  // Reasonable limit
+                    // For partial inputs, don't format yet
+                    if (cleaned.endsWith(".")) {
+                        super.remove(0, getLength());
+                        super.insertString(0, cleaned.replace(".", ","), a);
+                    } else {
+                        // Format complete numbers
+                        String formatted = format.format(value);
+                        // Remove currency symbol for editing
+                        formatted = formatted.replace(" €", "");
+                        super.remove(0, getLength());
+                        super.insertString(0, formatted, a);
+                    }
+                }
+            }
         } catch (NumberFormatException e) {
             // Invalid number, ignore input
         }
