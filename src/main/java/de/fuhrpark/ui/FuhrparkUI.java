@@ -113,8 +113,8 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void loadFahrzeuge() {
-        List<Fahrzeug> fahrzeuge = fahrzeugService.getFahrzeugListe();
-        tableModel.updateFahrzeuge(fahrzeuge);
+        List<Fahrzeug> fahrzeuge = fahrzeugService.getAlleFahrzeuge();
+        tableModel.setData(fahrzeuge);
     }
     
     private void showAddDialog() {
@@ -133,7 +133,7 @@ public class FuhrparkUI extends JFrame {
     private void deleteFahrzeug() {
         int selectedRow = fahrzeugTable.getSelectedRow();
         if (selectedRow >= 0) {
-            Fahrzeug fahrzeug = tableModel.getFahrzeug(selectedRow);
+            Fahrzeug fahrzeug = tableModel.getRow(selectedRow);
             int option = JOptionPane.showConfirmDialog(this,
                 "Möchten Sie das Fahrzeug wirklich löschen?",
                 "Fahrzeug löschen",
