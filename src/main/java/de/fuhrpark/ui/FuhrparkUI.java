@@ -15,7 +15,7 @@ public class FuhrparkUI extends JFrame {
     private final JLabel markeLabel;
     private final JLabel modellLabel;
     private final JLabel typLabel;
-    private final JLabel baujahrlabel;
+    private final JLabel baujahrLabel;
     private final JLabel kilometerstandLabel;
     private final JTable reparaturenTable;
     private final JTextField searchField;
@@ -39,7 +39,7 @@ public class FuhrparkUI extends JFrame {
         markeLabel = new JLabel("Marke: ");
         modellLabel = new JLabel("Modell: ");
         typLabel = new JLabel("Typ: ");
-        baujahrlabel = new JLabel("Baujahr: ");
+        baujahrLabel = new JLabel("Baujahr: ");
         kilometerstandLabel = new JLabel("Kilometerstand: ");
 
         // Details Panel
@@ -48,7 +48,7 @@ public class FuhrparkUI extends JFrame {
         detailsPanel.add(markeLabel);
         detailsPanel.add(modellLabel);
         detailsPanel.add(typLabel);
-        detailsPanel.add(baujahrlabel);
+        detailsPanel.add(baujahrLabel);
         detailsPanel.add(kilometerstandLabel);
 
         // Reparaturen Table
@@ -67,13 +67,7 @@ public class FuhrparkUI extends JFrame {
 
         // Add search functionality
         searchButton.addActionListener(_ -> {
-            String kennzeichen = searchField.getText();
-            Fahrzeug fahrzeug = fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
-            updateFahrzeugDetails(fahrzeug);
-            if (fahrzeug != null) {
-                List<ReparaturBuchEintrag> reparaturen = reparaturService.getReparaturenForFahrzeug(kennzeichen);
-                updateReparaturenTable(reparaturen);
-            }
+            searchFahrzeug();
         });
 
         // Buttons Panel
@@ -109,25 +103,40 @@ public class FuhrparkUI extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    public void updateFahrzeugDetails(Fahrzeug fahrzeug) {
+    private void updateFahrzeugDetails(Fahrzeug fahrzeug) {
         if (fahrzeug != null) {
-            kennzeichenLabel.setText("Kennzeichen: " + fahrzeug.getKennzeichen());
-            markeLabel.setText("Marke: " + fahrzeug.getMarke());
-            modellLabel.setText("Modell: " + fahrzeug.getModell());
-            typLabel.setText("Typ: " + fahrzeug.getTyp());
-            baujahrlabel.setText("Baujahr: " + fahrzeug.getBaujahr());
-            kilometerstandLabel.setText("Kilometerstand: " + fahrzeug.getKilometerstand());
+            // Use fahrzeugService to get and display vehicle details
+            kennzeichenLabel.setText(fahrzeug.getKennzeichen());
+            markeLabel.setText(fahrzeug.getHersteller());
+            modellLabel.setText(fahrzeug.getModell());
+            typLabel.setText(fahrzeug.getTyp().toString());
+            baujahrLabel.setText(String.valueOf(fahrzeug.getBaujahr()));
+            kilometerstandLabel.setText(String.valueOf(fahrzeug.getKilometerstand()));
+            
+            // Use reparaturService to update repairs
+            List<ReparaturBuchEintrag> reparaturen = reparaturService.getReparaturenForFahrzeug(fahrzeug.getKennzeichen());
+            updateReparaturenTable(reparaturen);
+            
+            // Use fahrtenbuchService to update logbook if needed
+            // ... any logbook-related updates
         } else {
-            clearFahrzeugDetails();
+            // Clear all labels if no vehicle found
+            clearLabels();
         }
     }
 
-    private void clearFahrzeugDetails() {
+    private void searchFahrzeug() {
+        String kennzeichen = searchField.getText().trim();
+        Fahrzeug fahrzeug = fahrzeugService.getFahrzeugByKennzeichen(kennzeichen);
+        updateFahrzeugDetails(fahrzeug);
+    }
+
+    private void clearLabels() {
         kennzeichenLabel.setText("Kennzeichen: ");
         markeLabel.setText("Marke: ");
         modellLabel.setText("Modell: ");
         typLabel.setText("Typ: ");
-        baujahrlabel.setText("Baujahr: ");
+        baujahrLabel.setText("Baujahr: ");
         kilometerstandLabel.setText("Kilometerstand: ");
     }
 
@@ -143,4 +152,17 @@ public class FuhrparkUI extends JFrame {
             });
         }
     }
+
+    private String getCurrentKennzeichen() {
+        String kennzeichen = searchField.getText().trim();
+        if (kennzeichen.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Bitte geben Sie zuerst ein Kennzeichen ein.",
+                "Kein Fahrzeug ausgewählt",
+                JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        return kennzeichen;
+    }
+} 
 } 
