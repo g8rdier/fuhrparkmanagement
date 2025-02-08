@@ -18,6 +18,7 @@ import de.fuhrpark.ui.dialog.FahrzeugDialog;
 import de.fuhrpark.ui.dialog.FahrtenbuchDialog;
 import de.fuhrpark.ui.model.FahrzeugData;
 import de.fuhrpark.ui.model.PreisDocument;
+import de.fuhrpark.ui.model.FahrzeugTableModel;
 import java.util.List;
 
 public class FuhrparkUI extends JFrame {
@@ -45,7 +46,7 @@ public class FuhrparkUI extends JFrame {
     
     private final FahrzeugService fahrzeugService;
     private final FahrzeugFactory fahrzeugFactory;
-    private final DefaultListModel<String> fahrzeugListModel;
+    private final FahrzeugTableModel tableModel;
 
     public FuhrparkUI(FuhrparkManager manager, FahrzeugService service, FahrzeugFactory factory) {
         super("Fuhrpark Manager");
@@ -55,8 +56,8 @@ public class FuhrparkUI extends JFrame {
         this.manager = manager;
         this.fahrzeugService = service;
         this.fahrzeugFactory = factory;
-        this.fahrzeugListModel = new DefaultListModel<>();
-        this.fahrzeugTable = new JTable();
+        this.tableModel = new FahrzeugTableModel();
+        this.fahrzeugTable = new JTable(tableModel);
         
         // Initialize all fields in constructor before calling initComponents
         fahrzeugTypComboBox = new JComboBox<>(VEHICLE_TYPES);
@@ -79,8 +80,20 @@ public class FuhrparkUI extends JFrame {
         setLayout(new BorderLayout(5, 5));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Toolbar
+        JToolBar toolbar = createToolbar();
+        add(toolbar, BorderLayout.NORTH);
+
+        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
+        add(scrollPane, BorderLayout.CENTER);
+
+        setSize(800, 600);
+        setLocationRelativeTo(null);
+    }
+    
+    private JToolBar createToolbar() {
         JToolBar toolbar = new JToolBar();
+        toolbar.setFloatable(false);
+
         JButton addButton = new JButton("Hinzufügen");
         JButton editButton = new JButton("Bearbeiten");
         JButton deleteButton = new JButton("Löschen");
@@ -95,19 +108,13 @@ public class FuhrparkUI extends JFrame {
         toolbar.add(editButton);
         toolbar.add(deleteButton);
         toolbar.add(fahrtenbuchButton);
-        add(toolbar, BorderLayout.NORTH);
 
-        // Table
-        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
-        add(scrollPane, BorderLayout.CENTER);
-
-        setSize(800, 600);
-        setLocationRelativeTo(null);
+        return toolbar;
     }
     
     private void loadFahrzeuge() {
         List<Fahrzeug> fahrzeuge = fahrzeugService.getAlleFahrzeuge();
-        // TODO: Update table model with fahrzeuge
+        tableModel.setFahrzeuge(fahrzeuge);
     }
     
     private void showAddDialog() {
@@ -120,24 +127,39 @@ public class FuhrparkUI extends JFrame {
     }
     
     private void showEditDialog() {
-        // TODO: Implement edit dialog
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
+            FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugFactory, fahrzeug);
+            dialog.setVisible(true);
+            if (dialog.getResult() != null) {
+                fahrzeugService.speichereFahrzeug(dialog.getResult());
+                loadFahrzeuge();
+            }
+        }
     }
     
     private void deleteFahrzeug() {
-        // TODO: Implement delete functionality
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
+            int option = JOptionPane.showConfirmDialog(this,
+                "Möchten Sie das Fahrzeug wirklich löschen?",
+                "Fahrzeug löschen",
+                JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                fahrzeugService.loescheFahrzeug(fahrzeug.getKennzeichen());
+                loadFahrzeuge();
+            }
+        }
     }
     
     private void showFahrtenbuch() {
         int selectedRow = fahrzeugTable.getSelectedRow();
         if (selectedRow >= 0) {
-            String kennzeichen = (String) fahrzeugTable.getValueAt(selectedRow, 0);
-            FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, null, kennzeichen);
+            Fahrzeug fahrzeug = tableModel.getFahrzeugAt(selectedRow);
+            FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, fahrzeugService, fahrzeug.getKennzeichen());
             dialog.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(this,
-                "Bitte wählen Sie ein Fahrzeug aus.",
-                "Fehler",
-                JOptionPane.ERROR_MESSAGE);
         }
     }
     
