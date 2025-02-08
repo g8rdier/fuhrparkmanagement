@@ -5,7 +5,7 @@ import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.ReparaturBuchEintrag;
 import de.fuhrpark.persistence.DataStore;
 import de.fuhrpark.persistence.DatabaseConfig;
-import de.fuhrpark.types.FahrzeugTyp;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -84,7 +84,7 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void addFahrtenbuchEintrag(FahrtenbuchEintrag eintrag) {
-        fahrtenbuch.computeIfAbsent(eintrag.getKennzeichen(), kennzeichen -> new ArrayList<>())
+        fahrtenbuch.computeIfAbsent(eintrag.getKennzeichen(), _ -> new ArrayList<>())
                   .add(eintrag);
     }
 
@@ -102,7 +102,7 @@ public class DatabaseDataStoreImpl implements DataStore {
 
     @Override
     public void addReparaturBuchEintrag(ReparaturBuchEintrag eintrag) {
-        reparaturen.computeIfAbsent(eintrag.getKennzeichen(), kennzeichen -> new ArrayList<>())
+        reparaturen.computeIfAbsent(eintrag.getKennzeichen(), _ -> new ArrayList<>())
                   .add(eintrag);
     }
 
