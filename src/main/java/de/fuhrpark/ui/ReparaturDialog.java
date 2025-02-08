@@ -40,12 +40,13 @@ public class ReparaturDialog extends JDialog {
         datumField.setText(LocalDate.now().format(DATE_FORMATTER));
         add(datumField);
 
+    
         JButton okButton = new JButton("Speichern");
-        okButton.addActionListener(_ -> saveAndClose());
+        okButton.addActionListener(e -> saveAndClose());
         add(okButton);
 
         JButton cancelButton = new JButton("Abbrechen");
-        cancelButton.addActionListener(_ -> dispose());
+        cancelButton.addActionListener(e -> dispose());
         add(cancelButton);
 
         pack();
