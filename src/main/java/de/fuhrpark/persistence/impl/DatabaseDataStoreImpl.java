@@ -257,14 +257,14 @@ public class DatabaseDataStoreImpl implements DataStore {
             stmt.setString(1, kennzeichen);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    ReparaturBuchEintrag reparatur = new ReparaturBuchEintrag(
-                        rs.getLong("id"),
-                        rs.getString("fahrzeug_kennzeichen"),
-                        rs.getDate("datum").toLocalDate(),
-                        rs.getString("beschreibung"),
-                        rs.getDouble("kosten"),
-                        rs.getString("werkstatt")
-                    );
+                    ReparaturBuchEintrag reparatur = ReparaturBuchEintrag.builder()
+                        .id(rs.getLong("id"))
+                        .fahrzeugKennzeichen(rs.getString("fahrzeug_kennzeichen"))
+                        .datum(rs.getDate("datum").toLocalDate())
+                        .beschreibung(rs.getString("beschreibung"))
+                        .kosten(rs.getDouble("kosten"))
+                        .werkstatt(rs.getString("werkstatt"))
+                        .build();
                     reparaturen.add(reparatur);
                 }
             }
