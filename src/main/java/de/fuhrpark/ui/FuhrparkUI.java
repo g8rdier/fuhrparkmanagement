@@ -1,19 +1,9 @@
 package de.fuhrpark.ui;
 
 import de.fuhrpark.model.Fahrzeug;
-import de.fuhrpark.model.ReparaturBuchEintrag;
-import de.fuhrpark.model.FahrtenbuchEintrag;
+import de.fuhrpark.model.PKW;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.List;
-import de.fuhrpark.service.FahrzeugService;
-import de.fuhrpark.service.FahrtenbuchService;
-import de.fuhrpark.service.ReparaturService;
-import java.util.ArrayList;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.ListModel;
-import javax.swing.DefaultListModel;
 
 public class FuhrparkUI extends JFrame {
     private final JList<Fahrzeug> fahrzeugList;
