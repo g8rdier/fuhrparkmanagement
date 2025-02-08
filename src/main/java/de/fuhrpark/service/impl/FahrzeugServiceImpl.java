@@ -16,12 +16,24 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     public void saveFahrzeug(Fahrzeug fahrzeug) {
         System.out.println("FahrzeugService: Saving vehicle " + fahrzeug.getKennzeichen());
         dataStore.saveFahrzeug(fahrzeug);
-        // Verify save was successful
-        Fahrzeug saved = getFahrzeug(fahrzeug.getKennzeichen());
-        if (saved == null) {
-            throw new RuntimeException("Vehicle was not saved successfully");
-        }
         System.out.println("FahrzeugService: Vehicle saved successfully");
+    }
+
+    @Override
+    public Fahrzeug getFahrzeug(String kennzeichen) {
+        return dataStore.getFahrzeug(kennzeichen);
+    }
+
+    @Override
+    public List<Fahrzeug> getAlleFahrzeuge() {
+        List<Fahrzeug> fahrzeuge = dataStore.getAlleFahrzeuge();
+        System.out.println("FahrzeugService: Retrieved " + fahrzeuge.size() + " vehicles");
+        return fahrzeuge;
+    }
+
+    @Override
+    public void deleteFahrzeug(String kennzeichen) {
+        dataStore.deleteFahrzeug(kennzeichen);
     }
 
     @Override
@@ -32,23 +44,6 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     @Override
     public void updateFahrzeug(Fahrzeug fahrzeug) {
         dataStore.updateFahrzeug(fahrzeug);
-    }
-
-    @Override
-    public void deleteFahrzeug(String kennzeichen) {
-        dataStore.deleteFahrzeug(kennzeichen);
-    }
-
-    @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
-        List<Fahrzeug> fahrzeuge = dataStore.getFahrzeuge();
-        System.out.println("FahrzeugService: Retrieved " + fahrzeuge.size() + " vehicles");
-        return fahrzeuge;
-    }
-
-    @Override
-    public Fahrzeug getFahrzeug(String kennzeichen) {
-        return dataStore.getFahrzeug(kennzeichen);
     }
 
     @Override
