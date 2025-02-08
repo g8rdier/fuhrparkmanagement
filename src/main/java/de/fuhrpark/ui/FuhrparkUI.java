@@ -56,63 +56,23 @@ public class FuhrparkUI extends JFrame {
             if (str == null) return;
             
             // Convert to uppercase
-            str = str.toUpperCase();
+            String upper = str.toUpperCase();
             
-            // Get current content
-            String currentText = getText(0, getLength());
-            String newText = new StringBuilder(currentText).insert(offs, str).toString();
-            
-            // Remove formatting characters for length check
-            String cleaned = newText.replace("-", "").replace(" ", "");
-            
-            // Check maximum length (8 chars + possible separators)
-            if (cleaned.length() > 8) return;
-            
-            // Only allow valid characters
-            if (!str.matches("[A-ZÄÖÜ0-9HE-\\s]+")) return;
-            
-            // Allow the insertion
-            super.insertString(offs, str, a);
-            
-            // After insertion, try to format
-            try {
-                String fullText = getText(0, getLength());
-                String formatted = formatPlate(fullText);
-                if (!formatted.equals(fullText)) {
-                    super.remove(0, getLength());
-                    super.insertString(0, formatted, a);
+            // Only allow letters, numbers, hyphen, space, and H/E
+            StringBuilder validChars = new StringBuilder();
+            for (char c : upper.toCharArray()) {
+                if (Character.isLetterOrDigit(c) || c == '-' || c == ' ' || c == 'H' || c == 'E') {
+                    validChars.append(c);
                 }
-            } catch (Exception e) {
-                // If formatting fails, keep the text as is
-            }
-        }
-        
-        private String formatPlate(String text) {
-            // Remove all formatting first
-            String cleaned = text.replace("-", "").replace(" ", "");
-            if (cleaned.isEmpty()) return "";
-            
-            StringBuilder formatted = new StringBuilder();
-            int pos = 0;
-            
-            for (char c : cleaned.toCharArray()) {
-                if (pos == 0) {
-                    formatted.append(c);
-                } else if (pos <= 2) {
-                    formatted.append(c);
-                } else if (pos == 3) {
-                    formatted.append('-').append(c);
-                } else if (pos == 4) {
-                    formatted.append(c);
-                } else if (pos == 5) {
-                    formatted.append(' ').append(c);
-                } else {
-                    formatted.append(c);
-                }
-                pos++;
             }
             
-            return formatted.toString();
+            // Get current text length
+            int currentLength = getLength();
+            
+            // Don't allow more than 12 characters (including separators)
+            if (currentLength + validChars.length() <= 12) {
+                super.insertString(offs, validChars.toString(), a);
+            }
         }
     }
     
@@ -120,37 +80,12 @@ public class FuhrparkUI extends JFrame {
         if (licensePlate == null || licensePlate.isEmpty()) {
             return false;
         }
+
+        // Basic format check (with flexible separators)
+        String cleaned = licensePlate.replace("-", "").replace(" ", "").toUpperCase();
         
-        // Clean the input
-        String cleaned = licensePlate.toUpperCase().trim();
-        
-        // Check basic format
-        if (!cleaned.contains("-") || !cleaned.contains(" ")) {
-            return false;
-        }
-        
-        // Split into parts
-        String[] mainParts = cleaned.split("-");
-        if (mainParts.length != 2) return false;
-        
-        String location = mainParts[0];
-        String[] numberParts = mainParts[1].split(" ");
-        if (numberParts.length != 2) return false;
-        
-        String letters = numberParts[0];
-        String numbers = numberParts[1];
-        
-        // Handle H/E suffix
-        String numbersPart = numbers;
-        if (numbers.endsWith("H") || numbers.endsWith("E")) {
-            numbersPart = numbers.substring(0, numbers.length() - 1);
-        }
-        
-        // Validate each part
-        return location.matches(LOCATION_PATTERN) &&
-               letters.matches(LETTERS_PATTERN) &&
-               numbersPart.matches(NUMBERS_PATTERN) &&
-               cleaned.length() <= 10; // Including separators
+        // Check for valid format: 1-3 letters, 1-2 letters, 1-4 numbers, optional H/E
+        return cleaned.matches("[A-ZÄÖÜ]{1,3}[A-Z]{1,2}[1-9][0-9]{0,3}[HE]?");
     }
     
     private void showLicensePlateHelp() {
@@ -173,8 +108,6 @@ public class FuhrparkUI extends JFrame {
             • HH-AB 42
             • B-AB 123H
             • M-XX 55E
-            
-            Maximale Länge: 8 Zeichen (ohne Bindestrich/Leerzeichen)
             """,
             "Kennzeichen Format",
             JOptionPane.INFORMATION_MESSAGE);
@@ -379,7 +312,7 @@ public class FuhrparkUI extends JFrame {
         String selectedBrand = (String) brandCombo.getSelectedItem();
         String brand = OTHER_BRAND.equals(selectedBrand) ? customBrandField.getText().trim() : selectedBrand;
         String model = modelField.getText().trim();
-        String licensePlate = licensePlateField.getText().trim().toUpperCase();
+        String licensePlate = licensePlateField.getText().trim();
         
         if (brand.isEmpty() || model.isEmpty() || licensePlate.isEmpty() || 
             (OTHER_BRAND.equals(selectedBrand) && customBrandField.getText().trim().isEmpty())) {
