@@ -1,8 +1,8 @@
 package de.fuhrpark.persistence.repository;
 
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.PKW;
-import de.fuhrpark.model.LKW;
+import de.fuhrpark.model.impl.PKW;
+import de.fuhrpark.model.impl.LKW;
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.persistence.DataStore;
@@ -24,7 +24,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public void saveFahrzeug(Fahrzeug fahrzeug) {
+    public void speichereFahrzeug(Fahrzeug fahrzeug) {
         if (fahrzeug == null) {
             throw new IllegalArgumentException("Fahrzeug darf nicht null sein");
         }
@@ -42,7 +42,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public void updateFahrzeug(Fahrzeug fahrzeug) {
+    public void aktualisiereFahrzeug(Fahrzeug fahrzeug) {
         if (fahrzeug == null) {
             throw new IllegalArgumentException("Fahrzeug darf nicht null sein");
         }
@@ -63,11 +63,10 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public void deleteFahrzeug(String kennzeichen) {
-        try {
-            PreparedStatement stmt = connection.prepareStatement(
+    public void loescheFahrzeug(String kennzeichen) {
+        try (PreparedStatement stmt = connection.prepareStatement(
                 "DELETE FROM fahrzeuge WHERE kennzeichen = ?"
-            );
+        )) {
             stmt.setString(1, kennzeichen);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -76,7 +75,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public Fahrzeug getFahrzeugByKennzeichen(String kennzeichen) {
+    public Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen) {
         if (kennzeichen == null) {
             throw new IllegalArgumentException("Kennzeichen darf nicht null sein");
         }
@@ -107,15 +106,45 @@ public class DatabaseDataStoreImpl implements DataStore {
     }
 
     @Override
-    public void saveFahrt(String kennzeichen, FahrtenbuchEintrag eintrag) {
-        // For BANF0-2, we'll implement a simple version that just logs
-        System.out.println("DatabaseDataStoreImpl: Would save fahrt for " + kennzeichen);
+    public void addFahrtenbuchEintrag(String kennzeichen, FahrtenbuchEintrag eintrag) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "INSERT INTO fahrtenbuch (kennzeichen, datum, start_ort, ziel_ort, kilometer, fahrer) VALUES (?, ?, ?, ?, ?, ?)"
+        )) {
+            stmt.setString(1, kennzeichen);
+            stmt.setDate(2, Date.valueOf(eintrag.getDatum()));
+            stmt.setString(3, eintrag.getStartOrt());
+            stmt.setString(4, eintrag.getZielOrt());
+            stmt.setDouble(5, eintrag.getKilometer());
+            stmt.setString(6, eintrag.getFahrer());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Fehler beim Speichern des Fahrtenbucheintrags: " + e.getMessage(), e);
+        }
     }
 
     @Override
-    public List<FahrtenbuchEintrag> getFahrten(String kennzeichen) {
-        // For BANF0-2, return empty list
-        return new ArrayList<FahrtenbuchEintrag>();
+    public List<FahrtenbuchEintrag> getFahrtenForFahrzeug(String kennzeichen) {
+        List<FahrtenbuchEintrag> eintraege = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT * FROM fahrtenbuch WHERE kennzeichen = ? ORDER BY datum"
+        )) {
+            stmt.setString(1, kennzeichen);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    eintraege.add(new FahrtenbuchEintrag(
+                        rs.getDate("datum").toLocalDate(),
+                        rs.getString("start_ort"),
+                        rs.getString("ziel_ort"),
+                        rs.getDouble("kilometer"),
+                        rs.getString("kennzeichen"),
+                        rs.getString("fahrer")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Fehler beim Laden der Fahrtenbucheinträge: " + e.getMessage(), e);
+        }
+        return eintraege;
     }
 
     private Fahrzeug createFahrzeugFromResultSet(ResultSet rs) throws SQLException {
@@ -124,13 +153,10 @@ public class DatabaseDataStoreImpl implements DataStore {
         String marke = rs.getString("marke");
         String modell = rs.getString("modell");
 
-        switch (FahrzeugTyp.valueOf(typ)) {
-            case PKW:
-                return new PKW(kennzeichen, marke, modell, 5, true);
-            case LKW:
-                return new LKW(kennzeichen, marke, modell, 7.5, true);
-            default:
-                throw new IllegalStateException("Unbekannter Fahrzeugtyp: " + typ);
-        }
+        return switch (FahrzeugTyp.valueOf(typ)) {
+            case PKW -> new PKW(marke, modell, kennzeichen, 0.0);
+            case LKW -> new LKW(marke, modell, kennzeichen, 0.0);
+            default -> throw new IllegalStateException("Unbekannter Fahrzeugtyp: " + typ);
+        };
     }
 }
