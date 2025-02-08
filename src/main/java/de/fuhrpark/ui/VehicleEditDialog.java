@@ -36,12 +36,20 @@ public class VehicleEditDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Add components
-        addFormField(inputPanel, "Fahrzeugtyp:", typeComboBox, gbc, 0);
-        addFormField(inputPanel, "Marke:", brandField, gbc, 1);
+        // Add components with required field markers
+        addFormField(inputPanel, "Fahrzeugtyp: *", typeComboBox, gbc, 0);
+        addFormField(inputPanel, "Marke: *", brandField, gbc, 1);
         addFormField(inputPanel, "Modell:", modelField, gbc, 2);
-        addFormField(inputPanel, "Kennzeichen:", licensePlateField, gbc, 3);
-        addFormField(inputPanel, "Kaufpreis (€):", priceField, gbc, 4);
+        addFormField(inputPanel, "Kennzeichen: *", licensePlateField, gbc, 3);
+        addFormField(inputPanel, "Kaufpreis (€): *", priceField, gbc, 4);
+
+        // Add required fields note
+        JLabel requiredNote = new JLabel("* Pflichtfeld");
+        requiredNote.setForeground(Color.RED);
+        gbc.gridy = 5;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        inputPanel.add(requiredNote, gbc);
 
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -49,8 +57,10 @@ public class VehicleEditDialog extends JDialog {
         JButton cancelButton = new JButton("Abbrechen");
 
         okButton.addActionListener(e -> {
-            confirmed = true;
-            dispose();
+            if (validateInputs()) {
+                confirmed = true;
+                dispose();
+            }
         });
         cancelButton.addActionListener(e -> dispose());
 
@@ -100,5 +110,25 @@ public class VehicleEditDialog extends JDialog {
 
     public String getPrice() {
         return priceField.getText();
+    }
+
+    private boolean validateInputs() {
+        if (brandField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie eine Marke ein.");
+            return false;
+        }
+        if (licensePlateField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie ein Kennzeichen ein.");
+            return false;
+        }
+        if (priceField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie einen Kaufpreis ein.");
+            return false;
+        }
+        return true;
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Fehler", JOptionPane.ERROR_MESSAGE);
     }
 } 
