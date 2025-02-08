@@ -14,7 +14,8 @@ public class ReparaturServiceImpl implements ReparaturService {
 
     @Override
     public void addReparatur(String kennzeichen, ReparaturBuchEintrag reparatur) {
-        dataStore.addReparatur(kennzeichen, reparatur);
+        reparatur.setKennzeichen(kennzeichen);
+        dataStore.saveReparatur(kennzeichen, reparatur);
     }
 
     @Override
