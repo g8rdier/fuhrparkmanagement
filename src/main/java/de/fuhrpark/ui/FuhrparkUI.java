@@ -36,6 +36,8 @@ public class FuhrparkUI extends JFrame {
     private JTable reparaturTable;
     private final DefaultTableModel reparaturTableModel;
 
+    private final JToolBar toolBar = new JToolBar();
+
     public FuhrparkUI(FahrzeugService fahrzeugService, FahrtenbuchService fahrtenbuchService, ReparaturService reparaturService) {
         super("Fuhrpark Verwaltung");
         this.fahrzeugService = fahrzeugService;
@@ -60,6 +62,17 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void initializeComponents() {
+        setLayout(new BorderLayout());
+        
+        // Configure toolbar
+        toolBar.setFloatable(false);
+        
+        JButton reparaturBuchButton = new JButton("Reparaturbuch");
+        reparaturBuchButton.addActionListener(e -> handleReparaturBuchOeffnen());
+        toolBar.add(reparaturBuchButton);
+        
+        add(toolBar, BorderLayout.NORTH);
+        
         // Initialize all components
         searchField = new JTextField(20);
         searchButton = new JButton("Fahrzeug suchen");
@@ -76,16 +89,6 @@ public class FuhrparkUI extends JFrame {
         
         fahrzeugTable = new JTable(new FahrzeugTableModel(fahrzeugService.getAlleFahrzeuge()));
 
-        // Find the Reparaturbuch button and connect it
-        JButton reparaturBuchButton = new JButton("Reparaturbuch");
-        reparaturBuchButton.addActionListener(e -> handleReparaturBuchOeffnen());
-        toolBar.add(reparaturBuchButton);
-    }
-
-    private void initializeUI() {
-        // Create main split pane
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        
         // Left panel with vehicle table
         JPanel leftPanel = new JPanel(new BorderLayout());
         JScrollPane tableScrollPane = new JScrollPane(fahrzeugTable);
@@ -98,6 +101,7 @@ public class FuhrparkUI extends JFrame {
         rightPanel.add(createDetailsPanel(), BorderLayout.CENTER);
         rightPanel.add(createButtonPanel(), BorderLayout.SOUTH);
 
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setLeftComponent(leftPanel);
         splitPane.setRightComponent(rightPanel);
         

@@ -35,8 +35,10 @@ public class FahrtenbuchDialog extends JDialog {
     private void initComponents() {
         setLayout(new BorderLayout());
 
-        // Toolbar with New button
+        // Create toolbar
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);  // Prevent toolbar from being dragged
+        
         JButton newButton = new JButton("Neu");
         newButton.addActionListener(e -> showNewEntryDialog());
         toolBar.add(newButton);
@@ -115,6 +117,12 @@ public class FahrtenbuchDialog extends JDialog {
                 result = createFahrtenbuchEintrag();
                 if (result != null) {
                     dialog.dispose();
+                    if (result != null) {
+                        service.addFahrt(kennzeichen, result);
+                        ((FahrtenbuchTableModel)table.getModel()).updateData(
+                            service.getFahrtenForFahrzeug(kennzeichen)
+                        );
+                    }
                 }
             }
         });
