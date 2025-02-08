@@ -249,7 +249,7 @@ public class DatabaseDataStoreImpl implements DataStore {
     @Override
     public List<ReparaturBuchEintrag> getReparaturenForFahrzeug(String kennzeichen) {
         List<ReparaturBuchEintrag> reparaturen = new ArrayList<>();
-        String sql = "SELECT * FROM reparaturbuch WHERE kennzeichen = ? ORDER BY datum DESC";
+        String sql = "SELECT * FROM reparaturen WHERE fahrzeug_kennzeichen = ?";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -257,35 +257,36 @@ public class DatabaseDataStoreImpl implements DataStore {
             stmt.setString(1, kennzeichen);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    ReparaturBuchEintrag eintrag = new ReparaturBuchEintrag(
+                    ReparaturBuchEintrag reparatur = new ReparaturBuchEintrag(
+                        rs.getLong("id"),
+                        rs.getString("fahrzeug_kennzeichen"),
                         rs.getDate("datum").toLocalDate(),
                         rs.getString("beschreibung"),
                         rs.getDouble("kosten"),
                         rs.getString("werkstatt")
                     );
-                    reparaturen.add(eintrag);
+                    reparaturen.add(reparatur);
                 }
             }
         } catch (SQLException e) {
             System.err.println("Error fetching repairs: " + e.getMessage());
-            // Don't throw exception, return empty list instead
             return new ArrayList<>();
         }
         return reparaturen;
     }
 
     @Override
-    public void saveReparatur(ReparaturBuchEintrag eintrag) {
-        String sql = "INSERT INTO reparaturbuch (kennzeichen, datum, beschreibung, kosten, werkstatt) VALUES (?, ?, ?, ?, ?)";
+    public void saveReparatur(ReparaturBuchEintrag reparatur) {
+        String sql = "INSERT INTO reparaturen (fahrzeug_kennzeichen, datum, beschreibung, kosten, werkstatt) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setString(1, eintrag.getKennzeichen());
-            stmt.setDate(2, Date.valueOf(eintrag.getDatum()));
-            stmt.setString(3, eintrag.getBeschreibung());
-            stmt.setDouble(4, eintrag.getKosten());
-            stmt.setString(5, eintrag.getWerkstatt());
+            stmt.setString(1, reparatur.getFahrzeugKennzeichen());
+            stmt.setDate(2, java.sql.Date.valueOf(reparatur.getDatum()));
+            stmt.setString(3, reparatur.getBeschreibung());
+            stmt.setDouble(4, reparatur.getKosten());
+            stmt.setString(5, reparatur.getWerkstatt());
             
             stmt.executeUpdate();
         } catch (SQLException e) {

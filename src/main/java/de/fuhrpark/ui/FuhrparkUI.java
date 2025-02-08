@@ -198,14 +198,29 @@ public class FuhrparkUI extends JFrame {
         }
     }
 
-    private String getCurrentKennzeichen() {
-        Fahrzeug selectedFahrzeug = getCurrentFahrzeug();
-        return selectedFahrzeug != null ? selectedFahrzeug.getKennzeichen() : null;
-    }
-
-    private Fahrzeug getCurrentFahrzeug() {
-        String kennzeichen = searchField.getText();
-        return fahrzeugService.getFahrzeug(kennzeichen);
+    private void handleFahrtenbuchOeffnen() {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Bitte wählen Sie zuerst ein Fahrzeug aus.",
+                "Kein Fahrzeug ausgewählt",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Convert view index to model index in case table is sorted
+        int modelRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
+        String kennzeichen = (String) fahrzeugTable.getModel().getValueAt(modelRow, 0);
+        
+        System.out.println("Opening Fahrtenbuch for: " + kennzeichen);
+        
+        Fahrzeug fahrzeug = fahrzeugService.getFahrzeug(kennzeichen);
+        if (fahrzeug != null) {
+            var dialog = new FahrtenbuchDialog(this, "Fahrtenbuch - " + kennzeichen, true, fahrzeug, fahrtenbuchService);
+            dialog.setVisible(true);
+        } else {
+            System.err.println("Could not find vehicle with kennzeichen: " + kennzeichen);
+        }
     }
 
     private void updateFahrtenList(List<FahrtenbuchEintrag> fahrten) {
@@ -385,30 +400,5 @@ public class FuhrparkUI extends JFrame {
         buttonPanel.add(addReparaturButton);
         
         return buttonPanel;
-    }
-
-    private void handleFahrtenbuchOeffnen() {
-        int selectedRow = fahrzeugTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this,
-                "Bitte wählen Sie zuerst ein Fahrzeug aus.",
-                "Kein Fahrzeug ausgewählt",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        // Convert view index to model index in case table is sorted
-        int modelRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
-        String kennzeichen = (String) fahrzeugTable.getModel().getValueAt(modelRow, 0);
-        
-        System.out.println("Opening Fahrtenbuch for: " + kennzeichen); // Debug output
-        
-        Fahrzeug fahrzeug = fahrzeugService.getFahrzeug(kennzeichen);
-        if (fahrzeug != null) {
-            FahrtenbuchDialog dialog = new FahrtenbuchDialog(this, fahrzeug, fahrtenbuchService);
-            dialog.setVisible(true);
-        } else {
-            System.err.println("Could not find vehicle with kennzeichen: " + kennzeichen);
-        }
     }
 } 
