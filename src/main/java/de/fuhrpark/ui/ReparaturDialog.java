@@ -1,11 +1,11 @@
 package de.fuhrpark.ui;
 
 import de.fuhrpark.model.ReparaturBuchEintrag;
+import de.fuhrpark.service.ReparaturService;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 public class ReparaturDialog extends JDialog {
     private JTextField beschreibungField;
