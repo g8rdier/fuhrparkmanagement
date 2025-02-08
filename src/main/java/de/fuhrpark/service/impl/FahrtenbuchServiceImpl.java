@@ -20,7 +20,7 @@ public class FahrtenbuchServiceImpl implements FahrtenbuchService {
         if (kennzeichen == null || eintrag == null) {
             throw new IllegalArgumentException("Kennzeichen und Eintrag dürfen nicht null sein");
         }
-        dataStore.saveFahrt(kennzeichen, eintrag);
+        dataStore.addFahrtenbuchEintrag(kennzeichen, eintrag);
     }
 
     @Override
@@ -28,11 +28,14 @@ public class FahrtenbuchServiceImpl implements FahrtenbuchService {
         if (kennzeichen == null) {
             throw new IllegalArgumentException("Kennzeichen darf nicht null sein");
         }
-        return dataStore.getFahrten(kennzeichen);
+        return dataStore.getFahrtenForFahrzeug(kennzeichen);
     }
 
     @Override
     public List<FahrtenbuchEintrag> getEintraegeForFahrzeug(String kennzeichen) {
-        return getFahrtenForFahrzeug(kennzeichen);
+        if (kennzeichen == null) {
+            throw new IllegalArgumentException("Kennzeichen darf nicht null sein");
+        }
+        return dataStore.getFahrtenForFahrzeug(kennzeichen);
     }
 }

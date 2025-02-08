@@ -1,4 +1,4 @@
-package de.fuhrpark.ui;
+package de.fuhrpark.ui.model;
 
 public class VehicleData {
     private String type;
@@ -7,14 +7,23 @@ public class VehicleData {
     private String licensePlate;
     private String price;
 
+    public VehicleData(String type, String brand, String model, String licensePlate, String price) {
+        this.type = type;
+        this.brand = brand;
+        this.model = model;
+        this.licensePlate = licensePlate;
+        this.price = price;
+    }
+
     public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
     public String getBrand() { return brand; }
-    public void setBrand(String brand) { this.brand = brand; }
     public String getModel() { return model; }
-    public void setModel(String model) { this.model = model; }
     public String getLicensePlate() { return licensePlate; }
-    public void setLicensePlate(String licensePlate) { this.licensePlate = licensePlate; }
     public String getPrice() { return price; }
+
+    public void setType(String type) { this.type = type; }
+    public void setBrand(String brand) { this.brand = brand; }
+    public void setModel(String model) { this.model = model; }
+    public void setLicensePlate(String licensePlate) { this.licensePlate = licensePlate; }
     public void setPrice(String price) { this.price = price; }
-}
+} 
