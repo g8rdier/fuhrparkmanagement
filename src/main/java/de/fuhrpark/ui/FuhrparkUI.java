@@ -189,12 +189,20 @@ public class FuhrparkUI extends JFrame {
             return;
         }
         
-        // Convert view index to model index in case table is sorted
         int modelRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
         String kennzeichen = (String) fahrzeugTable.getModel().getValueAt(modelRow, 0);
         
-        var dialog = new ReparaturBuchDialog(this, kennzeichen, reparaturService);
-        dialog.setVisible(true);
+        try {
+            var dialog = new ReparaturBuchDialog(this, kennzeichen, reparaturService);
+            dialog.setVisible(true);
+            refreshFahrzeugTable();  // Add refresh after closing dialog
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Fehler beim Öffnen des Reparaturbuches: " + e.getMessage(),
+                "Fehler",
+                JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
 
     private void handleFahrtenbuchOeffnen() {
@@ -404,12 +412,16 @@ public class FuhrparkUI extends JFrame {
     public void saveFahrzeug(Fahrzeug fahrzeug) {
         try {
             fahrzeugService.saveFahrzeug(fahrzeug);
-            updateFahrzeugTable();  // Refresh the table
+            refreshFahrzeugTable();  // Changed from updateFahrzeugTable to refreshFahrzeugTable
         } catch (Exception e) {
             // Log the error but don't prevent saving
             System.err.println("Warning when saving vehicle: " + e.getMessage());
             // Still update the table since the vehicle was saved
-            updateFahrzeugTable();
+            refreshFahrzeugTable();  // Changed here too
         }
+    }
+
+    private void refreshFahrzeugTable() {
+        // Implementation of refreshFahrzeugTable method
     }
 } 
