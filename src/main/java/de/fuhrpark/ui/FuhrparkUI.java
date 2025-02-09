@@ -35,22 +35,31 @@ public class FuhrparkUI extends JFrame {
     private final JTextField modellField;
     private final JTextField preisField;
 
-    public FuhrparkUI(FuhrparkManager manager) {
+    public FuhrparkUI(DataStore dataStore) {
         super("Fuhrpark Verwaltung");
-        if (manager == null) {
-            throw new IllegalArgumentException("FuhrparkManager darf nicht null sein");
-        }
         
-        this.manager = manager;
-        this.fahrtenbuchService = new FahrtenbuchServiceImpl(manager.getDataStore());
+        // Initialize services
+        FahrzeugService fahrzeugService = new FahrzeugServiceImpl(dataStore);
+        FahrzeugFactory fahrzeugFactory = new FahrzeugFactoryImpl();
+        this.fahrtenbuchService = new FahrtenbuchServiceImpl(dataStore);
+        
+        // Initialize manager
+        this.manager = new FuhrparkManager(fahrzeugService, fahrzeugFactory, dataStore);
+        
+        // Initialize UI components
         this.tableModel = new FahrzeugTableModel();
         this.fahrzeugTable = new JTable(tableModel);
-        
-        initUI();
-        refreshTable();
+        this.fahrzeugTypComboBox = new JComboBox<>(FahrzeugTyp.values());
+        this.kennzeichenField = new JTextField();
+        this.markeField = new JTextField();
+        this.modellField = new JTextField();
+        this.preisField = new JTextField();
+
+        initializeUI();
+        updateTableData();
     }
 
-    private void initUI() {
+    private void initializeUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(5, 5));
         
@@ -91,9 +100,9 @@ public class FuhrparkUI extends JFrame {
         return toolbar;
     }
 
-    private void refreshTable() {
-        tableModel.setFahrzeuge(manager.getAlleFahrzeuge());
-        tableModel.fireTableDataChanged();
+    private void updateTableData() {
+        List<Fahrzeug> fahrzeuge = manager.getAlleFahrzeuge();
+        tableModel.updateFahrzeuge(fahrzeuge);
     }
 
     private void addNewFahrzeug() {
@@ -102,7 +111,7 @@ public class FuhrparkUI extends JFrame {
         
         if (dialog.getResult() != null) {
             manager.addFahrzeug(dialog.getResult());
-            refreshTable();
+            updateTableData();
         }
     }
 
@@ -115,7 +124,7 @@ public class FuhrparkUI extends JFrame {
             
             if (dialog.isConfirmed() && dialog.updateFahrzeug()) {
                 manager.updateFahrzeug(fahrzeug);
-                refreshTable();
+                updateTableData();
             }
         }
     }
@@ -131,7 +140,7 @@ public class FuhrparkUI extends JFrame {
             
             if (confirm == JOptionPane.YES_OPTION) {
                 manager.deleteFahrzeug(fahrzeug.getKennzeichen());
-                refreshTable();
+                updateTableData();
             }
         }
     }
@@ -222,9 +231,9 @@ public class FuhrparkUI extends JFrame {
         SwingUtilities.invokeLater(() -> {
             try {
                 // Create components with proper error handling
-                FuhrparkManager manager = new FuhrparkManager();
+                DataStore dataStore = new DataStore();
                 
-                new FuhrparkUI(manager).setVisible(true);
+                new FuhrparkUI(dataStore).setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, 
