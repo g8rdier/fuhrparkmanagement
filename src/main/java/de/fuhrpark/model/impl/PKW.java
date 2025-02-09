@@ -1,23 +1,35 @@
 package de.fuhrpark.model.impl;
 
-import de.fuhrpark.model.base.AbstractFahrzeug;
+import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.enums.FahrzeugTyp;
 
 /**
  * Repräsentiert einen PKW im Fuhrpark.
  * Erweitert die Basisklasse Fahrzeug um PKW-spezifische Funktionalität.
  */
-public class PKW extends AbstractFahrzeug {
+public class PKW extends Fahrzeug {
     private final int sitzplaetze;
     private final boolean hatKlimaanlage;
+    private double wert;
 
     /**
      * Konstruktor für einen PKW
      */
-    public PKW(String marke, String modell, String kennzeichen, double preis) {
-        super(marke, modell, kennzeichen, preis);
+    public PKW(String kennzeichen, String marke, String modell, double wert) {
+        super(kennzeichen, marke, modell, wert);
         this.sitzplaetze = 5;
         this.hatKlimaanlage = true;
+        this.wert = wert;
+    }
+
+    @Override
+    public double getWert() {
+        return wert;
+    }
+
+    @Override
+    public void setWert(double wert) {
+        this.wert = wert;
     }
 
     @Override
@@ -31,11 +43,6 @@ public class PKW extends AbstractFahrzeug {
     }
 
     @Override
-    public void setPreis(double preis) {
-        super.setPreis(preis);
-    }
-
-    @Override
     public FahrzeugTyp getTyp() {
         return FahrzeugTyp.PKW;
     }
@@ -45,7 +52,7 @@ public class PKW extends AbstractFahrzeug {
 
     @Override
     public double berechneAktuellenWert() {
-        return getPreis() * 0.9;
+        return getWert() * 0.9;
     }
 
     @Override
