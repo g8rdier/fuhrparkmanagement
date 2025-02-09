@@ -18,11 +18,10 @@ public class FahrzeugDialog extends JDialog {
     private final JFormattedTextField wertField;
     private boolean confirmed = false;
 
-    // Constructor for new vehicle
+    // Constructor for new vehicles
     public FahrzeugDialog(JFrame owner) {
         super(owner, "Neues Fahrzeug", true);
         
-        // Initialize components
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
@@ -33,21 +32,23 @@ public class FahrzeugDialog extends JDialog {
         setupListeners();
     }
 
-    // Constructor for editing existing vehicle
+    // Constructor for editing existing vehicles
     public FahrzeugDialog(JFrame owner, Fahrzeug fahrzeug) {
         super(owner, "Fahrzeug bearbeiten", true);
+        
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
+        this.typComboBox.setSelectedItem(fahrzeug.getTyp());
+        this.typComboBox.setEnabled(false);  // Type can't be changed for existing vehicles
+        
         this.markeField = new JTextField(fahrzeug.getMarke(), 20);
         this.modellField = new JTextField(fahrzeug.getModell(), 20);
+        
         this.kennzeichenField = createKennzeichenField();
         this.kennzeichenField.setText(fahrzeug.getKennzeichen());
+        this.kennzeichenField.setEnabled(false);  // License plate can't be changed
+        
         this.wertField = createWertField();
         this.wertField.setValue(fahrzeug.getPreis());
-        
-        // Disable type selection and license plate for existing vehicles
-        this.typComboBox.setSelectedItem(fahrzeug.getTyp());
-        this.typComboBox.setEnabled(false);
-        this.kennzeichenField.setEnabled(false);
         
         initComponents();
     }

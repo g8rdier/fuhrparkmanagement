@@ -23,11 +23,16 @@ public class FuhrparkUI extends JFrame {
     private void initComponents() {
         setLayout(new BorderLayout());
 
-        // Create toolbar with add button
+        // Create toolbar with buttons
         JToolBar toolbar = new JToolBar();
         JButton addButton = new JButton("Fahrzeug hinzufügen");
+        JButton editButton = new JButton("Fahrzeug bearbeiten");
+        
         addButton.addActionListener(e -> addFahrzeug());
+        editButton.addActionListener(e -> editFahrzeug());
+        
         toolbar.add(addButton);
+        toolbar.add(editButton);
         add(toolbar, BorderLayout.NORTH);
 
         // Add table in a scroll pane
@@ -57,6 +62,37 @@ public class FuhrparkUI extends JFrame {
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
                     "Fehler beim Hinzufügen: " + e.getMessage(),
+                    "Fehler",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void editFahrzeug() {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Bitte wählen Sie ein Fahrzeug aus.",
+                "Kein Fahrzeug ausgewählt",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Fahrzeug fahrzeug = tableModel.getFahrzeug(selectedRow);
+        FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeug);
+        dialog.setVisible(true);
+
+        if (dialog.isConfirmed()) {
+            try {
+                // Update the vehicle with new values
+                fahrzeug.setMarke(dialog.getMarke());
+                fahrzeug.setModell(dialog.getModell());
+                fahrzeug.setPreis(dialog.getPreis());
+                
+                tableModel.fireTableRowsUpdated(selectedRow, selectedRow);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Fehler beim Bearbeiten: " + e.getMessage(),
                     "Fehler",
                     JOptionPane.ERROR_MESSAGE);
             }
