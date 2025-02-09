@@ -11,7 +11,7 @@ public class FahrzeugDialog extends JDialog {
     private final JComboBox<String> typComboBox;
     private final JTextField markeField;
     private final JTextField modellField;
-    private final JFormattedTextField kennzeichenField;
+    private final JTextField kennzeichenField;
     private final JFormattedTextField preisField;
     private final JLabel aktuellerWertLabel;
     private boolean confirmed = false;
@@ -50,16 +50,53 @@ public class FahrzeugDialog extends JDialog {
         setupWertCalculation();
     }
 
-    private JFormattedTextField createKennzeichenField() {
-        MaskFormatter formatter = null;
-        try {
-            formatter = new MaskFormatter("U-UU ####");
-            formatter.setPlaceholderCharacter('_');
-            formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-        return new JFormattedTextField(formatter);
+    private JTextField createKennzeichenField() {
+        JTextField field = new JTextField(10);
+        field.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
+                if (str == null) return;
+
+                String text = getText(0, getLength());
+                String newText = text.substring(0, offset) + str + text.substring(offset);
+                
+                if (isValidKennzeichenInput(newText)) {
+                    // Format while typing
+                    if (offset == 3 && !newText.contains("-")) {
+                        super.insertString(offset, "-", attr);
+                        offset++;
+                    }
+                    super.insertString(offset, str.toUpperCase(), attr);
+                }
+            }
+
+            private boolean isValidKennzeichenInput(String input) {
+                // Remove the hyphen for validation
+                String normalized = input.replace("-", "");
+                
+                // Max length check (3 letters + 2 letters + 4 numbers = 9, plus 1 for hyphen = 10)
+                if (normalized.length() > 9) return false;
+
+                // Split into parts
+                String firstPart = normalized.substring(0, Math.min(3, normalized.length()));
+                String secondPart = normalized.length() > 3 ? 
+                    normalized.substring(3, Math.min(5, normalized.length())) : "";
+                String numberPart = normalized.length() > 5 ? normalized.substring(5) : "";
+
+                // Validate first part (1-3 letters)
+                if (!firstPart.isEmpty() && !firstPart.matches("[A-Z]{1,3}")) return false;
+
+                // Validate second part (1-2 letters)
+                if (!secondPart.isEmpty() && !secondPart.matches("[A-Z]{1,2}")) return false;
+
+                // Validate number part (1-4 numbers)
+                if (!numberPart.isEmpty() && !numberPart.matches("[0-9]{1,4}")) return false;
+
+                return true;
+            }
+        });
+
+        return field;
     }
 
     private JFormattedTextField createPreisField() {
