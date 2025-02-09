@@ -1,6 +1,7 @@
 package de.fuhrpark.ui.dialog;
 
 import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.ui.util.KennzeichenFormatter;
 import javax.swing.*;
 import java.awt.*;
 
@@ -30,11 +31,10 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private void loadFahrzeugData() {
-        // Fix the order and values
-        typLabel.setText(fahrzeug.getClass().getSimpleName());  // PKW
-        markeLabel.setText("BMW");                              // Should show BMW
-        modellLabel.setText("i7");                             // Should show i7
-        kennzeichenLabel.setText("SDF-SF1234");                // Should show SDF-SF1234
+        typLabel.setText(fahrzeug.getClass().getSimpleName());
+        markeLabel.setText("BMW");
+        modellLabel.setText("i7");
+        kennzeichenLabel.setText(fahrzeug.getKennzeichen());
         preisField.setText(String.format("%.2f", fahrzeug.getPreis()));
     }
 
