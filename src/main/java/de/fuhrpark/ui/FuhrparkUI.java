@@ -139,9 +139,9 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void addFahrzeug() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this);
+        FahrzeugDialog dialog = new FahrzeugDialog(this, tableModel);
         dialog.setVisible(true);
-
+        
         if (dialog.isConfirmed()) {
             try {
                 Fahrzeug fahrzeug = fahrzeugFactory.createFahrzeug(
@@ -174,7 +174,7 @@ public class FuhrparkUI extends JFrame {
         }
 
         Fahrzeug fahrzeug = tableModel.getFahrzeug(selectedRow);
-        FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeug);
+        FahrzeugDialog dialog = new FahrzeugDialog(this, tableModel, fahrzeug);
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {

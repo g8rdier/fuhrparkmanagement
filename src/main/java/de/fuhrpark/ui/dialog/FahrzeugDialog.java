@@ -1,6 +1,7 @@
 package de.fuhrpark.ui.dialog;
 
 import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.ui.model.FahrzeugTableModel;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
@@ -16,8 +17,8 @@ public class FahrzeugDialog extends JDialog {
     private final JTextField modellField;
     private final JFormattedTextField kennzeichenField;
     private final JFormattedTextField wertField;
-    private boolean confirmed = false;
     private final FahrzeugTableModel tableModel;
+    private boolean confirmed = false;
 
     // Constructor for new vehicles
     public FahrzeugDialog(JFrame owner, FahrzeugTableModel tableModel) {
@@ -35,23 +36,20 @@ public class FahrzeugDialog extends JDialog {
     }
 
     // Constructor for editing existing vehicles
-    public FahrzeugDialog(JFrame owner, Fahrzeug fahrzeug) {
+    public FahrzeugDialog(JFrame owner, FahrzeugTableModel tableModel, Fahrzeug fahrzeug) {
         super(owner, "Fahrzeug bearbeiten", true);
+        this.tableModel = tableModel;
         
-        // Initialize components
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.typComboBox.setSelectedItem(fahrzeug.getTyp());
-        this.typComboBox.setEnabled(false);  // Type can't be changed
+        this.typComboBox.setEnabled(false);
         
         this.markeField = new JTextField(fahrzeug.getMarke(), 20);
-        this.markeField.setEnabled(false);   // Brand can't be changed
-        this.markeField.setDisabledTextColor(Color.GRAY);
+        this.markeField.setEnabled(false);
         
         this.modellField = new JTextField(fahrzeug.getModell(), 20);
-        this.modellField.setEnabled(false);  // Model can't be changed
-        this.modellField.setDisabledTextColor(Color.GRAY);
+        this.modellField.setEnabled(false);
         
-        // These fields remain editable
         this.kennzeichenField = createKennzeichenField();
         this.kennzeichenField.setText(fahrzeug.getKennzeichen());
         
