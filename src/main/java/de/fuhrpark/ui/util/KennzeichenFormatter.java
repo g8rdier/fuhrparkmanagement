@@ -30,14 +30,28 @@ public class KennzeichenFormatter extends PlainDocument {
                     }
                 }
 
-                // Only allow valid characters
-                if (!newText.matches("^[A-Z0-9-]*$")) {
+                // Split into parts
+                String[] parts = newText.split("-", 2);
+                String beforeHyphen = parts[0];
+                String afterHyphen = parts.length > 1 ? parts[1] : "";
+
+                // Validate parts
+                if (!beforeHyphen.matches("^[A-Z]{0,3}$")) {
                     return;
                 }
 
-                // Enforce max length
-                if (newText.length() > 10) {
-                    return;
+                // After hyphen: 1-2 letters followed by 1-4 numbers
+                if (parts.length > 1) {
+                    String letters = afterHyphen.replaceAll("[0-9]", "");
+                    String numbers = afterHyphen.replaceAll("[A-Z]", "");
+                    
+                    if (letters.length() > 2 || !letters.matches("^[A-Z]*$")) {
+                        return;
+                    }
+                    
+                    if (numbers.length() > 4 || !numbers.matches("^[1-9][0-9]*$")) {
+                        return;
+                    }
                 }
 
                 super.replace(fb, 0, fb.getDocument().getLength(), newText, attrs);

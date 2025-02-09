@@ -8,6 +8,7 @@ import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.ui.dialog.FahrzeugDialog;
+import de.fuhrpark.ui.dialog.FahrzeugEditDialog;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 
 import javax.swing.*;
@@ -48,12 +49,15 @@ public class FuhrparkUI extends JFrame {
         toolbar.setFloatable(false);
 
         JButton addButton = new JButton("Fahrzeug hinzufügen");
+        JButton editButton = new JButton("Fahrzeug bearbeiten");
         JButton deleteButton = new JButton("Fahrzeug löschen");
 
         addButton.addActionListener(this::showAddDialog);
+        editButton.addActionListener(this::showEditDialog);
         deleteButton.addActionListener(this::deleteSelectedFahrzeug);
 
         toolbar.add(addButton);
+        toolbar.add(editButton);
         toolbar.add(deleteButton);
 
         // Setup table
@@ -75,6 +79,29 @@ public class FuhrparkUI extends JFrame {
         dialog.setVisible(true);
         if (dialog.showDialog()) {
             refreshTable();
+        }
+    }
+
+    private void showEditDialog(ActionEvent e) {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            int modelRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
+            String kennzeichen = (String) tableModel.getValueAt(modelRow, 1);
+            Fahrzeug fahrzeug = manager.getFahrzeug(kennzeichen);
+            
+            if (fahrzeug != null) {
+                FahrzeugEditDialog dialog = new FahrzeugEditDialog(this, fahrzeug);
+                dialog.setVisible(true);
+                
+                if (dialog.isConfirmed() && dialog.updateFahrzeug()) {
+                    refreshTable();
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Bitte wählen Sie ein Fahrzeug aus.",
+                "Kein Fahrzeug ausgewählt",
+                JOptionPane.WARNING_MESSAGE);
         }
     }
 
