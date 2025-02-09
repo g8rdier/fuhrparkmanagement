@@ -4,6 +4,7 @@ import de.fuhrpark.model.base.Fahrzeug;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.text.MaskFormatter;
@@ -74,14 +75,42 @@ public class FahrzeugDialog extends JDialog {
     }
 
     private JFormattedTextField createPreisField() {
-        NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
+        NumberFormat format = NumberFormat.getInstance(Locale.GERMANY);
         format.setMinimumFractionDigits(2);
         format.setMaximumFractionDigits(2);
-        NumberFormatter formatter = new NumberFormatter(format);
+        format.setGroupingUsed(true);
+        format.setGroupingSize(3);
+        
+        NumberFormatter formatter = new NumberFormatter(format) {
+            @Override
+            public Object stringToValue(String text) throws ParseException {
+                if (text.isEmpty()) return 0.0;
+                // Remove € symbol and trim
+                text = text.replace("€", "").trim();
+                return super.stringToValue(text);
+            }
+            
+            @Override
+            public String valueToString(Object value) throws ParseException {
+                String str = super.valueToString(value);
+                if (!str.isEmpty()) {
+                    return str + " €";
+                }
+                return "0,00 €";
+            }
+        };
+        
         formatter.setValueClass(Double.class);
         formatter.setMinimum(0.0);
+        formatter.setAllowsInvalid(false);
+        
         JFormattedTextField field = new JFormattedTextField(formatter);
         field.setValue(0.0);
+        field.setColumns(12);
+        
+        // Add listener to update aktueller wert when price changes
+        field.addPropertyChangeListener("value", evt -> updateAktuellerWert());
+        
         return field;
     }
 
@@ -114,9 +143,20 @@ public class FahrzeugDialog extends JDialog {
     }
 
     private void updateAktuellerWert() {
-        String typ = (String) typComboBox.getSelectedItem();
-        double faktor = "PKW".equals(typ) ? 0.9 : 0.85;
-        aktuellerWertLabel.setText(String.format("%.2f €", 0.0 * faktor));
+        try {
+            double preis = getPreis();
+            String typ = (String) typComboBox.getSelectedItem();
+            double faktor = "PKW".equals(typ) ? 0.9 : 0.85;
+            double wert = preis * faktor;
+            
+            // Format with German locale (dots for thousands, comma for decimals)
+            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.GERMANY);
+            df.setMinimumFractionDigits(2);
+            df.setMaximumFractionDigits(2);
+            aktuellerWertLabel.setText(df.format(wert) + " €");
+        } catch (Exception e) {
+            aktuellerWertLabel.setText("0,00 €");
+        }
     }
 
     private void setupWertCalculation() {
@@ -172,8 +212,14 @@ public class FahrzeugDialog extends JDialog {
         gbc.gridx = 1;
         add(kennzeichenField, gbc);
 
-        // Aktueller Wert
+        // Preis
         gbc.gridx = 0; gbc.gridy = 4;
+        add(new JLabel("Preis:"), gbc);
+        gbc.gridx = 1;
+        add(preisField, gbc);
+
+        // Aktueller Wert
+        gbc.gridx = 0; gbc.gridy = 5;
         add(new JLabel("Aktueller Wert:"), gbc);
         gbc.gridx = 1;
         add(aktuellerWertLabel, gbc);
@@ -192,7 +238,7 @@ public class FahrzeugDialog extends JDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.gridx = 0; gbc.gridy = 6;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         add(buttonPanel, gbc);
@@ -256,12 +302,8 @@ public class FahrzeugDialog extends JDialog {
     }
 
     public double getPreis() {
-        try {
-            Number value = (Number) preisField.getValue();
-            return value != null ? value.doubleValue() : 0.0;
-        } catch (Exception e) {
-            return 0.0;
-        }
+        Object value = preisField.getValue();
+        return (value instanceof Double) ? (Double) value : 0.0;
     }
 
     public boolean isConfirmed() {
