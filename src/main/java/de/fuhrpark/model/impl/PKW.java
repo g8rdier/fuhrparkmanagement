@@ -1,7 +1,7 @@
 package de.fuhrpark.model.impl;
 
 import de.fuhrpark.model.base.AbstractFahrzeug;
-import de.fuhrpark.model.base.FahrzeugTyp;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 
 /**
  * Repräsentiert einen PKW im Fuhrpark.
@@ -15,7 +15,7 @@ public class PKW extends AbstractFahrzeug {
      * Konstruktor für einen PKW
      */
     public PKW(String marke, String modell, String kennzeichen, double preis) {
-        super(FahrzeugTyp.PKW, marke, modell, kennzeichen, preis);
+        super(marke, modell, kennzeichen, preis);
         this.sitzplaetze = 5;
         this.hatKlimaanlage = true;
     }

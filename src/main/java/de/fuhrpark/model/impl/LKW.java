@@ -1,7 +1,7 @@
 package de.fuhrpark.model.impl;
 
 import de.fuhrpark.model.base.AbstractFahrzeug;
-import de.fuhrpark.model.base.FahrzeugTyp;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 
 /**
  * Repräsentiert einen LKW im Fuhrpark.
@@ -15,7 +15,7 @@ public class LKW extends AbstractFahrzeug {
      * Konstruktor für einen LKW
      */
     public LKW(String marke, String modell, String kennzeichen, double preis) {
-        super(FahrzeugTyp.LKW, marke, modell, kennzeichen, preis);
+        super(marke, modell, kennzeichen, preis);
         this.ladekapazitaet = 0.0;
         this.hatAnhaengerkupplung = false;
     }
