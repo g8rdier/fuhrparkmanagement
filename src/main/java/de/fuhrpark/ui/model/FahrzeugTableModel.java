@@ -7,6 +7,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import de.fuhrpark.persistence.FahrzeugPersistence;
 
 public class FahrzeugTableModel extends AbstractTableModel {
     private final List<Fahrzeug> fahrzeuge;
@@ -14,7 +15,7 @@ public class FahrzeugTableModel extends AbstractTableModel {
     private final DecimalFormat currencyFormat;
 
     public FahrzeugTableModel() {
-        this.fahrzeuge = new ArrayList<>();
+        this.fahrzeuge = new ArrayList<>(FahrzeugPersistence.loadFahrzeuge());
         this.currencyFormat = (DecimalFormat) NumberFormat.getInstance(Locale.GERMANY);
         this.currencyFormat.setMinimumFractionDigits(2);
         this.currencyFormat.setMaximumFractionDigits(2);
@@ -87,5 +88,9 @@ public class FahrzeugTableModel extends AbstractTableModel {
 
     public void updateFahrzeuge(List<Fahrzeug> fahrzeuge) {
         setFahrzeuge(fahrzeuge);
+    }
+
+    public void saveData() {
+        FahrzeugPersistence.saveFahrzeuge(fahrzeuge);
     }
 } 

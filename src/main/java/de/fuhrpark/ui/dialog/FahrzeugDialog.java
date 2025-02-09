@@ -17,10 +17,12 @@ public class FahrzeugDialog extends JDialog {
     private final JFormattedTextField kennzeichenField;
     private final JFormattedTextField wertField;
     private boolean confirmed = false;
+    private final FahrzeugTableModel tableModel;
 
     // Constructor for new vehicles
-    public FahrzeugDialog(JFrame owner) {
+    public FahrzeugDialog(JFrame owner, FahrzeugTableModel tableModel) {
         super(owner, "Neues Fahrzeug", true);
+        this.tableModel = tableModel;
         
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
@@ -217,10 +219,7 @@ public class FahrzeugDialog extends JDialog {
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
 
-        okButton.addActionListener(e -> {
-            confirmed = true;
-            dispose();
-        });
+        okButton.addActionListener(e -> okButtonClicked());
         cancelButton.addActionListener(e -> dispose());
 
         buttonPanel.add(okButton);
@@ -297,5 +296,37 @@ public class FahrzeugDialog extends JDialog {
 
     public boolean isConfirmed() {
         return confirmed;
+    }
+
+    private boolean isKennzeichenDuplicate(String kennzeichen) {
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            String existingKennzeichen = (String) tableModel.getValueAt(i, 1); // Column 1 is Kennzeichen
+            if (kennzeichen.equals(existingKennzeichen)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void okButtonClicked() {
+        if (!validateKennzeichen(kennzeichenField)) {
+            JOptionPane.showMessageDialog(this,
+                "Bitte geben Sie ein gültiges Kennzeichen ein.",
+                "Ungültiges Kennzeichen",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String kennzeichen = getKennzeichen();
+        if (isKennzeichenDuplicate(kennzeichen)) {
+            JOptionPane.showMessageDialog(this,
+                "Dieses Kennzeichen existiert bereits.",
+                "Duplikat gefunden",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        confirmed = true;
+        dispose();
     }
 } 

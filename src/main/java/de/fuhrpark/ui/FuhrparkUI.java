@@ -30,6 +30,15 @@ public class FuhrparkUI extends JFrame {
         
         initComponents();
         setupFrame();
+        
+        // Add window listener to save data on exit
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                tableModel.saveData();
+                System.exit(0);
+            }
+        });
     }
 
     private JTable createTable() {
