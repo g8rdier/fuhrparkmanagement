@@ -1,6 +1,8 @@
 package de.fuhrpark;
 
 import de.fuhrpark.ui.FuhrparkUI;
+import de.fuhrpark.manager.FuhrparkManagerImpl;
+import de.fuhrpark.manager.FuhrparkManager;
 
 public class App {
     public static void main(String[] args) {
@@ -11,7 +13,8 @@ public class App {
                 javax.swing.UIManager.setLookAndFeel(
                     javax.swing.UIManager.getSystemLookAndFeelClassName());
                 
-                FuhrparkUI ui = new FuhrparkUI();
+                FuhrparkManager manager = new FuhrparkManagerImpl();
+                FuhrparkUI ui = new FuhrparkUI(manager);
                 ui.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
                 ui.setTitle("Fuhrpark Verwaltung");
                 ui.pack();
