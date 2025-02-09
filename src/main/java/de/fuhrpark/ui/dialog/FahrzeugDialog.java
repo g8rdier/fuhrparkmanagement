@@ -5,10 +5,14 @@ import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import javax.swing.*;
 import java.awt.*;
+import de.fuhrpark.ui.util.KennzeichenFormatter;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.JFormattedTextField;
+import java.text.ParseException;
 
 public class FahrzeugDialog extends JDialog {
     private Fahrzeug result = null;
-    private final JTextField kennzeichenField = new JTextField(10);
+    private final JFormattedTextField kennzeichenField;
     private final JTextField markeField = new JTextField(10);
     private final JTextField modellField = new JTextField(10);
     private final JTextField preisField = new JTextField(10);
@@ -67,8 +71,10 @@ public class FahrzeugDialog extends JDialog {
     }
 
     private boolean validateInput() {
-        if (kennzeichenField.getText().trim().isEmpty()) {
-            showValidationError("Bitte geben Sie ein Kennzeichen ein.");
+        try {
+            kennzeichenField.commitEdit();
+        } catch (ParseException e) {
+            showValidationError("Bitte geben Sie ein gültiges Kennzeichen ein (z.B. B-AB123)");
             return false;
         }
         if (markeField.getText().trim().isEmpty()) {
