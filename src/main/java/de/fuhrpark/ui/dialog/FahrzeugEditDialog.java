@@ -11,8 +11,8 @@ public class FahrzeugEditDialog extends JDialog {
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
 
-    public FahrzeugEditDialog(Window owner, Fahrzeug fahrzeug) {
-        super(owner, "Fahrzeug bearbeiten", ModalityType.APPLICATION_MODAL);
+    public FahrzeugEditDialog(JFrame parent, Fahrzeug fahrzeug) {
+        super(parent, "Fahrzeug bearbeiten", true);
         this.fahrzeug = fahrzeug;
         
         markeField = new JTextField(20);
@@ -66,7 +66,7 @@ public class FahrzeugEditDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
-        setLocationRelativeTo(owner);
+        setLocationRelativeTo(parent);
     }
 
     private void addFormField(JPanel panel, String label, JComponent field, GridBagConstraints gbc, int row) {
