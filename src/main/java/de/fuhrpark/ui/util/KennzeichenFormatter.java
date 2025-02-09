@@ -7,12 +7,12 @@ public class KennzeichenFormatter extends MaskFormatter {
     
     public KennzeichenFormatter() {
         try {
-            // U = uppercase letter, # = number
-            setMask("UUU-UU####");
-            setPlaceholderCharacter('_');
-            setValueContainsLiteralCharacters(false);
-            setAllowsInvalid(false);
-            setOverwriteMode(true);
+            setMask("***-**####");  // More flexible mask
+            setPlaceholder("_");     // Clear placeholder
+            setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"); // Valid chars
+            setValueContainsLiteralCharacters(true);  // Keep the hyphen
+            setCommitsOnValidEdit(true);  // Commit on valid edits
+            setAllowsInvalid(true);      // Allow temporary invalid states
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -20,14 +20,31 @@ public class KennzeichenFormatter extends MaskFormatter {
 
     @Override
     public Object stringToValue(String text) throws ParseException {
-        // Remove placeholder characters
-        String value = text.replace("_", "").toUpperCase();
+        if (text == null || text.trim().isEmpty()) {
+            return null;
+        }
+
+        // Clean the input
+        String value = text.toUpperCase().replace("_", "").trim();
         
-        // Validate format: 1-3 letters, hyphen, 1-2 letters, 1-4 numbers
+        // If it's a partial input, allow it
+        if (value.matches("^[A-Z]{1,3}(-[A-Z]{0,2}[0-9]{0,4})?$")) {
+            return value;
+        }
+        
+        // For complete inputs, enforce strict format
         if (!value.matches("^[A-Z]{1,3}-[A-Z]{1,2}[1-9][0-9]{0,3}$")) {
-            throw new ParseException("Invalid license plate format", 0);
+            throw new ParseException("Ungültiges Kennzeichen Format", 0);
         }
         
         return value;
+    }
+
+    @Override
+    public String valueToString(Object value) throws ParseException {
+        if (value == null) {
+            return "";
+        }
+        return super.valueToString(value);
     }
 } 

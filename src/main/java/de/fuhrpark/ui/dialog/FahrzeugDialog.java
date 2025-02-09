@@ -95,29 +95,35 @@ public class FahrzeugDialog extends JDialog {
     }
 
     private boolean validateInput() {
-        try {
-            kennzeichenField.commitEdit();
-            if (getKennzeichen().isEmpty()) {
-                showError("Bitte geben Sie ein Kennzeichen ein.");
-                return false;
-            }
-            if (getMarke().isEmpty()) {
-                showError("Bitte geben Sie eine Marke ein.");
-                return false;
-            }
-            if (getModell().isEmpty()) {
-                showError("Bitte geben Sie ein Modell ein.");
-                return false;
-            }
-            getPreis(); // Will throw NumberFormatException if invalid
-            return true;
-        } catch (ParseException e) {
-            showError("Ungültiges Kennzeichen Format.");
+        // First check if kennzeichen is valid
+        String kennzeichen = kennzeichenField.getText();
+        if (kennzeichen == null || !kennzeichen.matches("^[A-Z]{1,3}-[A-Z]{1,2}[1-9][0-9]{0,3}$")) {
+            showError("Bitte geben Sie ein gültiges Kennzeichen ein (z.B. B-AB123)");
+            kennzeichenField.setText("");  // Clear invalid input
+            kennzeichenField.requestFocus();
             return false;
+        }
+
+        // Rest of validation
+        if (getMarke().isEmpty()) {
+            showError("Bitte geben Sie eine Marke ein.");
+            return false;
+        }
+        if (getModell().isEmpty()) {
+            showError("Bitte geben Sie ein Modell ein.");
+            return false;
+        }
+        try {
+            double preis = getPreis();
+            if (preis <= 0) {
+                showError("Der Preis muss größer als 0 sein.");
+                return false;
+            }
         } catch (NumberFormatException e) {
             showError("Bitte geben Sie einen gültigen Preis ein.");
             return false;
         }
+        return true;
     }
 
     private void showError(String message) {
