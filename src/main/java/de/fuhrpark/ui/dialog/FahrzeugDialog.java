@@ -19,14 +19,16 @@ public class FahrzeugDialog extends JDialog {
     // Constructor for new vehicle
     public FahrzeugDialog(JFrame owner) {
         super(owner, "Neues Fahrzeug", true);
+        
+        // Initialize components
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
         this.kennzeichenField = createKennzeichenField();
         this.preisField = createPreisField();
         this.aktuellerWertLabel = new JLabel("0,00 €");
+        
         initComponents();
-        setupWertCalculation();
     }
 
     // Constructor for editing existing vehicle
@@ -138,34 +140,34 @@ public class FahrzeugDialog extends JDialog {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Add components with proper layout
+        // Typ
         gbc.gridx = 0; gbc.gridy = 0;
         add(new JLabel("Typ:"), gbc);
         gbc.gridx = 1;
         add(typComboBox, gbc);
 
+        // Marke
         gbc.gridx = 0; gbc.gridy = 1;
-        add(new JLabel("Kennzeichen:"), gbc);
-        gbc.gridx = 1;
-        add(kennzeichenField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 2;
         add(new JLabel("Marke:"), gbc);
         gbc.gridx = 1;
         add(markeField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3;
+        // Modell
+        gbc.gridx = 0; gbc.gridy = 2;
         add(new JLabel("Modell:"), gbc);
         gbc.gridx = 1;
         add(modellField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 4;
-        add(new JLabel("Preis:"), gbc);
+        // Kennzeichen
+        gbc.gridx = 0; gbc.gridy = 3;
+        add(new JLabel("Kennzeichen:"), gbc);
         gbc.gridx = 1;
-        add(preisField, gbc);
+        add(kennzeichenField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 5;
+        // Aktueller Wert
+        gbc.gridx = 0; gbc.gridy = 4;
         add(new JLabel("Aktueller Wert:"), gbc);
         gbc.gridx = 1;
         add(aktuellerWertLabel, gbc);
@@ -176,17 +178,15 @@ public class FahrzeugDialog extends JDialog {
         JButton cancelButton = new JButton("Abbrechen");
 
         okButton.addActionListener(e -> {
-            if (validateInputs()) {
-                confirmed = true;
-                dispose();
-            }
+            confirmed = true;
+            dispose();
         });
         cancelButton.addActionListener(e -> dispose());
 
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        gbc.gridx = 0; gbc.gridy = 6;
+        gbc.gridx = 0; gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         add(buttonPanel, gbc);
