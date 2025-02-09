@@ -71,6 +71,20 @@ public class FahrzeugDialog extends JDialog {
             showValidationError("Bitte geben Sie ein Kennzeichen ein.");
             return false;
         }
+        if (markeField.getText().trim().isEmpty()) {
+            showValidationError("Bitte geben Sie eine Marke ein.");
+            return false;
+        }
+        if (modellField.getText().trim().isEmpty()) {
+            showValidationError("Bitte geben Sie ein Modell ein.");
+            return false;
+        }
+        try {
+            Double.parseDouble(preisField.getText().trim());
+        } catch (NumberFormatException e) {
+            showValidationError("Bitte geben Sie einen gültigen Preis ein.");
+            return false;
+        }
         return true;
     }
 
@@ -82,21 +96,37 @@ public class FahrzeugDialog extends JDialog {
     }
 
     private Fahrzeug createFahrzeug() {
-        try {
-            FahrzeugTyp typ = (FahrzeugTyp) typeComboBox.getSelectedItem();
-            String kennzeichen = kennzeichenField.getText().trim();
-            String marke = markeField.getText().trim();
-            String modell = modellField.getText().trim();
-            double preis = Double.parseDouble(preisField.getText().trim());
+        FahrzeugTyp typ = (FahrzeugTyp) typeComboBox.getSelectedItem();
+        String kennzeichen = kennzeichenField.getText().trim();
+        String marke = markeField.getText().trim();
+        String modell = modellField.getText().trim();
+        double preis = Double.parseDouble(preisField.getText().trim());
 
-            return fahrzeugFactory.erstelleFahrzeug(typ, marke, modell, kennzeichen, preis);
-        } catch (NumberFormatException e) {
-            showValidationError("Bitte geben Sie einen gültigen Preis ein.");
-            return null;
-        }
+        return fahrzeugFactory.createFahrzeug(typ, kennzeichen, marke, modell, preis);
     }
 
-    public Fahrzeug getResult() {
-        return result;
+    public boolean showDialog() {
+        setVisible(true);
+        return result != null;
+    }
+
+    public FahrzeugTyp getSelectedTyp() {
+        return (FahrzeugTyp) typeComboBox.getSelectedItem();
+    }
+
+    public String getKennzeichen() {
+        return kennzeichenField.getText().trim();
+    }
+
+    public String getMarke() {
+        return markeField.getText().trim();
+    }
+
+    public String getModell() {
+        return modellField.getText().trim();
+    }
+
+    public double getPreis() {
+        return Double.parseDouble(preisField.getText().trim());
     }
 } 
