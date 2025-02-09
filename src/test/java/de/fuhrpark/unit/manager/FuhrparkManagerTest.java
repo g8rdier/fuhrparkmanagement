@@ -14,7 +14,6 @@ import de.fuhrpark.model.impl.LKW;
 import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.manager.FuhrparkManager;
 
 public class FuhrparkManagerTest {
@@ -24,66 +23,50 @@ public class FuhrparkManagerTest {
     @Mock
     private FahrzeugFactory fahrzeugFactory;
     
-    @Mock
-    private DataStore dataStore;
-    
     private FuhrparkManager manager;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        manager = new FuhrparkManager(fahrzeugService, fahrzeugFactory, dataStore);
+        manager = new FuhrparkManager(fahrzeugService, fahrzeugFactory);
     }
 
     @Test
-    public void testCreatePKW() {
+    public void testAddPKW() {
         // Arrange
         String kennzeichen = "B-XX 1234";
         String marke = "BMW";
         String modell = "X5";
         double preis = 50000.0;
-        PKW expectedPKW = new PKW(marke, modell, kennzeichen, preis);
+        PKW expectedPKW = new PKW(kennzeichen, marke, modell, preis);
         
-        when(fahrzeugFactory.erstelleFahrzeug(FahrzeugTyp.PKW, marke, modell, kennzeichen, preis))
+        when(fahrzeugFactory.createFahrzeug(FahrzeugTyp.PKW, kennzeichen, marke, modell, preis))
             .thenReturn(expectedPKW);
 
         // Act
-        Fahrzeug pkw = manager.createFahrzeug("PKW", kennzeichen, marke, modell, preis);
+        manager.addFahrzeug(FahrzeugTyp.PKW, kennzeichen, marke, modell, preis);
 
         // Assert
-        assertNotNull(pkw);
-        assertTrue(pkw instanceof PKW);
-        assertEquals(kennzeichen, pkw.getKennzeichen());
-        verify(fahrzeugService).speichereFahrzeug(pkw);
+        verify(fahrzeugService).addFahrzeug(expectedPKW);
     }
 
     @Test
-    public void testCreateLKW() {
+    public void testAddLKW() {
         // Arrange
         String kennzeichen = "B-YY 5678";
         String marke = "MAN";
         String modell = "TGX";
         double preis = 150000.0;
-        LKW expectedLKW = new LKW(marke, modell, kennzeichen, preis);
+        LKW expectedLKW = new LKW(kennzeichen, marke, modell, preis);
         
-        when(fahrzeugFactory.erstelleFahrzeug(FahrzeugTyp.LKW, marke, modell, kennzeichen, preis))
+        when(fahrzeugFactory.createFahrzeug(FahrzeugTyp.LKW, kennzeichen, marke, modell, preis))
             .thenReturn(expectedLKW);
 
         // Act
-        Fahrzeug lkw = manager.createFahrzeug("LKW", kennzeichen, marke, modell, preis);
+        manager.addFahrzeug(FahrzeugTyp.LKW, kennzeichen, marke, modell, preis);
 
         // Assert
-        assertNotNull(lkw);
-        assertTrue(lkw instanceof LKW);
-        assertEquals(kennzeichen, lkw.getKennzeichen());
-        verify(fahrzeugService).speichereFahrzeug(lkw);
-    }
-
-    @Test
-    public void testInvalidFahrzeugType() {
-        assertThrows(IllegalArgumentException.class, () -> 
-            manager.createFahrzeug("INVALID", "B-ZZ 9999", "Test", "Test", 10000.0)
-        );
+        verify(fahrzeugService).addFahrzeug(expectedLKW);
     }
 
     @Test
@@ -95,6 +78,22 @@ public class FuhrparkManagerTest {
         manager.deleteFahrzeug(kennzeichen);
         
         // Assert
-        verify(fahrzeugService).loescheFahrzeug(kennzeichen);
+        verify(fahrzeugService).deleteFahrzeug(kennzeichen);
+    }
+
+    @Test
+    public void testGetFahrzeug() {
+        // Arrange
+        String kennzeichen = "B-TEST 123";
+        PKW expectedPKW = new PKW(kennzeichen, "Test", "Test", 10000.0);
+        when(fahrzeugService.getFahrzeug(kennzeichen)).thenReturn(expectedPKW);
+
+        // Act
+        Fahrzeug result = manager.getFahrzeug(kennzeichen);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(kennzeichen, result.getKennzeichen());
+        verify(fahrzeugService).getFahrzeug(kennzeichen);
     }
 }
