@@ -31,18 +31,7 @@ public class FahrzeugDialog extends JDialog {
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
-        
-        // Create masked formatter for license plate
-        try {
-            MaskFormatter kennzeichenMask = new MaskFormatter("UUU-UU####");
-            kennzeichenMask.setPlaceholderCharacter('_');
-            kennzeichenMask.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-            this.kennzeichenField = new JFormattedTextField(kennzeichenMask);
-            kennzeichenField.setColumns(20);
-        } catch (java.text.ParseException e) {
-            this.kennzeichenField = new JFormattedTextField();
-            e.printStackTrace();
-        }
+        this.kennzeichenField = createKennzeichenField();
         
         // Setup currency formatter for wertField
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
@@ -113,6 +102,20 @@ public class FahrzeugDialog extends JDialog {
 
         pack();
         setLocationRelativeTo(getOwner());
+    }
+
+    private JFormattedTextField createKennzeichenField() {
+        try {
+            MaskFormatter kennzeichenMask = new MaskFormatter("UUU-UU####");
+            kennzeichenMask.setPlaceholderCharacter('_');
+            kennzeichenMask.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+            JFormattedTextField field = new JFormattedTextField(kennzeichenMask);
+            field.setColumns(20);
+            return field;
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+            return new JFormattedTextField();
+        }
     }
 
     private boolean validateInputs() {
