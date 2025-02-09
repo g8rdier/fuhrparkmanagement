@@ -10,155 +10,114 @@ import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 import java.awt.*;
 import java.text.ParseException;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class FahrzeugDialog extends JDialog {
-    private final JComboBox<FahrzeugTyp> typComboBox;
-    private final JFormattedTextField kennzeichenField;
+    private final JComboBox<String> typComboBox;
     private final JTextField markeField;
     private final JTextField modellField;
-    private final JTextField preisField;
-    private boolean approved = false;
+    private final JFormattedTextField kennzeichenField;
+    private final JFormattedTextField wertField;
+    private boolean confirmed = false;
     private final FuhrparkManager manager;
 
     public FahrzeugDialog(Frame owner, FuhrparkManager manager) {
         super(owner, "Fahrzeug hinzufügen", true);
         this.manager = manager;
         
-        // Initialize components
-        this.typComboBox = new JComboBox<>(FahrzeugTyp.values());
-        
-        // Fix the kennzeichenField initialization
-        KennzeichenFormatter formatter = new KennzeichenFormatter();
-        this.kennzeichenField = new JFormattedTextField();
-        kennzeichenField.setDocument(formatter);
-        kennzeichenField.setColumns(12);
-        
+        // Initialize components in correct order
+        this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
-        this.preisField = new JTextField(20);
+        this.kennzeichenField = new JFormattedTextField();
+        kennzeichenField.setDocument(new KennzeichenFormatter());
         
+        // Setup currency formatter for wertField
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+        this.wertField = new JFormattedTextField(currencyFormat);
+        wertField.setColumns(20);
+        wertField.setValue(0.00);
+
         initializeUI();
     }
 
     private void initializeUI() {
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
+        JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Add components
-        gbc.gridx = 0; gbc.gridy = 0;
-        add(new JLabel("Typ:"), gbc);
-        gbc.gridx = 1;
-        add(typComboBox, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 1;
-        add(new JLabel("Kennzeichen:"), gbc);
-        gbc.gridx = 1;
-        add(kennzeichenField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 2;
-        add(new JLabel("Marke:"), gbc);
-        gbc.gridx = 1;
-        add(markeField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 3;
-        add(new JLabel("Modell:"), gbc);
-        gbc.gridx = 1;
-        add(modellField, gbc);
-
-        gbc.gridx = 0; gbc.gridy = 4;
-        add(new JLabel("Preis:"), gbc);
-        gbc.gridx = 1;
-        add(preisField, gbc);
+        // Add components in correct order
+        addFormField(panel, "Typ:", typComboBox, gbc, 0);
+        addFormField(panel, "Marke:", markeField, gbc, 1);
+        addFormField(panel, "Modell:", modellField, gbc, 2);
+        addFormField(panel, "Kennzeichen:", kennzeichenField, gbc, 3);
+        addFormField(panel, "Aktueller Wert (€):", wertField, gbc, 4);
 
         // Buttons
-        JPanel buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
-        
-        okButton.addActionListener(e -> onOK());
-        
-        cancelButton.addActionListener(e -> setVisible(false));
-        
+
+        okButton.addActionListener(e -> {
+            if (validateInputs()) {
+                confirmed = true;
+                dispose();
+            }
+        });
+        cancelButton.addActionListener(e -> dispose());
+
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        gbc.gridx = 0; gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        add(buttonPanel, gbc);
+        add(panel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
         setLocationRelativeTo(getOwner());
     }
 
-    private void onOK() {
-        if (validateInput()) {
-            try {
-                manager.addFahrzeug(
-                    getSelectedTyp(),
-                    getKennzeichen(),
-                    getMarke(),
-                    getModell(),
-                    getPreis()
-                );
-                approved = true;
-                setVisible(false);
-            } catch (Exception e) {
-                showError("Fehler beim Speichern: " + e.getMessage());
-            }
-        }
-    }
-
-    private boolean validateInput() {
-        // First check if kennzeichen is valid
-        String kennzeichen = kennzeichenField.getText();
-        if (kennzeichen == null || !kennzeichen.matches("^[A-Z]{1,3}-[A-Z]{1,2}[1-9][0-9]{0,3}$")) {
-            showError("Bitte geben Sie ein gültiges Kennzeichen ein (z.B. B-AB123)");
-            kennzeichenField.setText("");  // Clear invalid input
-            kennzeichenField.requestFocus();
-            return false;
-        }
-
-        // Rest of validation
-        if (getMarke().isEmpty()) {
+    private boolean validateInputs() {
+        if (markeField.getText().trim().isEmpty()) {
             showError("Bitte geben Sie eine Marke ein.");
             return false;
         }
-        if (getModell().isEmpty()) {
+        if (modellField.getText().trim().isEmpty()) {
             showError("Bitte geben Sie ein Modell ein.");
             return false;
         }
+        if (kennzeichenField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie ein Kennzeichen ein.");
+            return false;
+        }
         try {
-            double preis = getPreis();
-            if (preis <= 0) {
-                showError("Der Preis muss größer als 0 sein.");
+            Number wert = (Number) wertField.getValue();
+            if (wert.doubleValue() <= 0) {
+                showError("Der Wert muss größer als 0 sein.");
                 return false;
             }
-        } catch (NumberFormatException e) {
-            showError("Bitte geben Sie einen gültigen Preis ein.");
+        } catch (Exception e) {
+            showError("Bitte geben Sie einen gültigen Wert ein.");
             return false;
         }
         return true;
     }
 
     private void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, "Eingabefehler", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, "Fehler", JOptionPane.ERROR_MESSAGE);
     }
 
     public boolean showDialog() {
-        approved = false;
+        confirmed = false;
         setVisible(true);
-        return approved;
+        return confirmed;
     }
 
-    // Getter methods
-    public FahrzeugTyp getSelectedTyp() {
-        return (FahrzeugTyp) typComboBox.getSelectedItem();
-    }
-
-    public String getKennzeichen() {
-        return kennzeichenField.getText().trim();
+    public String getSelectedType() {
+        return (String) typComboBox.getSelectedItem();
     }
 
     public String getMarke() {
@@ -169,7 +128,16 @@ public class FahrzeugDialog extends JDialog {
         return modellField.getText().trim();
     }
 
-    public double getPreis() {
-        return Double.parseDouble(preisField.getText().trim());
+    public String getKennzeichen() {
+        return kennzeichenField.getText().trim();
+    }
+
+    public double getWert() {
+        Number value = (Number) wertField.getValue();
+        return value.doubleValue();
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
     }
 } 
