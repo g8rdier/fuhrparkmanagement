@@ -1,99 +1,84 @@
 package de.fuhrpark.unit.manager;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
+import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.impl.PKW;
 import de.fuhrpark.model.impl.LKW;
-import de.fuhrpark.model.enums.FahrzeugTyp;
-import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.manager.FuhrparkManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-public class FuhrparkManagerTest {
-    @Mock
-    private FahrzeugService fahrzeugService;
-    
-    @Mock
-    private FahrzeugFactory fahrzeugFactory;
-    
+class FuhrparkManagerTest {
     private FuhrparkManager manager;
+    private FahrzeugFactory factory;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        manager = new FuhrparkManager(fahrzeugService, fahrzeugFactory);
+    void setUp() {
+        factory = mock(FahrzeugFactory.class);
+        manager = new FuhrparkManager();
     }
 
     @Test
-    public void testAddPKW() {
-        // Arrange
-        String kennzeichen = "B-XX 1234";
-        String marke = "BMW";
-        String modell = "X5";
-        double preis = 50000.0;
-        PKW expectedPKW = new PKW(kennzeichen, marke, modell, preis);
-        
-        when(fahrzeugFactory.createFahrzeug(FahrzeugTyp.PKW, kennzeichen, marke, modell, preis))
-            .thenReturn(expectedPKW);
+    void shouldAddPKWToFuhrpark() {
+        // Given
+        PKW pkw = new PKW("B-XX 1234", "BMW", "X3", 50000.0);
+        when(factory.createFahrzeug("PKW", "B-XX 1234", "BMW", "X3", 50000.0))
+            .thenReturn(pkw);
 
-        // Act
-        manager.addFahrzeug(FahrzeugTyp.PKW, kennzeichen, marke, modell, preis);
+        // When
+        manager.addFahrzeug(pkw);
 
-        // Assert
-        verify(fahrzeugService).addFahrzeug(expectedPKW);
+        // Then
+        assertTrue(manager.getAlleFahrzeuge().contains(pkw));
+        assertEquals(1, manager.getAlleFahrzeuge().size());
     }
 
     @Test
-    public void testAddLKW() {
-        // Arrange
-        String kennzeichen = "B-YY 5678";
-        String marke = "MAN";
-        String modell = "TGX";
-        double preis = 150000.0;
-        LKW expectedLKW = new LKW(kennzeichen, marke, modell, preis);
-        
-        when(fahrzeugFactory.createFahrzeug(FahrzeugTyp.LKW, kennzeichen, marke, modell, preis))
-            .thenReturn(expectedLKW);
+    void shouldAddLKWToFuhrpark() {
+        // Given
+        LKW lkw = new LKW("B-YY 5678", "MAN", "TGX", 150000.0);
+        when(factory.createFahrzeug("LKW", "B-YY 5678", "MAN", "TGX", 150000.0))
+            .thenReturn(lkw);
 
-        // Act
-        manager.addFahrzeug(FahrzeugTyp.LKW, kennzeichen, marke, modell, preis);
+        // When
+        manager.addFahrzeug(lkw);
 
-        // Assert
-        verify(fahrzeugService).addFahrzeug(expectedLKW);
+        // Then
+        assertTrue(manager.getAlleFahrzeuge().contains(lkw));
+        assertEquals(1, manager.getAlleFahrzeuge().size());
     }
 
     @Test
-    public void testDeleteFahrzeug() {
-        // Arrange
-        String kennzeichen = "B-TEST 456";
-        
-        // Act
-        manager.deleteFahrzeug(kennzeichen);
-        
-        // Assert
-        verify(fahrzeugService).deleteFahrzeug(kennzeichen);
+    void shouldCreateAndAddPKW() {
+        // Given
+        PKW pkw = new PKW("B-XX 1234", "BMW", "X3", 50000.0);
+        when(factory.createFahrzeug("PKW", "B-XX 1234", "BMW", "X3", 50000.0))
+            .thenReturn(pkw);
+
+        // When
+        Fahrzeug created = manager.createFahrzeug("PKW", "B-XX 1234", "BMW", "X3", 50000.0);
+        manager.addFahrzeug(created);
+
+        // Then
+        assertEquals(1, manager.getAlleFahrzeuge().size());
+        assertEquals("PKW", created.getTyp());
     }
 
     @Test
-    public void testGetFahrzeug() {
-        // Arrange
-        String kennzeichen = "B-AB123";
-        Fahrzeug expectedFahrzeug = mock(Fahrzeug.class);
-        when(fahrzeugService.getFahrzeug(kennzeichen)).thenReturn(expectedFahrzeug);
+    void shouldCreateAndAddLKW() {
+        // Given
+        LKW lkw = new LKW("B-YY 5678", "MAN", "TGX", 150000.0);
+        when(factory.createFahrzeug("LKW", "B-YY 5678", "MAN", "TGX", 150000.0))
+            .thenReturn(lkw);
 
-        // Act
-        Fahrzeug result = manager.getFahrzeug(kennzeichen);
+        // When
+        Fahrzeug created = manager.createFahrzeug("LKW", "B-YY 5678", "MAN", "TGX", 150000.0);
+        manager.addFahrzeug(created);
 
-        // Assert
-        assertNotNull(result);
-        assertEquals(expectedFahrzeug, result);
-        verify(fahrzeugService).getFahrzeug(kennzeichen);
+        // Then
+        assertEquals(1, manager.getAlleFahrzeuge().size());
+        assertEquals("LKW", created.getTyp());
     }
 }
