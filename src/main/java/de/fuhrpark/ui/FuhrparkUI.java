@@ -10,16 +10,14 @@ import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
 import de.fuhrpark.persistence.repository.DataStore;
+import de.fuhrpark.persistence.repository.impl.FileDataStore;
 import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import de.fuhrpark.ui.dialog.FahrzeugDialog;
 import de.fuhrpark.ui.dialog.FahrzeugEditDialog;
-import de.fuhrpark.persistence.repository.impl.FileDataStore;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,11 +28,11 @@ public class FuhrparkUI extends JFrame {
     private final JTable fahrzeugTable;
     
     // UI Components
-    private final JComboBox<FahrzeugTyp> fahrzeugTypComboBox;
-    private final JTextField kennzeichenField;
-    private final JTextField markeField;
-    private final JTextField modellField;
-    private final JTextField preisField;
+    private JComboBox<FahrzeugTyp> fahrzeugTypComboBox;
+    private JTextField kennzeichenField;
+    private JTextField markeField;
+    private JTextField modellField;
+    private JTextField preisField;
 
     public FuhrparkUI(DataStore dataStore) {
         super("Fuhrpark Verwaltung");
