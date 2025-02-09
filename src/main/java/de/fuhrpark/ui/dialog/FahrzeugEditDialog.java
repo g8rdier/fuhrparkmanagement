@@ -6,9 +6,9 @@ import java.awt.*;
 
 public class FahrzeugEditDialog extends JDialog {
     private final JLabel kennzeichenLabel;
+    private final JLabel typLabel;
     private final JLabel markeLabel;
     private final JLabel modellLabel;
-    private final JLabel typLabel;
     private final JTextField preisField;
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
@@ -19,9 +19,9 @@ public class FahrzeugEditDialog extends JDialog {
         
         // Initialize components
         this.kennzeichenLabel = new JLabel();
+        this.typLabel = new JLabel();
         this.markeLabel = new JLabel();
         this.modellLabel = new JLabel();
-        this.typLabel = new JLabel();
         this.preisField = new JTextField(20);
 
         initComponents();
@@ -31,10 +31,10 @@ public class FahrzeugEditDialog extends JDialog {
 
     private void loadFahrzeugData() {
         kennzeichenLabel.setText(fahrzeug.getKennzeichen());
+        typLabel.setText(fahrzeug.getClass().getSimpleName());
         markeLabel.setText(fahrzeug.getMarke());
         modellLabel.setText(fahrzeug.getModell());
-        typLabel.setText(fahrzeug.getClass().getSimpleName());
-        preisField.setText(String.valueOf(fahrzeug.getPreis()));
+        preisField.setText(String.format("%.2f", fahrzeug.getPreis()));
     }
 
     private void initComponents() {
@@ -42,13 +42,20 @@ public class FahrzeugEditDialog extends JDialog {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        // Add components in order
+        // Add components in correct order with proper labels
         addFormField(panel, "Kennzeichen:", kennzeichenLabel, gbc, 0);
         addFormField(panel, "Typ:", typLabel, gbc, 1);
         addFormField(panel, "Marke:", markeLabel, gbc, 2);
         addFormField(panel, "Modell:", modellLabel, gbc, 3);
         addFormField(panel, "Preis (€): *", preisField, gbc, 4);
+
+        // Style read-only labels
+        kennzeichenLabel.setForeground(Color.DARK_GRAY);
+        typLabel.setForeground(Color.DARK_GRAY);
+        markeLabel.setForeground(Color.DARK_GRAY);
+        modellLabel.setForeground(Color.DARK_GRAY);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
