@@ -24,6 +24,9 @@ public class FuhrparkManager {
      * Konstruktor mit Dependency Injection
      */
     public FuhrparkManager(FahrzeugService fahrzeugService, FahrzeugFactory fahrzeugFactory, DataStore dataStore) {
+        if (fahrzeugService == null || fahrzeugFactory == null) {
+            throw new IllegalArgumentException("Services dürfen nicht null sein");
+        }
         this.fahrzeugService = fahrzeugService;
         this.fahrzeugFactory = fahrzeugFactory;
         this.dataStore = dataStore;
@@ -48,15 +51,9 @@ public class FuhrparkManager {
     /**
      * Erstellt und speichert ein neues Fahrzeug
      */
-    public Fahrzeug createFahrzeug(String typString, String kennzeichen, String marke, String modell, double preis) {
-        FahrzeugTyp typ;
-        try {
-            typ = FahrzeugTyp.valueOf(typString);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Ungültiger Fahrzeugtyp: " + typString);
-        }
-        
-        Fahrzeug fahrzeug = fahrzeugFactory.erstelleFahrzeug(typ, marke, modell, kennzeichen, preis);
+    public Fahrzeug createFahrzeug(String typ, String kennzeichen, String marke, String modell, double preis) {
+        FahrzeugTyp fahrzeugTyp = FahrzeugTyp.valueOf(typ);
+        Fahrzeug fahrzeug = fahrzeugFactory.erstelleFahrzeug(fahrzeugTyp, marke, modell, kennzeichen, preis);
         fahrzeugService.speichereFahrzeug(fahrzeug);
         return fahrzeug;
     }
