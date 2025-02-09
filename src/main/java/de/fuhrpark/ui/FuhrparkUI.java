@@ -14,6 +14,7 @@ import de.fuhrpark.ui.dialog.FahrzeugEditDialog;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 
 import javax.swing.*;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -23,6 +24,9 @@ public class FuhrparkUI extends JFrame {
     private final FahrzeugFactory fahrzeugFactory;
     private final FahrzeugTableModel tableModel;
     private final JTable fahrzeugTable;
+    private final JButton addButton;
+    private final JButton editButton;
+    private final JButton deleteButton;
 
     public FuhrparkUI(FileDataStore dataStore) {
         super("Fuhrpark Verwaltung");
@@ -36,96 +40,41 @@ public class FuhrparkUI extends JFrame {
         // Initialize UI components
         this.tableModel = new FahrzeugTableModel();
         this.fahrzeugTable = new JTable(tableModel);
+        this.addButton = new JButton("Hinzufügen");
+        this.editButton = new JButton("Bearbeiten");
+        this.deleteButton = new JButton("Löschen");
         
-        initializeUI();
-        refreshTable();
-    }
-
-    private void initializeUI() {
-        // Set minimum size and layout
-        setMinimumSize(new Dimension(800, 600));
-        setLayout(new BorderLayout());
-
-        // Create toolbar with buttons
-        JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
-
-        JButton addButton = new JButton("Fahrzeug hinzufügen");
-        JButton editButton = new JButton("Fahrzeug bearbeiten");
-        JButton deleteButton = new JButton("Fahrzeug löschen");
-
-        addButton.addActionListener(this::showAddDialog);
-        editButton.addActionListener(this::showEditDialog);
-        deleteButton.addActionListener(this::deleteSelectedFahrzeug);
-
-        toolbar.add(addButton);
-        toolbar.add(editButton);
-        toolbar.add(deleteButton);
-
         // Setup table
         fahrzeugTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        fahrzeugTable.setAutoCreateRowSorter(true);
-        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
+        TableRowSorter<FahrzeugTableModel> sorter = new TableRowSorter<>(tableModel);
+        fahrzeugTable.setRowSorter(sorter);
 
-        // Add components to frame
-        add(toolbar, BorderLayout.NORTH);
+        // Layout
+        setLayout(new BorderLayout());
+        
+        // Table panel
+        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Center on screen
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        buttonPanel.add(addButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Add action listeners
+        addButton.addActionListener(this::addFahrzeug);
+        editButton.addActionListener(this::editFahrzeug);
+        deleteButton.addActionListener(this::deleteFahrzeug);
+
+        // Set window properties
+        setSize(800, 600);
         setLocationRelativeTo(null);
-        pack();
     }
 
-    private void showAddDialog(ActionEvent e) {
-        addFahrzeug();
-    }
-
-    private void showEditDialog(ActionEvent e) {
-        int selectedRow = fahrzeugTable.getSelectedRow();
-        if (selectedRow >= 0) {
-            int modelRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
-            String kennzeichen = (String) tableModel.getValueAt(modelRow, 1);
-            Fahrzeug fahrzeug = manager.getFahrzeug(kennzeichen);
-            
-            if (fahrzeug != null) {
-                FahrzeugEditDialog dialog = new FahrzeugEditDialog(this, fahrzeug);
-                dialog.setVisible(true);
-                
-                if (dialog.isConfirmed() && dialog.updateFahrzeug()) {
-                    refreshTable();
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this,
-                "Bitte wählen Sie ein Fahrzeug aus.",
-                "Kein Fahrzeug ausgewählt",
-                JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
-    private void deleteSelectedFahrzeug(ActionEvent e) {
-        int selectedRow = fahrzeugTable.getSelectedRow();
-        if (selectedRow >= 0) {
-            int modelRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
-            String kennzeichen = (String) tableModel.getValueAt(modelRow, 1); // Assuming kennzeichen is in column 1
-            manager.deleteFahrzeug(kennzeichen);
-            refreshTable();
-        } else {
-            JOptionPane.showMessageDialog(this,
-                "Bitte wählen Sie ein Fahrzeug aus.",
-                "Kein Fahrzeug ausgewählt",
-                JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
-    private void refreshTable() {
-        List<Fahrzeug> fahrzeuge = manager.getAlleFahrzeuge();
-        tableModel.setFahrzeuge(fahrzeuge);
-        tableModel.fireTableDataChanged();
-    }
-
-    private void addFahrzeug() {
-        FahrzeugDialog dialog = new FahrzeugDialog((JFrame) SwingUtilities.getWindowAncestor(this));
+    private void addFahrzeug(ActionEvent e) {
+        FahrzeugDialog dialog = new FahrzeugDialog(this);
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
@@ -145,17 +94,44 @@ public class FuhrparkUI extends JFrame {
                 }
 
                 tableModel.addFahrzeug(fahrzeug);
-                tableModel.fireTableDataChanged();
                 
                 int newRow = tableModel.getRowCount() - 1;
                 if (newRow >= 0) {
                     fahrzeugTable.setRowSelectionInterval(newRow, newRow);
                 }
-            } catch (Exception e) {
+            } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,
-                    "Fehler beim Hinzufügen des Fahrzeugs: " + e.getMessage(),
+                    "Fehler beim Hinzufügen des Fahrzeugs: " + ex.getMessage(),
                     "Fehler",
                     JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void editFahrzeug(ActionEvent e) {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            selectedRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
+            Fahrzeug fahrzeug = tableModel.getFahrzeug(selectedRow);
+            FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeug);
+            dialog.setVisible(true);
+            if (dialog.isConfirmed()) {
+                tableModel.fireTableRowsUpdated(selectedRow, selectedRow);
+            }
+        }
+    }
+
+    private void deleteFahrzeug(ActionEvent e) {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            selectedRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "Möchten Sie das ausgewählte Fahrzeug wirklich löschen?",
+                "Fahrzeug löschen",
+                JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                tableModel.removeFahrzeug(selectedRow);
             }
         }
     }
