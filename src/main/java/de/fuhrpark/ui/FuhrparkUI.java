@@ -1,34 +1,29 @@
 package de.fuhrpark.ui;
 
+import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.FahrtenbuchEintrag;
-import de.fuhrpark.service.base.FahrzeugService;
+import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.service.base.FahrtenbuchService;
+import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
-import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
-import de.fuhrpark.persistence.repository.DataStore;
-import de.fuhrpark.persistence.repository.impl.FileDataStore;
-import de.fuhrpark.manager.FuhrparkManager;
-import de.fuhrpark.ui.model.FahrzeugTableModel;
 import de.fuhrpark.ui.dialog.FahrzeugDialog;
-import de.fuhrpark.ui.dialog.FahrzeugEditDialog;
+import de.fuhrpark.ui.model.FahrzeugTableModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 import java.util.List;
 
 public class FuhrparkUI extends JFrame {
     private final FuhrparkManager manager;
+    private final FahrzeugFactory fahrzeugFactory;
     private final FahrzeugTableModel tableModel;
     private final JTable fahrzeugTable;
 
     public FuhrparkUI(DataStore dataStore) {
         // Initialize services
         FahrzeugService fahrzeugService = new FahrzeugServiceImpl(dataStore);
-        FahrzeugFactory fahrzeugFactory = new FahrzeugFactoryImpl();
+        this.fahrzeugFactory = new FahrzeugFactoryImpl();
         this.manager = new FuhrparkManager(fahrzeugService, fahrzeugFactory);
         
         // Initialize UI components
@@ -66,7 +61,7 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void showAddDialog() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this);
+        FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugFactory);
         if (dialog.showDialog()) {
             manager.addFahrzeug(
                 dialog.getSelectedTyp(),
@@ -83,7 +78,7 @@ public class FuhrparkUI extends JFrame {
         int selectedRow = fahrzeugTable.getSelectedRow();
         if (selectedRow >= 0) {
             String kennzeichen = (String) tableModel.getValueAt(selectedRow, 1); // Assuming kennzeichen is in column 1
-            manager.loescheFahrzeug(kennzeichen);
+            manager.deleteFahrzeug(kennzeichen);
             refreshTable();
         }
     }
