@@ -14,6 +14,7 @@ import de.fuhrpark.model.impl.LKW;
 import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
+import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.manager.FuhrparkManager;
 
 public class FuhrparkManagerTest {
@@ -23,12 +24,15 @@ public class FuhrparkManagerTest {
     @Mock
     private FahrzeugFactory fahrzeugFactory;
     
+    @Mock
+    private DataStore dataStore;
+    
     private FuhrparkManager manager;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        manager = new FuhrparkManager(fahrzeugService, fahrzeugFactory);
+        manager = new FuhrparkManager(fahrzeugService, fahrzeugFactory, dataStore);
     }
 
     @Test
