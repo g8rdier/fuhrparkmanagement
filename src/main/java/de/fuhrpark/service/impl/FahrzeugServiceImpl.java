@@ -21,6 +21,12 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     }
 
     @Override
+    public void aktualisiereFahrzeug(Fahrzeug fahrzeug) {
+        // Since we're using a map in DataStore, this is essentially the same operation
+        dataStore.speichereFahrzeug(fahrzeug);
+    }
+
+    @Override
     public Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen) {
         return dataStore.findeFahrzeugNachKennzeichen(kennzeichen);
     }
