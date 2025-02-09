@@ -61,19 +61,20 @@ public class FahrzeugDialog extends JDialog {
 
     private JFormattedTextField createKennzeichenField() {
         try {
-            MaskFormatter formatter = new MaskFormatter("UUU-UU####");
+            MaskFormatter formatter = new MaskFormatter("***-**####");  // Changed from UUU-UU
             formatter.setPlaceholderCharacter('_');
             formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+            formatter.setCommitsOnValidEdit(true);
+            formatter.setValueContainsLiteralCharacters(true);
             
             final JFormattedTextField field = new JFormattedTextField(formatter);
             field.setColumns(10);
             
-            // Add focus listener to validate minimum requirements
-            field.addFocusListener(new java.awt.event.FocusAdapter() {
-                @Override
-                public void focusLost(java.awt.event.FocusEvent evt) {
-                    validateKennzeichen(field);
-                }
+            // Add document listener instead of focus listener
+            field.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+                public void insertUpdate(javax.swing.event.DocumentEvent e) { validateKennzeichen(field); }
+                public void removeUpdate(javax.swing.event.DocumentEvent e) { validateKennzeichen(field); }
+                public void changedUpdate(javax.swing.event.DocumentEvent e) { validateKennzeichen(field); }
             });
             
             return field;
@@ -85,21 +86,27 @@ public class FahrzeugDialog extends JDialog {
 
     private boolean validateKennzeichen(JFormattedTextField field) {
         String value = field.getText();
+        if (value == null || value.length() < 7) return false;  // Minimum length check
         
-        // Split into the three parts
-        String firstPart = value.substring(0, 3);        // First three letters
-        String secondPart = value.substring(4, 6);       // Two letters after hyphen
-        String numberPart = value.substring(6);          // Last four numbers
+        // Split into parts (accounting for possible incomplete input)
+        String firstPart = value.substring(0, Math.min(3, value.length()));
+        String secondPart = value.length() > 4 ? value.substring(4, Math.min(6, value.length())) : "";
+        String numberPart = value.length() > 6 ? value.substring(6) : "";
         
-        // Count actual characters (excluding underscores)
-        int firstPartLetters = firstPart.replace("_", "").length();
-        int secondPartLetters = secondPart.replace("_", "").length();
-        int numberPartDigits = numberPart.replace("_", "").length();
+        // Remove underscores for counting actual characters
+        firstPart = firstPart.replace("_", "");
+        secondPart = secondPart.replace("_", "");
+        numberPart = numberPart.replace("_", "");
         
-        // Validate minimum requirements
-        boolean isValid = firstPartLetters >= 1 &&      // At least one letter in first part
-                        secondPartLetters >= 1 &&        // At least one letter in second part
-                        numberPartDigits >= 1;           // At least one number in last part
+        // Check if letters and numbers are in correct positions
+        boolean firstPartValid = firstPart.length() >= 1 && 
+                               firstPart.chars().allMatch(ch -> Character.isLetter(ch) || ch == '-');
+        boolean secondPartValid = secondPart.length() >= 1 && 
+                                secondPart.chars().allMatch(ch -> Character.isLetter(ch) || ch == '-');
+        boolean numberPartValid = numberPart.length() >= 1 && 
+                                numberPart.chars().allMatch(ch -> Character.isDigit(ch) || ch == '_');
+        
+        boolean isValid = firstPartValid && secondPartValid && numberPartValid;
         
         // Visual feedback
         if (isValid) {
@@ -287,8 +294,13 @@ public class FahrzeugDialog extends JDialog {
 
     public String getKennzeichen() {
         String raw = kennzeichenField.getText();
-        // Keep partial input, just remove underscores
-        return raw.replace("_", "").trim();
+        // Keep the format but remove underscores
+        String cleaned = raw.replace("_", "");
+        // Ensure the hyphen is preserved if it exists in the input
+        if (cleaned.length() >= 4 && cleaned.charAt(3) != '-') {
+            cleaned = cleaned.substring(0, 3) + "-" + cleaned.substring(3);
+        }
+        return cleaned.trim();
     }
 
     public double getPreis() {
