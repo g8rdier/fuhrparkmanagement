@@ -1,64 +1,65 @@
 package de.fuhrpark.ui.util;
 
-import javax.swing.text.DefaultFormatter;
-import java.text.ParseException;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
 
-public class KennzeichenFormatter extends DefaultFormatter {
+public class KennzeichenFormatter extends PlainDocument {
     
     public KennzeichenFormatter() {
-        setOverwriteMode(false);
-        setAllowsInvalid(true);
-        setCommitsOnValidEdit(true);
+        setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) 
+                    throws BadLocationException {
+                replace(fb, offset, 0, string, attr);
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) 
+                    throws BadLocationException {
+                String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
+                newText = newText.toUpperCase();
+
+                // Handle hyphen insertion
+                if (newText.length() >= 2 && !newText.contains("-")) {
+                    int hyphenPos = findHyphenPosition(newText);
+                    if (hyphenPos > 0) {
+                        newText = newText.substring(0, hyphenPos) + "-" + newText.substring(hyphenPos);
+                    }
+                }
+
+                // Only allow valid characters
+                if (!newText.matches("^[A-Z0-9-]*$")) {
+                    return;
+                }
+
+                // Enforce max length
+                if (newText.length() > 10) {
+                    return;
+                }
+
+                super.replace(fb, 0, fb.getDocument().getLength(), newText, attrs);
+            }
+
+            private int findHyphenPosition(String text) {
+                for (int i = 1; i <= Math.min(3, text.length()); i++) {
+                    if (i == text.length() || !Character.isLetter(text.charAt(i))) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+        });
     }
 
-    @Override
-    public Object stringToValue(String text) throws ParseException {
-        if (text == null || text.trim().isEmpty()) {
-            return null;
+    public boolean isValid() {
+        try {
+            String text = getText(0, getLength());
+            return text.matches("^[A-Z]{1,3}-[A-Z]{1,2}[1-9][0-9]{0,3}$");
+        } catch (BadLocationException e) {
+            return false;
         }
-
-        // Convert to uppercase and clean
-        String value = text.toUpperCase().trim();
-        
-        // Add hyphen if missing but format is potentially valid
-        if (!value.contains("-") && value.length() >= 2) {
-            // Find where district code ends (1-3 letters)
-            for (int i = 1; i <= Math.min(3, value.length()); i++) {
-                if (i < value.length() && Character.isLetter(value.charAt(i-1)) && Character.isLetter(value.charAt(i))) {
-                    continue;
-                }
-                value = value.substring(0, i) + "-" + value.substring(i);
-                break;
-            }
-        }
-
-        // Validate complete inputs
-        if (value.contains("-")) {
-            String[] parts = value.split("-");
-            if (parts.length == 2) {
-                String district = parts[0];
-                String number = parts[1];
-                
-                // Validate district (1-3 letters)
-                if (!district.matches("[A-Z]{1,3}")) {
-                    throw new ParseException("Invalid district code", 0);
-                }
-                
-                // Validate number part (1-2 letters followed by 1-4 digits)
-                if (!number.matches("[A-Z]{1,2}[1-9][0-9]{0,3}")) {
-                    throw new ParseException("Invalid number part", 0);
-                }
-            }
-        }
-
-        return value;
-    }
-
-    @Override
-    public String valueToString(Object value) throws ParseException {
-        if (value == null) {
-            return "";
-        }
-        return value.toString().toUpperCase();
     }
 } 
