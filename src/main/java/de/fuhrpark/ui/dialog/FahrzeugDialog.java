@@ -23,22 +23,39 @@ public class FahrzeugDialog extends JDialog {
     private boolean confirmed = false;
     private final FuhrparkManager manager;
 
-    public FahrzeugDialog(Frame owner, FuhrparkManager manager) {
+    // Constructor for new vehicle
+    public FahrzeugDialog(JFrame owner) {
         super(owner, "Fahrzeug hinzufügen", true);
-        this.manager = manager;
-        
-        // Initialize components in correct order
+        this.manager = null;
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
         this.kennzeichenField = createKennzeichenField();
-        
-        // Setup currency formatter for wertField
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
-        this.wertField = new JFormattedTextField(currencyFormat);
-        wertField.setColumns(20);
-        wertField.setValue(0.00);
+        this.wertField = createWertField();
+        initComponents();
+    }
 
+    // Constructor for editing existing vehicle
+    public FahrzeugDialog(JFrame owner, Fahrzeug fahrzeug) {
+        super(owner, "Fahrzeug bearbeiten", true);
+        this.manager = null;
+        this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
+        this.markeField = new JTextField(20);
+        this.modellField = new JTextField(20);
+        this.kennzeichenField = createKennzeichenField();
+        this.wertField = createWertField();
+        
+        // Set existing values
+        typComboBox.setSelectedItem(fahrzeug instanceof de.fuhrpark.model.impl.PKW ? "PKW" : "LKW");
+        markeField.setText(fahrzeug.getMarke());
+        modellField.setText(fahrzeug.getModell());
+        kennzeichenField.setText(fahrzeug.getKennzeichen());
+        wertField.setValue(fahrzeug.getWert());
+        
+        // Disable type and kennzeichen for existing vehicles
+        typComboBox.setEnabled(false);
+        kennzeichenField.setEnabled(false);
+        
         initComponents();
     }
 
@@ -118,6 +135,14 @@ public class FahrzeugDialog extends JDialog {
         }
     }
 
+    private JFormattedTextField createWertField() {
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+        JFormattedTextField field = new JFormattedTextField(currencyFormat);
+        field.setColumns(20);
+        field.setValue(0.00);
+        return field;
+    }
+
     private boolean validateInputs() {
         if (markeField.getText().trim().isEmpty()) {
             showError("Bitte geben Sie eine Marke ein.");
@@ -168,13 +193,16 @@ public class FahrzeugDialog extends JDialog {
     }
 
     public String getKennzeichen() {
-        String kennzeichen = kennzeichenField.getText().trim();
-        return kennzeichen.replace("_", ""); // Remove any remaining underscores
+        return kennzeichenField.getText().trim();
     }
 
     public double getWert() {
-        Number value = (Number) wertField.getValue();
-        return value.doubleValue();
+        try {
+            Number value = (Number) wertField.getValue();
+            return value.doubleValue();
+        } catch (Exception e) {
+            return 0.0;
+        }
     }
 
     public boolean isConfirmed() {

@@ -1,9 +1,10 @@
 package de.fuhrpark.ui;
 
 import de.fuhrpark.manager.FuhrparkManager;
-import de.fuhrpark.model.fahrzeug.PKW;
-import de.fuhrpark.model.fahrzeug.LKW;
-import de.fuhrpark.model.fahrzeug.Fahrzeug;
+import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.model.impl.PKW;
+import de.fuhrpark.model.impl.LKW;
+import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.persistence.repository.impl.FileDataStore;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.service.base.FahrzeugService;
