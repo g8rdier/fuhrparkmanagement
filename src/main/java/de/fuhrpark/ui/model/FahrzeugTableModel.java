@@ -43,11 +43,10 @@ public class FahrzeugTableModel extends AbstractTableModel {
     }
 
     public void addFahrzeug(Fahrzeug fahrzeug) {
-        if (fahrzeug == null) {
-            throw new IllegalArgumentException("Fahrzeug darf nicht null sein");
+        if (fahrzeug != null) {
+            fahrzeuge.add(fahrzeug);
+            fireTableRowsInserted(fahrzeuge.size() - 1, fahrzeuge.size() - 1);
         }
-        fahrzeuge.add(fahrzeug);
-        fireTableRowsInserted(fahrzeuge.size()-1, fahrzeuge.size()-1);
     }
 
     public void updateFahrzeug(int row, Fahrzeug fahrzeug) {

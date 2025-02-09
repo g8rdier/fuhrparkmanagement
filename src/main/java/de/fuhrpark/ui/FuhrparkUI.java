@@ -75,11 +75,7 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void showAddDialog(ActionEvent e) {
-        FahrzeugDialog dialog = new FahrzeugDialog(this, manager);
-        dialog.setVisible(true);
-        if (dialog.showDialog()) {
-            refreshTable();
-        }
+        addFahrzeug();
     }
 
     private void showEditDialog(ActionEvent e) {
@@ -124,6 +120,44 @@ public class FuhrparkUI extends JFrame {
         List<Fahrzeug> fahrzeuge = manager.getAlleFahrzeuge();
         tableModel.setFahrzeuge(fahrzeuge);
         tableModel.fireTableDataChanged();
+    }
+
+    private void addFahrzeug() {
+        FahrzeugDialog dialog = new FahrzeugDialog(this);
+        dialog.setVisible(true);
+
+        if (dialog.isConfirmed()) {
+            try {
+                Fahrzeug fahrzeug;
+                String typ = dialog.getSelectedType();
+                String marke = dialog.getMarke();
+                String modell = dialog.getModell();
+                String kennzeichen = dialog.getKennzeichen();
+                double wert = dialog.getWert();
+
+                // Create the appropriate vehicle type
+                if ("PKW".equals(typ)) {
+                    fahrzeug = new PKW(kennzeichen, marke, modell, wert);
+                } else {
+                    fahrzeug = new LKW(kennzeichen, marke, modell, wert);
+                }
+
+                // Add to model and update table
+                tableModel.addFahrzeug(fahrzeug);
+                tableModel.fireTableDataChanged();
+                
+                // Optional: Select the newly added vehicle
+                int newRow = tableModel.getRowCount() - 1;
+                if (newRow >= 0) {
+                    fahrzeugTable.setRowSelectionInterval(newRow, newRow);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                    "Fehler beim Hinzufügen des Fahrzeugs: " + e.getMessage(),
+                    "Fehler",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     public static void main(String[] args) {
