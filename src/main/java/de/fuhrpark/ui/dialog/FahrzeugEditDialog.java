@@ -8,7 +8,7 @@ public class FahrzeugEditDialog extends JDialog {
     private final JLabel typLabel;
     private final JLabel markeLabel;
     private final JLabel modellLabel;
-    private final JLabel kennzeichenLabel;
+    private final JFormattedTextField kennzeichenField;
     private final JTextField preisField;
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
@@ -21,7 +21,7 @@ public class FahrzeugEditDialog extends JDialog {
         this.typLabel = new JLabel();
         this.markeLabel = new JLabel();
         this.modellLabel = new JLabel();
-        this.kennzeichenLabel = new JLabel();
+        this.kennzeichenField = new JFormattedTextField();
         this.preisField = new JTextField(20);
 
         initComponents();
@@ -30,11 +30,11 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private void loadFahrzeugData() {
-        // Load data in correct order
+        // Correct order of data
         typLabel.setText(fahrzeug.getClass().getSimpleName());
         markeLabel.setText(fahrzeug.getMarke());
         modellLabel.setText(fahrzeug.getModell());
-        kennzeichenLabel.setText(fahrzeug.getKennzeichen());
+        kennzeichenField.setText(fahrzeug.getKennzeichen());
         preisField.setText(String.format("%.2f", fahrzeug.getPreis()));
     }
 
@@ -50,7 +50,7 @@ public class FahrzeugEditDialog extends JDialog {
         addFormField(panel, "Typ:", typLabel, gbc, 0);
         addFormField(panel, "Marke:", markeLabel, gbc, 1);
         addFormField(panel, "Modell:", modellLabel, gbc, 2);
-        addFormField(panel, "Kennzeichen:", kennzeichenLabel, gbc, 3);
+        addFormField(panel, "Kennzeichen:", kennzeichenField, gbc, 3);
         
         // Only editable field
         addFormField(panel, "Preis (€): *", preisField, gbc, 4);
@@ -59,18 +59,15 @@ public class FahrzeugEditDialog extends JDialog {
         typLabel.setForeground(Color.DARK_GRAY);
         markeLabel.setForeground(Color.DARK_GRAY);
         modellLabel.setForeground(Color.DARK_GRAY);
-        kennzeichenLabel.setForeground(Color.DARK_GRAY);
 
         // Make read-only fields look disabled but readable
         Color readOnlyBg = new Color(240, 240, 240);
         typLabel.setBackground(readOnlyBg);
         markeLabel.setBackground(readOnlyBg);
         modellLabel.setBackground(readOnlyBg);
-        kennzeichenLabel.setBackground(readOnlyBg);
         typLabel.setOpaque(true);
         markeLabel.setOpaque(true);
         modellLabel.setOpaque(true);
-        kennzeichenLabel.setOpaque(true);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -111,7 +108,7 @@ public class FahrzeugEditDialog extends JDialog {
         }
         
         try {
-            // Only update the price
+            fahrzeug.setKennzeichen(kennzeichenField.getText().trim());
             fahrzeug.setPreis(Double.parseDouble(preisField.getText().trim()));
             return true;
         } catch (Exception e) {
