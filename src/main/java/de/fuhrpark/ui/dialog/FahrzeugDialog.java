@@ -19,11 +19,15 @@ public class FahrzeugDialog extends JDialog {
     private final JFormattedTextField wertField;
     private final FahrzeugTableModel tableModel;
     private boolean confirmed = false;
+    private final boolean isEditMode;
+    private final Fahrzeug existingFahrzeug;
 
     // Constructor for new vehicles
     public FahrzeugDialog(JFrame owner, FahrzeugTableModel tableModel) {
         super(owner, "Neues Fahrzeug", true);
         this.tableModel = tableModel;
+        this.isEditMode = false;
+        this.existingFahrzeug = null;
         
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
@@ -32,13 +36,14 @@ public class FahrzeugDialog extends JDialog {
         this.wertField = createWertField();
         
         initComponents();
-        setupListeners();
     }
 
     // Constructor for editing existing vehicles
     public FahrzeugDialog(JFrame owner, FahrzeugTableModel tableModel, Fahrzeug fahrzeug) {
         super(owner, "Fahrzeug bearbeiten", true);
         this.tableModel = tableModel;
+        this.isEditMode = true;
+        this.existingFahrzeug = fahrzeug;
         
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.typComboBox.setSelectedItem(fahrzeug.getTyp());
@@ -316,7 +321,7 @@ public class FahrzeugDialog extends JDialog {
         }
 
         String kennzeichen = getKennzeichen();
-        if (isKennzeichenDuplicate(kennzeichen)) {
+        if (!isEditMode && isKennzeichenDuplicate(kennzeichen)) {
             JOptionPane.showMessageDialog(this,
                 "Dieses Kennzeichen existiert bereits.",
                 "Duplikat gefunden",
