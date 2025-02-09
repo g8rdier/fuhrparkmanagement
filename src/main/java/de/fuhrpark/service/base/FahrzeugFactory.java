@@ -1,7 +1,6 @@
 package de.fuhrpark.service.base;
 
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.enums.FahrzeugTyp;
 
 public interface FahrzeugFactory {
     /**
@@ -14,5 +13,5 @@ public interface FahrzeugFactory {
      * @param preis The price of the vehicle
      * @return A new vehicle instance
      */
-    Fahrzeug createFahrzeug(FahrzeugTyp typ, String kennzeichen, String marke, String modell, double preis);
+    Fahrzeug createFahrzeug(String typ, String kennzeichen, String marke, String modell, double preis);
 } 
