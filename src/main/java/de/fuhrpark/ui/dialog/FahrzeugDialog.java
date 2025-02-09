@@ -8,6 +8,7 @@ import de.fuhrpark.manager.FuhrparkManager;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.text.ParseException;
 import java.text.NumberFormat;
@@ -30,8 +31,18 @@ public class FahrzeugDialog extends JDialog {
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
-        this.kennzeichenField = new JFormattedTextField();
-        kennzeichenField.setDocument(new KennzeichenFormatter());
+        
+        // Create masked formatter for license plate
+        try {
+            MaskFormatter kennzeichenMask = new MaskFormatter("UUU-UU####");
+            kennzeichenMask.setPlaceholderCharacter('_');
+            kennzeichenMask.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+            this.kennzeichenField = new JFormattedTextField(kennzeichenMask);
+            kennzeichenField.setColumns(20);
+        } catch (java.text.ParseException e) {
+            this.kennzeichenField = new JFormattedTextField();
+            e.printStackTrace();
+        }
         
         // Setup currency formatter for wertField
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
@@ -113,8 +124,9 @@ public class FahrzeugDialog extends JDialog {
             showError("Bitte geben Sie ein Modell ein.");
             return false;
         }
-        if (kennzeichenField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie ein Kennzeichen ein.");
+        String kennzeichen = getKennzeichen();
+        if (kennzeichen.isEmpty() || kennzeichen.contains("_")) {
+            showError("Bitte geben Sie ein vollständiges Kennzeichen ein.");
             return false;
         }
         try {
@@ -153,7 +165,8 @@ public class FahrzeugDialog extends JDialog {
     }
 
     public String getKennzeichen() {
-        return kennzeichenField.getText().trim();
+        String kennzeichen = kennzeichenField.getText().trim();
+        return kennzeichen.replace("_", ""); // Remove any remaining underscores
     }
 
     public double getWert() {
