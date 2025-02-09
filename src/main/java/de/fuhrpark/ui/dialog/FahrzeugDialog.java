@@ -39,10 +39,10 @@ public class FahrzeugDialog extends JDialog {
         wertField.setColumns(20);
         wertField.setValue(0.00);
 
-        initializeUI();
+        initComponents();
     }
 
-    private void initializeUI() {
+    private void initComponents() {
         setLayout(new BorderLayout());
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -51,11 +51,35 @@ public class FahrzeugDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Add components in correct order
-        addFormField(panel, "Typ:", typComboBox, gbc, 0);
-        addFormField(panel, "Marke:", markeField, gbc, 1);
-        addFormField(panel, "Modell:", modellField, gbc, 2);
-        addFormField(panel, "Kennzeichen:", kennzeichenField, gbc, 3);
-        addFormField(panel, "Aktueller Wert (€):", wertField, gbc, 4);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Typ:"), gbc);
+        gbc.gridx = 1;
+        panel.add(typComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Marke:"), gbc);
+        gbc.gridx = 1;
+        panel.add(markeField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(new JLabel("Modell:"), gbc);
+        gbc.gridx = 1;
+        panel.add(modellField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(new JLabel("Kennzeichen:"), gbc);
+        gbc.gridx = 1;
+        panel.add(kennzeichenField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panel.add(new JLabel("Aktueller Wert (€):"), gbc);
+        gbc.gridx = 1;
+        panel.add(wertField, gbc);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
