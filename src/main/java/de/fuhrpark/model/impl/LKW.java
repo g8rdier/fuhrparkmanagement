@@ -16,8 +16,28 @@ public class LKW extends AbstractFahrzeug {
      */
     public LKW(String marke, String modell, String kennzeichen, double preis) {
         super(FahrzeugTyp.LKW, marke, modell, kennzeichen, preis);
-        this.ladekapazitaet = 0.0; // Assuming default value
-        this.hatAnhaengerkupplung = false; // Assuming default value
+        this.ladekapazitaet = 0.0;
+        this.hatAnhaengerkupplung = false;
+    }
+
+    @Override
+    public void setMarke(String marke) {
+        super.setMarke(marke);
+    }
+
+    @Override
+    public void setModell(String modell) {
+        super.setModell(modell);
+    }
+
+    @Override
+    public void setPreis(double preis) {
+        super.setPreis(preis);
+    }
+
+    @Override
+    public FahrzeugTyp getTyp() {
+        return FahrzeugTyp.LKW;
     }
 
     public double getLadekapazitaet() { return ladekapazitaet; }

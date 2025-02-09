@@ -16,8 +16,8 @@ public class PKW extends AbstractFahrzeug {
      */
     public PKW(String marke, String modell, String kennzeichen, double preis) {
         super(FahrzeugTyp.PKW, marke, modell, kennzeichen, preis);
-        this.sitzplaetze = 5; // Default value
-        this.hatKlimaanlage = true; // Default value
+        this.sitzplaetze = 5;
+        this.hatKlimaanlage = true;
     }
 
     @Override
@@ -35,17 +35,17 @@ public class PKW extends AbstractFahrzeug {
         super.setPreis(preis);
     }
 
+    @Override
+    public FahrzeugTyp getTyp() {
+        return FahrzeugTyp.PKW;
+    }
+
     public int getSitzplaetze() { return sitzplaetze; }
     public boolean hasKlimaanlage() { return hatKlimaanlage; }
 
     @Override
     public double berechneAktuellenWert() {
-        return getPreis() * 0.9; // 10% depreciation
-    }
-
-    @Override
-    public FahrzeugTyp getTyp() {
-        return FahrzeugTyp.PKW;
+        return getPreis() * 0.9;
     }
 
     @Override

@@ -36,9 +36,9 @@ public class FuhrparkUI extends JFrame {
     private final JTextField modellField;
     private final JTextField preisField;
 
-    public FuhrparkUI(FuhrparkManager manager) {
+    public FuhrparkUI() {
         super("Fuhrpark Verwaltung");
-        this.manager = manager;
+        this.manager = new FuhrparkManagerImpl();
         this.fahrzeugService = new FahrzeugServiceImpl();
         this.fahrtenbuchService = new FahrtenbuchServiceImpl(manager.getDataStore());
         this.tableModel = new FahrzeugTableModel();
@@ -109,7 +109,7 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void refreshTable() {
-        tableModel.setFahrzeuge(manager.getAlleFahrzeuge());
+        tableModel.setFahrzeuge(manager.getFahrzeuge());
     }
 
     private void addNewFahrzeug() {
@@ -118,11 +118,13 @@ public class FuhrparkUI extends JFrame {
         
         if (dialog.getResult() != null) {
             Fahrzeug fahrzeug = dialog.getResult();
-            manager.addFahrzeug(fahrzeug.getKennzeichen(), 
-                              fahrzeug.getMarke(), 
-                              fahrzeug.getModell(), 
-                              fahrzeug.getTyp().name(), 
-                              fahrzeug.getPreis());
+            manager.createFahrzeug(
+                fahrzeug.getTyp().name(),
+                fahrzeug.getKennzeichen(),
+                fahrzeug.getMarke(),
+                fahrzeug.getModell(),
+                fahrzeug.getPreis()
+            );
             refreshTable();
         }
     }
@@ -245,7 +247,7 @@ public class FuhrparkUI extends JFrame {
                 // Create components with proper error handling
                 FuhrparkManager manager = new FuhrparkManager();
                 
-                new FuhrparkUI(manager).setVisible(true);
+                new FuhrparkUI().setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, 
