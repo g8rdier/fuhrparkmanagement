@@ -61,11 +61,10 @@ public class FahrzeugTableModel extends AbstractTableModel {
     }
 
     public void removeFahrzeug(int row) {
-        if (row < 0 || row >= fahrzeuge.size()) {
-            throw new IndexOutOfBoundsException("Ungültiger Zeilenindex: " + row);
+        if (row >= 0 && row < fahrzeuge.size()) {
+            fahrzeuge.remove(row);
+            fireTableRowsDeleted(row, row);
         }
-        fahrzeuge.remove(row);
-        fireTableRowsDeleted(row, row);
     }
 
     public Fahrzeug getFahrzeug(int row) {

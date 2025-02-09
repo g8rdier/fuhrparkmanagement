@@ -27,12 +27,15 @@ public class FuhrparkUI extends JFrame {
         JToolBar toolbar = new JToolBar();
         JButton addButton = new JButton("Fahrzeug hinzufügen");
         JButton editButton = new JButton("Fahrzeug bearbeiten");
+        JButton deleteButton = new JButton("Fahrzeug löschen");
         
         addButton.addActionListener(e -> addFahrzeug());
         editButton.addActionListener(e -> editFahrzeug());
+        deleteButton.addActionListener(e -> deleteFahrzeug());
         
         toolbar.add(addButton);
         toolbar.add(editButton);
+        toolbar.add(deleteButton);
         add(toolbar, BorderLayout.NORTH);
 
         // Add table in a scroll pane
@@ -96,6 +99,28 @@ public class FuhrparkUI extends JFrame {
                     "Fehler",
                     JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+
+    private void deleteFahrzeug() {
+        int selectedRow = fahrzeugTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Bitte wählen Sie ein Fahrzeug aus.",
+                "Kein Fahrzeug ausgewählt",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Möchten Sie das ausgewählte Fahrzeug wirklich löschen?",
+            "Fahrzeug löschen",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            tableModel.removeFahrzeug(selectedRow);
+            tableModel.fireTableDataChanged();
         }
     }
 } 
