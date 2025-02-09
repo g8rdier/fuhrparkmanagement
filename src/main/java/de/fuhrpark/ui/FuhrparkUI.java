@@ -1,6 +1,8 @@
 package de.fuhrpark.ui;
 
 import de.fuhrpark.manager.FuhrparkManager;
+import de.fuhrpark.model.PKW;
+import de.fuhrpark.model.LKW;
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.persistence.repository.impl.FileDataStore;
 import de.fuhrpark.service.base.FahrzeugFactory;
@@ -135,7 +137,7 @@ public class FuhrparkUI extends JFrame {
                 String kennzeichen = dialog.getKennzeichen();
                 double wert = dialog.getWert();
 
-                // Create the appropriate vehicle type
+                // Create the appropriate vehicle type with proper class references
                 if ("PKW".equals(typ)) {
                     fahrzeug = new PKW(kennzeichen, marke, modell, wert);
                 } else {
