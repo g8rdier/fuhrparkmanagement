@@ -13,22 +13,23 @@ import java.awt.*;
 import java.text.ParseException;
 import java.text.NumberFormat;
 import java.util.Locale;
+import javax.swing.text.NumberFormatter;
 
 public class FahrzeugDialog extends JDialog {
     private final JComboBox<String> typComboBox;
     private final JTextField markeField;
     private final JTextField modellField;
-    private final JFormattedTextField kennzeichenField;
+    private final JTextField kennzeichenField;
     private final JFormattedTextField preisField;
     private boolean confirmed = false;
 
     // Constructor for new vehicle
     public FahrzeugDialog(JFrame owner) {
-        super(owner, "Fahrzeug hinzufügen", true);
+        super(owner, "Neues Fahrzeug", true);
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
-        this.kennzeichenField = createKennzeichenField();
+        this.kennzeichenField = new JTextField(20);
         this.preisField = createPreisField();
         initComponents();
     }
@@ -37,21 +38,16 @@ public class FahrzeugDialog extends JDialog {
     public FahrzeugDialog(JFrame owner, Fahrzeug fahrzeug) {
         super(owner, "Fahrzeug bearbeiten", true);
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
-        this.markeField = new JTextField(20);
-        this.modellField = new JTextField(20);
-        this.kennzeichenField = createKennzeichenField();
+        this.markeField = new JTextField(fahrzeug.getMarke(), 20);
+        this.modellField = new JTextField(fahrzeug.getModell(), 20);
+        this.kennzeichenField = new JTextField(fahrzeug.getKennzeichen(), 20);
         this.preisField = createPreisField();
+        this.preisField.setValue(fahrzeug.getPreis());
         
-        // Set existing values
-        typComboBox.setSelectedItem(fahrzeug instanceof de.fuhrpark.model.impl.PKW ? "PKW" : "LKW");
-        markeField.setText(fahrzeug.getMarke());
-        modellField.setText(fahrzeug.getModell());
-        kennzeichenField.setText(fahrzeug.getKennzeichen());
-        preisField.setValue(fahrzeug.getPreis());
-        
-        // Disable type and kennzeichen for existing vehicles
-        typComboBox.setEnabled(false);
-        kennzeichenField.setEnabled(false);
+        // Disable type selection and license plate for existing vehicles
+        this.typComboBox.setSelectedItem(fahrzeug.getTyp());
+        this.typComboBox.setEnabled(false);
+        this.kennzeichenField.setEnabled(false);
         
         initComponents();
     }
@@ -118,26 +114,13 @@ public class FahrzeugDialog extends JDialog {
         setLocationRelativeTo(getOwner());
     }
 
-    private JFormattedTextField createKennzeichenField() {
-        try {
-            MaskFormatter kennzeichenMask = new MaskFormatter("UUU-UU####");
-            kennzeichenMask.setPlaceholderCharacter('_');
-            kennzeichenMask.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-            JFormattedTextField field = new JFormattedTextField(kennzeichenMask);
-            field.setColumns(20);
-            return field;
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-            return new JFormattedTextField();
-        }
-    }
-
     private JFormattedTextField createPreisField() {
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY);
-        JFormattedTextField field = new JFormattedTextField(currencyFormat);
-        field.setColumns(20);
-        field.setValue(0.00);
-        return field;
+        NumberFormat format = NumberFormat.getNumberInstance();
+        format.setMinimumFractionDigits(2);
+        NumberFormatter formatter = new NumberFormatter(format);
+        formatter.setValueClass(Double.class);
+        formatter.setMinimum(0.0);
+        return new JFormattedTextField(formatter);
     }
 
     private boolean validateInputs() {
@@ -196,7 +179,7 @@ public class FahrzeugDialog extends JDialog {
     public double getPreis() {
         try {
             Number value = (Number) preisField.getValue();
-            return value.doubleValue();
+            return value != null ? value.doubleValue() : 0.0;
         } catch (Exception e) {
             return 0.0;
         }

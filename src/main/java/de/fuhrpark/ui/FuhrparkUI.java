@@ -21,86 +21,41 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 
 public class FuhrparkUI extends JFrame {
-    private final FuhrparkManager manager;
     private final FahrzeugFactory fahrzeugFactory;
-    private final FahrzeugTableModel tableModel;
     private final JTable fahrzeugTable;
-    private final JButton addButton;
-    private final JButton editButton;
-    private final JButton deleteButton;
+    private final FahrzeugTableModel tableModel;
 
-    public FuhrparkUI(FileDataStore dataStore) {
+    public FuhrparkUI(FahrzeugFactory fahrzeugFactory) {
         super("Fuhrpark Verwaltung");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        // Initialize services and manager
-        FahrzeugService fahrzeugService = new FahrzeugServiceImpl(dataStore);
-        this.fahrzeugFactory = new FahrzeugFactoryImpl();
-        this.manager = new FuhrparkManager(fahrzeugService, fahrzeugFactory);
-        
-        // Initialize UI components
+        this.fahrzeugFactory = fahrzeugFactory;
         this.tableModel = new FahrzeugTableModel();
         this.fahrzeugTable = new JTable(tableModel);
-        this.addButton = new JButton("Hinzufügen");
-        this.editButton = new JButton("Bearbeiten");
-        this.deleteButton = new JButton("Löschen");
-        
-        // Setup table
-        fahrzeugTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        TableRowSorter<FahrzeugTableModel> sorter = new TableRowSorter<>(tableModel);
-        fahrzeugTable.setRowSorter(sorter);
-
-        // Layout
-        setLayout(new BorderLayout());
-        
-        // Table panel
-        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
-        add(scrollPane, BorderLayout.CENTER);
-
-        // Button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        // Add action listeners
-        addButton.addActionListener(this::addFahrzeug);
-        editButton.addActionListener(this::editFahrzeug);
-        deleteButton.addActionListener(this::deleteFahrzeug);
-
-        // Set window properties
-        setSize(800, 600);
-        setLocationRelativeTo(null);
+        initComponents();
     }
 
-    private void addFahrzeug(ActionEvent e) {
+    private void initComponents() {
+        // ... layout code ...
+    }
+
+    private void addFahrzeug() {
         FahrzeugDialog dialog = new FahrzeugDialog(this);
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
             try {
-                Fahrzeug fahrzeug;
-                String typ = dialog.getSelectedType();
-                String marke = dialog.getMarke();
-                String modell = dialog.getModell();
-                String kennzeichen = dialog.getKennzeichen();
-                double preis = dialog.getPreis();
-
-                fahrzeug = "PKW".equals(typ) 
-                    ? new PKW(kennzeichen, marke, modell, preis)
-                    : new LKW(kennzeichen, marke, modell, preis);
+                Fahrzeug fahrzeug = fahrzeugFactory.createFahrzeug(
+                    dialog.getSelectedType(),
+                    dialog.getKennzeichen(),
+                    dialog.getMarke(),
+                    dialog.getModell(),
+                    dialog.getPreis()
+                );
 
                 tableModel.addFahrzeug(fahrzeug);
                 tableModel.fireTableDataChanged();
-                
-                int newRow = tableModel.getRowCount() - 1;
-                if (newRow >= 0) {
-                    fahrzeugTable.setRowSelectionInterval(newRow, newRow);
-                }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
-                    "Fehler beim Hinzufügen des Fahrzeugs: " + e.getMessage(),
+                    "Fehler beim Hinzufügen: " + e.getMessage(),
                     "Fehler",
                     JOptionPane.ERROR_MESSAGE);
             }
