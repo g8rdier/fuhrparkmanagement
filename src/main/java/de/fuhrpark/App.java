@@ -2,6 +2,11 @@ package de.fuhrpark;
 
 import de.fuhrpark.ui.FuhrparkUI;
 import de.fuhrpark.manager.FuhrparkManager;
+import de.fuhrpark.persistence.repository.DataStore;
+import de.fuhrpark.service.base.FahrzeugService;
+import de.fuhrpark.service.base.FahrzeugFactory;
+import de.fuhrpark.service.impl.FahrzeugServiceImpl;
+import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 
 public class App {
     public static void main(String[] args) {
@@ -12,8 +17,11 @@ public class App {
                 javax.swing.UIManager.setLookAndFeel(
                     javax.swing.UIManager.getSystemLookAndFeelClassName());
                 
-                FuhrparkManager manager = new FuhrparkManager();
-                FuhrparkUI ui = new FuhrparkUI(manager);
+                // Initialize dependencies
+                DataStore dataStore = new DataStore();
+                
+                // Create the UI with DataStore
+                FuhrparkUI ui = new FuhrparkUI(dataStore);
                 ui.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
