@@ -1,101 +1,93 @@
 # Fuhrpark-Verwaltung
 
-Eine Java-Desktop-Anwendung zur Verwaltung eines Fuhrparks mit Fahrtenbuch und Reparaturverwaltung.
-
-## Funktionen
-
-- **Fahrzeugverwaltung**
-  - Hinzufügen neuer Fahrzeuge
-  - Suche nach Fahrzeugen über Kennzeichen
-  - Anzeige aller Fahrzeugdetails
-  - Übersicht aller Fahrzeuge in Tabellenform
-
-- **Fahrtenbuch**
-  - Erfassung von Fahrten pro Fahrzeug
-  - Dokumentation von Start- und Zielort
-  - Kilometerzähler-Erfassung
-  - Chronologische Übersicht aller Fahrten
-
-- **Reparaturverwaltung**
-  - Erfassung von Reparaturen und Wartungen
-  - Dokumentation der Werkstattbesuche
-  - Kostenerfassung
-  - Reparaturhistorie pro Fahrzeug
-
-## Installation
-
-1. Sicherstellen, dass Java 17 oder höher installiert ist
-2. Repository klonen:
-   ```bash
-   git clone https://github.com/g8rdier/fuhrparkmanagement.git
-   cd fuhrpark
-   ```
-3. Anwendung bauen:
-   ```bash
-   mvn clean install
-   ```
-4. Anwendung starten:
-   ```bash
-   mvn exec:java -Dexec.mainClass="de.fuhrpark.App"
-   ```
+## Übersicht
+Diese Java-Anwendung ermöglicht die grundlegende Verwaltung eines Fuhrparks mit verschiedenen Fahrzeugtypen (PKW, LKW). Sie wurde gemäß den BANF-Anforderungen entwickelt und implementiert.
 
 ## Technische Details
 
-- **Entwickelt mit:**
-  - Java 17
-  - Swing (GUI)
-  - H2 Datenbank (Persistenz)
-  - Maven (Build-Management)
+### Architektur
+Die Anwendung ist in folgende Hauptkomponenten gegliedert:
+- **Model**: Fahrzeug-Basisklasse mit PKW/LKW-Implementierungen (Vererbungshierarchie)
+- **Persistence**: Datenpersistenz mittels Serialisierung
+- **UI**: Swing-basierte Benutzeroberfläche
 
-- **Datenspeicherung:**
-  - Lokale H2-Datenbank
-  - Automatische Schemaerstellung beim ersten Start
-  - Persistente Datenspeicherung zwischen Programmstarts
+### Technische Anforderungen (BANF)
+- **BANF0**: Vollständig in Java entwickelt
+- **BANF1**: Übersichtliche Swing-GUI
+- **BANF2**: Vererbungshierarchie (Fahrzeug → PKW/LKW)
+- **BANF3**: SOLID-Prinzipien beachtet
+- **BANF4**: Persistenzschicht implementiert
 
-## Benutzung
+## Benutzerhandbuch
 
-### Neues Fahrzeug anlegen
-1. Auf "Neues Fahrzeug" klicken
-2. Fahrzeugdaten eingeben (Kennzeichen, Marke, Modell, etc.)
-3. Mit "Speichern" bestätigen
+### Hauptfunktionen
+1. **Fahrzeug hinzufügen**
+   - Klicken Sie auf "Neu"
+   - Wählen Sie den Fahrzeugtyp (PKW/LKW)
+   - Füllen Sie die Pflichtfelder aus:
+     - Kennzeichen (Format: XXX-XX1234)
+     - Marke
+     - Modell
+     - Wert (in €)
 
-### Fahrtenbuch führen
-1. Fahrzeug in der Liste auswählen
-2. "Fahrtenbuch öffnen" klicken
-3. Neue Fahrt mit Start- und Zielort sowie Kilometern erfassen
+2. **Fahrzeug bearbeiten**
+   - Wählen Sie ein Fahrzeug aus der Liste
+   - Klicken Sie auf "Bearbeiten"
+   - Ändern Sie die gewünschten Werte
 
-### Reparatur erfassen
-1. Fahrzeug auswählen
-2. "Reparatur hinzufügen" klicken
-3. Reparaturdetails und Kosten eingeben
+3. **Fahrzeug löschen**
+   - Wählen Sie ein Fahrzeug aus der Liste
+   - Klicken Sie auf "Löschen"
 
-## Datenbank
+### Datenpersistenz
+- Alle Änderungen werden automatisch gespeichert
+- Die Daten werden in einer Datei im Benutzerverzeichnis gespeichert
+- Beim Neustart der Anwendung werden alle Daten automatisch geladen
 
-Die Anwendung nutzt eine H2-Datenbank mit folgenden Tabellen:
-- `fahrzeuge`: Grunddaten aller Fahrzeuge
-- `fahrtenbuch`: Dokumentation aller Fahrten
-- `reparaturbuch`: Erfassung aller Reparaturen und Wartungen
+## Installation und Start
 
-Die Datenbank wird automatisch im Projektverzeichnis erstellt und bei jedem Start der Anwendung geprüft und ggf. initialisiert.
+### Systemvoraussetzungen
+- Java Runtime Environment (JRE) 17 oder höher
+- Mindestens 256MB RAM
+- 50MB freier Festplattenspeicher
 
-## Fehlerbehebung
+### Installation
+1. Entpacken Sie die ZIP-Datei
+2. Starten Sie die Anwendung:
+   ```bash
+   java -jar fuhrpark.jar
+   ```
 
-### Bekannte Probleme und Lösungen
-1. **Datenbank nicht erreichbar**
-   - Prüfen, ob die Datei `fuhrparkdb.mv.db` im Projektverzeichnis existiert
-   - Bei Beschädigung die Datei löschen - sie wird beim nächsten Start neu erstellt
+## Technische Dokumentation
 
-2. **UI reagiert nicht**
-   - Anwendung neu starten
-   - Logs im Projektverzeichnis prüfen
+### Projektstruktur
+```
+src/main/java/de/fuhrpark/
+├── model/
+│   ├── base/
+│   │   └── Fahrzeug.java (Basisklasse)
+│   └── impl/
+│       ├── PKW.java
+│       └── LKW.java
+├── persistence/
+│   └── FahrzeugPersistence.java
+└── ui/
+    ├── dialog/
+    │   └── FahrzeugDialog.java
+    ├── model/
+    │   └── FahrzeugTableModel.java
+    └── FuhrparkUI.java
+```
 
-## Support
+### Designentscheidungen
+- **Vererbung**: Fahrzeug-Basisklasse mit spezialisierten PKW- und LKW-Implementierungen
+- **Persistenz**: Serialisierung für einfache Datenspeicherung
+- **UI**: Swing für plattformunabhängige Benutzeroberfläche
 
-Bei Fragen oder Problemen:
-1. Issue im GitHub Repository erstellen
-2. Detaillierte Fehlerbeschreibung bereitstellen
-3. Log-Dateien anhängen
+### Validierungen
+- **Kennzeichen**: Format XXX-XX1234 (Buchstaben-Zahlen-Kombination)
+- **Wert**: Maximal 10 Millionen €
+- **Pflichtfelder**: Alle Felder müssen ausgefüllt sein
 
 ## Lizenz
-
-[Ihre gewählte Lizenz]
+[Lizenzinformationen]
