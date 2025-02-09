@@ -4,6 +4,7 @@ import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.ui.util.KennzeichenFormatter;
+import de.fuhrpark.manager.FuhrparkManager;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
@@ -17,9 +18,11 @@ public class FahrzeugDialog extends JDialog {
     private final JTextField modellField;
     private final JTextField preisField;
     private boolean approved = false;
+    private final FuhrparkManager manager;
 
-    public FahrzeugDialog(Frame owner, FahrzeugFactory factory) {
+    public FahrzeugDialog(Frame owner, FuhrparkManager manager) {
         super(owner, "Fahrzeug hinzufügen", true);
+        this.manager = manager;
         
         try {
             this.kennzeichenField = new JTextField(12);
@@ -74,12 +77,7 @@ public class FahrzeugDialog extends JDialog {
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
         
-        okButton.addActionListener(e -> {
-            if (validateInput()) {
-                approved = true;
-                setVisible(false);
-            }
-        });
+        okButton.addActionListener(e -> onOK());
         
         cancelButton.addActionListener(e -> setVisible(false));
         
@@ -92,6 +90,24 @@ public class FahrzeugDialog extends JDialog {
 
         pack();
         setLocationRelativeTo(getOwner());
+    }
+
+    private void onOK() {
+        if (validateInput()) {
+            try {
+                manager.addFahrzeug(
+                    getSelectedTyp(),
+                    getKennzeichen(),
+                    getMarke(),
+                    getModell(),
+                    getPreis()
+                );
+                approved = true;
+                setVisible(false);
+            } catch (Exception e) {
+                showError("Fehler beim Speichern: " + e.getMessage());
+            }
+        }
     }
 
     private boolean validateInput() {

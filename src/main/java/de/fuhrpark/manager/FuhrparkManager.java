@@ -19,9 +19,6 @@ public class FuhrparkManager {
      * Konstruktor mit Dependency Injection
      */
     public FuhrparkManager(FahrzeugService fahrzeugService, FahrzeugFactory fahrzeugFactory) {
-        if (fahrzeugService == null || fahrzeugFactory == null) {
-            throw new IllegalArgumentException("Services dürfen nicht null sein");
-        }
         this.fahrzeugService = fahrzeugService;
         this.fahrzeugFactory = fahrzeugFactory;
     }
@@ -37,14 +34,6 @@ public class FuhrparkManager {
 
     public void deleteFahrzeug(String kennzeichen) {
         fahrzeugService.deleteFahrzeug(kennzeichen);
-    }
-
-    public void updateFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.updateFahrzeug(fahrzeug);
-    }
-
-    public Fahrzeug getFahrzeug(String kennzeichen) {
-        return fahrzeugService.getFahrzeug(kennzeichen);
     }
 }
 

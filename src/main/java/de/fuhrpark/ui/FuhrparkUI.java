@@ -13,6 +13,7 @@ import de.fuhrpark.ui.model.FahrzeugTableModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 public class FuhrparkUI extends JFrame {
     private final FuhrparkManager manager;
@@ -70,7 +71,8 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void showAddDialog(ActionEvent e) {
-        FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeugFactory);
+        FahrzeugDialog dialog = new FahrzeugDialog(this, manager);
+        dialog.setVisible(true);
         if (dialog.showDialog()) {
             refreshTable();
         }
@@ -92,7 +94,9 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void refreshTable() {
-        tableModel.setFahrzeuge(manager.getAlleFahrzeuge());
+        List<Fahrzeug> fahrzeuge = manager.getAlleFahrzeuge();
+        tableModel.setFahrzeuge(fahrzeuge);
+        tableModel.fireTableDataChanged();
     }
 
     public static void main(String[] args) {
