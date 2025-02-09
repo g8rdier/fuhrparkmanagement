@@ -59,7 +59,9 @@ public class FahrzeugDialog extends JDialog {
             // Format: XXX-XX9999 where X is letter and 9 is number
             MaskFormatter formatter = new MaskFormatter("UUU-UU####");
             formatter.setPlaceholderCharacter('_');
-            formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            
+            // Allow both letters and numbers, but validation will ensure correct placement
+            formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
             
             final JFormattedTextField field = new JFormattedTextField(formatter);
             field.setColumns(10);
