@@ -1,7 +1,6 @@
 package de.fuhrpark;
 
 import de.fuhrpark.ui.FuhrparkUI;
-import de.fuhrpark.manager.FuhrparkManagerImpl;
 import de.fuhrpark.manager.FuhrparkManager;
 
 public class App {
@@ -13,15 +12,15 @@ public class App {
                 javax.swing.UIManager.setLookAndFeel(
                     javax.swing.UIManager.getSystemLookAndFeelClassName());
                 
-                FuhrparkManager manager = new FuhrparkManagerImpl();
+                FuhrparkManager manager = new FuhrparkManager();
                 FuhrparkUI ui = new FuhrparkUI(manager);
-                ui.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-                ui.setTitle("Fuhrpark Verwaltung");
-                ui.pack();
-                ui.setLocationRelativeTo(null);
                 ui.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
+                javax.swing.JOptionPane.showMessageDialog(null,
+                    "Fehler beim Starten der Anwendung: " + e.getMessage(),
+                    "Fehler",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         });
     }

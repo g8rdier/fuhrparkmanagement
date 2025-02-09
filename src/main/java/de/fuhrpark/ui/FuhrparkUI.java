@@ -24,7 +24,6 @@ import java.util.List;
 
 public class FuhrparkUI extends JFrame {
     private final FuhrparkManager manager;
-    private final FahrzeugService fahrzeugService;
     private final FahrtenbuchService fahrtenbuchService;
     private final FahrzeugTableModel tableModel;
     private final JTable fahrzeugTable;
@@ -38,82 +37,67 @@ public class FuhrparkUI extends JFrame {
 
     public FuhrparkUI(FuhrparkManager manager) {
         super("Fuhrpark Verwaltung");
+        if (manager == null) {
+            throw new IllegalArgumentException("FuhrparkManager darf nicht null sein");
+        }
+        
         this.manager = manager;
-        this.fahrzeugService = new FahrzeugServiceImpl();
         this.fahrtenbuchService = new FahrtenbuchServiceImpl(manager.getDataStore());
         this.tableModel = new FahrzeugTableModel();
         this.fahrzeugTable = new JTable(tableModel);
         
-        // Setup UI
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
-        
-        // Initialize components
-        fahrzeugTypComboBox = new JComboBox<>(FahrzeugTyp.values());
-        kennzeichenField = new JTextField(10);
-        markeField = new JTextField(10);
-        modellField = new JTextField(10);
-        preisField = new JTextField(10);
-
-        // Layout
-        setupLayout();
-        
-        // Load initial data
+        initUI();
         refreshTable();
+    }
+
+    private void initUI() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(5, 5));
         
+        // Add toolbar with main actions
+        JToolBar toolbar = createToolbar();
+        add(toolbar, BorderLayout.NORTH);
+        
+        // Add table with scrolling
+        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
+        add(scrollPane, BorderLayout.CENTER);
+        
+        // Set minimum size and pack
+        setMinimumSize(new Dimension(800, 600));
         pack();
         setLocationRelativeTo(null);
     }
 
-    private void setupLayout() {
-        // Input Panel
-        JPanel inputPanel = new JPanel(new GridLayout(6, 2, 5, 5));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        
-        inputPanel.add(new JLabel("Typ:"));
-        inputPanel.add(fahrzeugTypComboBox);
-        inputPanel.add(new JLabel("Kennzeichen:"));
-        inputPanel.add(kennzeichenField);
-        inputPanel.add(new JLabel("Marke:"));
-        inputPanel.add(markeField);
-        inputPanel.add(new JLabel("Modell:"));
-        inputPanel.add(modellField);
-        inputPanel.add(new JLabel("Preis:"));
-        inputPanel.add(preisField);
+    private JToolBar createToolbar() {
+        JToolBar toolbar = new JToolBar();
+        toolbar.setFloatable(false);
 
-        JButton addButton = new JButton("Hinzufügen");
-        addButton.addActionListener(e -> addNewFahrzeug());
-        inputPanel.add(addButton);
-
-        // Table Panel
-        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
-        
-        // Button Panel
-        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("Neu");
         JButton editButton = new JButton("Bearbeiten");
         JButton deleteButton = new JButton("Löschen");
         JButton fahrtenbuchButton = new JButton("Fahrtenbuch");
-        
+
+        addButton.addActionListener(e -> addNewFahrzeug());
         editButton.addActionListener(e -> editSelectedFahrzeug());
         deleteButton.addActionListener(e -> deleteSelectedFahrzeug());
         fahrtenbuchButton.addActionListener(e -> showFahrtenbuch());
-        
-        buttonPanel.add(editButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(fahrtenbuchButton);
 
-        // Add to frame
-        add(inputPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        toolbar.add(addButton);
+        toolbar.add(editButton);
+        toolbar.add(deleteButton);
+        toolbar.addSeparator();
+        toolbar.add(fahrtenbuchButton);
+
+        return toolbar;
     }
 
     private void refreshTable() {
         tableModel.setFahrzeuge(manager.getAlleFahrzeuge());
+        tableModel.fireTableDataChanged();
     }
 
     private void addNewFahrzeug() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this, manager);
+        FahrzeugDialog dialog = new FahrzeugDialog(this, manager.getFahrzeugFactory());
         dialog.setVisible(true);
         
         if (dialog.getResult() != null) {
