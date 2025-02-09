@@ -14,7 +14,7 @@ import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import de.fuhrpark.ui.dialog.FahrzeugDialog;
 import de.fuhrpark.ui.dialog.FahrzeugEditDialog;
-import de.fuhrpark.persistence.repository.FileDataStore;
+import de.fuhrpark.persistence.repository.impl.FileDataStore;
 
 import javax.swing.*;
 import java.awt.*;
