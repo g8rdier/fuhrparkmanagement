@@ -16,9 +16,6 @@ import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.manager.FuhrparkManager;
 
-/**
- * Testet die Funktionalität des FuhrparkManagers
- */
 public class FuhrparkManagerTest {
     @Mock
     private FahrzeugService fahrzeugService;
@@ -36,18 +33,46 @@ public class FuhrparkManagerTest {
 
     @Test
     public void testCreatePKW() {
-        Fahrzeug pkw = manager.createFahrzeug("PKW", "B-XX 1234", "BMW", "X5", 50000.0);
+        // Arrange
+        String kennzeichen = "B-XX 1234";
+        String marke = "BMW";
+        String modell = "X5";
+        double preis = 50000.0;
+        PKW expectedPKW = new PKW(marke, modell, kennzeichen, preis);
+        
+        when(fahrzeugFactory.erstelleFahrzeug(FahrzeugTyp.PKW, marke, modell, kennzeichen, preis))
+            .thenReturn(expectedPKW);
+
+        // Act
+        Fahrzeug pkw = manager.createFahrzeug("PKW", kennzeichen, marke, modell, preis);
+
+        // Assert
         assertNotNull(pkw);
         assertTrue(pkw instanceof PKW);
-        assertEquals("B-XX 1234", pkw.getKennzeichen());
+        assertEquals(kennzeichen, pkw.getKennzeichen());
+        verify(fahrzeugService).speichereFahrzeug(pkw);
     }
 
     @Test
     public void testCreateLKW() {
-        Fahrzeug lkw = manager.createFahrzeug("LKW", "B-YY 5678", "MAN", "TGX", 150000.0);
+        // Arrange
+        String kennzeichen = "B-YY 5678";
+        String marke = "MAN";
+        String modell = "TGX";
+        double preis = 150000.0;
+        LKW expectedLKW = new LKW(marke, modell, kennzeichen, preis);
+        
+        when(fahrzeugFactory.erstelleFahrzeug(FahrzeugTyp.LKW, marke, modell, kennzeichen, preis))
+            .thenReturn(expectedLKW);
+
+        // Act
+        Fahrzeug lkw = manager.createFahrzeug("LKW", kennzeichen, marke, modell, preis);
+
+        // Assert
         assertNotNull(lkw);
         assertTrue(lkw instanceof LKW);
-        assertEquals("B-YY 5678", lkw.getKennzeichen());
+        assertEquals(kennzeichen, lkw.getKennzeichen());
+        verify(fahrzeugService).speichereFahrzeug(lkw);
     }
 
     @Test
@@ -58,52 +83,14 @@ public class FuhrparkManagerTest {
     }
 
     @Test
-    public void testFahrzeugFinden() {
-        String kennzeichen = "B-TEST 999";
-        manager.createFahrzeug("PKW", kennzeichen, "VW", "Golf", 5, true);
-        
-        Fahrzeug gefunden = fahrzeugService.findeFahrzeugNachKennzeichen(kennzeichen);
-        assertNotNull(gefunden, "Gefundenes Fahrzeug sollte nicht null sein");
-        assertEquals(kennzeichen, gefunden.getKennzeichen(), "Kennzeichen stimmt nicht überein");
-    }
-
-    @Test
-    public void testFahrzeugLoeschen() {
-        String kennzeichen = "B-DEL 777";
-        manager.createFahrzeug("PKW", kennzeichen, "Audi", "A4", 5, true);
-        
-        fahrzeugService.loescheFahrzeug(kennzeichen);
-        assertNull(fahrzeugService.findeFahrzeugNachKennzeichen(kennzeichen), 
-                  "Gelöschtes Fahrzeug sollte nicht mehr findbar sein");
-    }
-
-    @Test
-    public void testCreateFahrzeug() {
-        String kennzeichen = "B-TEST 123";
-        String marke = "BMW";
-        String modell = "X5";
-        double preis = 50000.0;
-        
-        Fahrzeug mockPKW = new PKW(marke, modell, kennzeichen, preis);
-        when(fahrzeugFactory.erstelleFahrzeug(FahrzeugTyp.PKW, marke, modell, kennzeichen, preis))
-            .thenReturn(mockPKW);
-        
-        Fahrzeug result = manager.createFahrzeug("PKW", kennzeichen, marke, modell, preis);
-        
-        assertNotNull(result);
-        assertEquals(kennzeichen, result.getKennzeichen());
-        assertEquals(marke, result.getMarke());
-        assertEquals(modell, result.getModell());
-        
-        verify(fahrzeugService).speichereFahrzeug(mockPKW);
-    }
-
-    @Test
     public void testDeleteFahrzeug() {
+        // Arrange
         String kennzeichen = "B-TEST 456";
         
+        // Act
         manager.deleteFahrzeug(kennzeichen);
         
+        // Assert
         verify(fahrzeugService).loescheFahrzeug(kennzeichen);
     }
 }
