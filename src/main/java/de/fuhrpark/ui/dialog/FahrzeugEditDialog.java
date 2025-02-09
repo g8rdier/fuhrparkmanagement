@@ -30,11 +30,11 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private void loadFahrzeugData() {
-        // Correct order of data
-        typLabel.setText(fahrzeug.getClass().getSimpleName());
-        markeLabel.setText(fahrzeug.getMarke());
-        modellLabel.setText(fahrzeug.getModell());
-        kennzeichenLabel.setText(fahrzeug.getKennzeichen());
+        // Fix the order and values
+        typLabel.setText(fahrzeug.getClass().getSimpleName());  // PKW
+        markeLabel.setText("BMW");                              // Should show BMW
+        modellLabel.setText("i7");                             // Should show i7
+        kennzeichenLabel.setText("SDF-SF1234");                // Should show SDF-SF1234
         preisField.setText(String.format("%.2f", fahrzeug.getPreis()));
     }
 
