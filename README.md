@@ -71,12 +71,20 @@ src/main/java/de/fuhrpark/
 │       └── LKW.java
 ├── persistence/
 │   └── FahrzeugPersistence.java
+├── service/
+│   ├── base/
+│   │   ├── FahrzeugFactory.java
+│   │   └── FahrzeugService.java
+│   └── impl/
+│       ├── FahrzeugFactoryImpl.java
+│       └── FahrzeugServiceImpl.java
 └── ui/
     ├── dialog/
     │   └── FahrzeugDialog.java
     ├── model/
     │   └── FahrzeugTableModel.java
-    └── FuhrparkUI.java
+    ├── FuhrparkUI.java
+    └── App.java
 ```
 
 ### Designentscheidungen
