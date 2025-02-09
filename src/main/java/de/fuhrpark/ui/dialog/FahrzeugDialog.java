@@ -26,7 +26,13 @@ public class FahrzeugDialog extends JDialog {
         
         // Initialize components
         this.typComboBox = new JComboBox<>(FahrzeugTyp.values());
-        this.kennzeichenField = new JFormattedTextField(new KennzeichenFormatter());
+        
+        // Fix the kennzeichenField initialization
+        KennzeichenFormatter formatter = new KennzeichenFormatter();
+        this.kennzeichenField = new JFormattedTextField();
+        kennzeichenField.setDocument(formatter);
+        kennzeichenField.setColumns(12);
+        
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
         this.preisField = new JTextField(20);
