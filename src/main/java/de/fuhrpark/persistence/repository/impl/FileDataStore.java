@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.IOException;
 
 public class FileDataStore implements DataStore {
     private final Map<String, Fahrzeug> fahrzeuge;
@@ -19,15 +18,13 @@ public class FileDataStore implements DataStore {
     }
 
     @Override
-    public void save() throws IOException {
+    public void save() {
         // TODO: Implement actual file saving
-        // For now, just a stub implementation
     }
 
     @Override
-    public void load() throws IOException {
+    public void load() {
         // TODO: Implement actual file loading
-        // For now, just a stub implementation
     }
 
     @Override
