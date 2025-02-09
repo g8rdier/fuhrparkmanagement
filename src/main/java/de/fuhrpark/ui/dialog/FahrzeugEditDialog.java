@@ -5,10 +5,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class FahrzeugEditDialog extends JDialog {
-    private final JLabel kennzeichenLabel;
     private final JLabel typLabel;
     private final JLabel markeLabel;
     private final JLabel modellLabel;
+    private final JTextField kennzeichenField;
     private final JTextField preisField;
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
@@ -18,10 +18,10 @@ public class FahrzeugEditDialog extends JDialog {
         this.fahrzeug = fahrzeug;
         
         // Initialize components
-        this.kennzeichenLabel = new JLabel();
         this.typLabel = new JLabel();
         this.markeLabel = new JLabel();
         this.modellLabel = new JLabel();
+        this.kennzeichenField = new JTextField(20);
         this.preisField = new JTextField(20);
 
         initComponents();
@@ -30,10 +30,11 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private void loadFahrzeugData() {
-        kennzeichenLabel.setText(fahrzeug.getKennzeichen());
+        // Load data in correct order
         typLabel.setText(fahrzeug.getClass().getSimpleName());
         markeLabel.setText(fahrzeug.getMarke());
         modellLabel.setText(fahrzeug.getModell());
+        kennzeichenField.setText(fahrzeug.getKennzeichen());
         preisField.setText(String.format("%.2f", fahrzeug.getPreis()));
     }
 
@@ -44,18 +45,28 @@ public class FahrzeugEditDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        // Add components in correct order with proper labels
-        addFormField(panel, "Kennzeichen:", kennzeichenLabel, gbc, 0);
-        addFormField(panel, "Typ:", typLabel, gbc, 1);
-        addFormField(panel, "Marke:", markeLabel, gbc, 2);
-        addFormField(panel, "Modell:", modellLabel, gbc, 3);
+        // Add components in correct order
+        // First the read-only fields
+        addFormField(panel, "Typ:", typLabel, gbc, 0);
+        addFormField(panel, "Marke:", markeLabel, gbc, 1);
+        addFormField(panel, "Modell:", modellLabel, gbc, 2);
+        
+        // Then the editable fields
+        addFormField(panel, "Kennzeichen:", kennzeichenField, gbc, 3);
         addFormField(panel, "Preis (€): *", preisField, gbc, 4);
 
         // Style read-only labels
-        kennzeichenLabel.setForeground(Color.DARK_GRAY);
         typLabel.setForeground(Color.DARK_GRAY);
         markeLabel.setForeground(Color.DARK_GRAY);
         modellLabel.setForeground(Color.DARK_GRAY);
+
+        // Make read-only fields look disabled but readable
+        typLabel.setBackground(new Color(240, 240, 240));
+        markeLabel.setBackground(new Color(240, 240, 240));
+        modellLabel.setBackground(new Color(240, 240, 240));
+        typLabel.setOpaque(true);
+        markeLabel.setOpaque(true);
+        modellLabel.setOpaque(true);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -100,6 +111,7 @@ public class FahrzeugEditDialog extends JDialog {
         }
         
         try {
+            fahrzeug.setKennzeichen(kennzeichenField.getText().trim());
             fahrzeug.setPreis(Double.parseDouble(preisField.getText().trim()));
             return true;
         } catch (Exception e) {
@@ -109,6 +121,10 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private boolean validateInputs() {
+        if (kennzeichenField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie ein Kennzeichen ein.");
+            return false;
+        }
         if (preisField.getText().trim().isEmpty()) {
             showError("Bitte geben Sie einen Kaufpreis ein.");
             return false;
