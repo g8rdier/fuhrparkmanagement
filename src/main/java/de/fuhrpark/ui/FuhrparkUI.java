@@ -2,7 +2,7 @@ package de.fuhrpark.ui;
 
 import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.persistence.repository.DataStore;
+import de.fuhrpark.persistence.repository.impl.FileDataStore;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
@@ -20,7 +20,7 @@ public class FuhrparkUI extends JFrame {
     private final FahrzeugTableModel tableModel;
     private final JTable fahrzeugTable;
 
-    public FuhrparkUI(DataStore dataStore) {
+    public FuhrparkUI(FileDataStore dataStore) {
         // Initialize services
         FahrzeugService fahrzeugService = new FahrzeugServiceImpl(dataStore);
         this.fahrzeugFactory = new FahrzeugFactoryImpl();
