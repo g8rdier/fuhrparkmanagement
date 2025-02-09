@@ -10,6 +10,7 @@ import java.util.Locale;
 import de.fuhrpark.persistence.FahrzeugPersistence;
 
 public class FahrzeugTableModel extends AbstractTableModel {
+    private static final long serialVersionUID = 1L;
     private final List<Fahrzeug> fahrzeuge;
     private final String[] columnNames = {"Typ", "Kennzeichen", "Marke", "Modell", "Aktueller Wert"};
     private final DecimalFormat currencyFormat;

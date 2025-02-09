@@ -7,6 +7,7 @@ import de.fuhrpark.model.base.Fahrzeug;
  * Erweitert die Basisklasse Fahrzeug um PKW-spezifische Funktionalität.
  */
 public class PKW extends Fahrzeug {
+    private static final long serialVersionUID = 1L;
     private final int sitzplaetze;
     private final boolean hatKlimaanlage;
 

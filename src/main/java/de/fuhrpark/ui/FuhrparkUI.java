@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 public class FuhrparkUI extends JFrame {
+    private static final long serialVersionUID = 1L;
     private final FahrzeugFactory fahrzeugFactory;
     private final JTable fahrzeugTable;
     private final FahrzeugTableModel tableModel;

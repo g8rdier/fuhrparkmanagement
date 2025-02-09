@@ -3,15 +3,16 @@ package de.fuhrpark.ui.dialog;
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import javax.swing.*;
-import javax.swing.text.*;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Locale;
 import javax.swing.text.MaskFormatter;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class FahrzeugDialog extends JDialog {
+    private static final long serialVersionUID = 1L;
     private final JComboBox<String> typComboBox;
     private final JTextField markeField;
     private final JTextField modellField;
@@ -148,36 +149,6 @@ public class FahrzeugDialog extends JDialog {
         return field;
     }
 
-    private void setupListeners() {
-        // Add validation listener for kennzeichen
-        kennzeichenField.addFocusListener(new java.awt.event.FocusAdapter() {
-            @Override
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                validateKennzeichen(kennzeichenField);
-            }
-        });
-
-        // Add listener for typ to update aktueller wert
-        typComboBox.addActionListener(e -> updateAktuellerWert());
-    }
-
-    private void updateAktuellerWert() {
-        try {
-            double preis = getPreis();
-            String typ = (String) typComboBox.getSelectedItem();
-            double faktor = "PKW".equals(typ) ? 0.9 : 0.85;
-            double wert = preis * faktor;
-            
-            // Format with German locale (dots for thousands, comma for decimals)
-            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.GERMANY);
-            df.setMinimumFractionDigits(2);
-            df.setMaximumFractionDigits(2);
-            wertField.setText(df.format(wert) + " €");
-        } catch (Exception e) {
-            wertField.setText("0,00 €");
-        }
-    }
-
     private void initComponents() {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -233,33 +204,6 @@ public class FahrzeugDialog extends JDialog {
 
         pack();
         setLocationRelativeTo(getOwner());
-    }
-
-    private boolean validateInputs() {
-        if (markeField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie eine Marke ein.");
-            return false;
-        }
-        if (modellField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie ein Modell ein.");
-            return false;
-        }
-        String kennzeichen = getKennzeichen();
-        if (kennzeichen.isEmpty() || kennzeichen.contains("_")) {
-            showError("Bitte geben Sie ein vollständiges Kennzeichen ein.");
-            return false;
-        }
-        try {
-            Number preis = (Number) wertField.getValue();
-            if (preis.doubleValue() <= 0) {
-                showError("Der Preis muss größer als 0 sein.");
-                return false;
-            }
-        } catch (Exception e) {
-            showError("Bitte geben Sie einen gültigen Preis ein.");
-            return false;
-        }
-        return true;
     }
 
     private void showError(String message) {
@@ -329,5 +273,10 @@ public class FahrzeugDialog extends JDialog {
 
         confirmed = true;
         dispose();
+    }
+
+    @Override
+    public void addWindowListener(WindowAdapter _) {
+        super.addWindowListener(_);
     }
 } 

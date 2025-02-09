@@ -1,8 +1,9 @@
 package de.fuhrpark;
 
+import javax.swing.SwingUtilities;
+import javax.swing.JFrame;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.ui.FuhrparkUI;
-import javax.swing.*;
 
 public class App {
     public static void main(String[] args) {
@@ -15,10 +16,7 @@ public class App {
                 ui.setLocationRelativeTo(null);
                 ui.setVisible(true);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null,
-                    "Fehler beim Starten der Anwendung: " + e.getMessage(),
-                    "Fehler",
-                    JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
         });
     }
