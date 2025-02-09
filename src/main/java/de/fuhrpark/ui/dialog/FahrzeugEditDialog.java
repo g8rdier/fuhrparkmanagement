@@ -11,17 +11,17 @@ public class FahrzeugEditDialog extends JDialog {
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
 
-    public FahrzeugEditDialog(Frame parent, Fahrzeug fahrzeug) {
-        super(parent, "Fahrzeug bearbeiten", true);
+    public FahrzeugEditDialog(JFrame owner, Fahrzeug fahrzeug) {
+        super(owner, "Fahrzeug bearbeiten", true);
         this.fahrzeug = fahrzeug;
         
         markeField = new JTextField(20);
         modellField = new JTextField(20);
         preisField = new JTextField(20);
 
-        setLayout(new BorderLayout(10, 10));
         initComponents();
         loadFahrzeugData();
+        setLocationRelativeTo(owner);
     }
 
     private void loadFahrzeugData() {
@@ -65,7 +65,6 @@ public class FahrzeugEditDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
-        setLocationRelativeTo(parent);
     }
 
     private void addFormField(JPanel panel, String label, JComponent field, GridBagConstraints gbc, int row) {
