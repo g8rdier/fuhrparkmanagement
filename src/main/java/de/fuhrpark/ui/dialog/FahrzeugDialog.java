@@ -66,6 +66,7 @@ public class FahrzeugDialog extends JDialog {
 
     private JFormattedTextField createKennzeichenField() {
         try {
+            // Format: XXX-XX1234 (where X can be A-Z and 1234 can be 0-9)
             MaskFormatter formatter = new MaskFormatter("UUU-UU####");
             formatter.setPlaceholderCharacter('_');
             formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
@@ -73,6 +74,7 @@ public class FahrzeugDialog extends JDialog {
             final JFormattedTextField field = new JFormattedTextField(formatter);
             field.setColumns(10);
             
+            // Add focus listener for validation
             field.addFocusListener(new java.awt.event.FocusAdapter() {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent evt) {
@@ -88,31 +90,38 @@ public class FahrzeugDialog extends JDialog {
     }
 
     private boolean validateKennzeichen(JFormattedTextField field) {
-        String value = field.getText();
+        String value = field.getText().replace("_", "").trim();
         
-        // Split into the three parts
-        String firstPart = value.substring(0, 3);        // First three letters
-        String secondPart = value.substring(4, 6);       // Two letters after hyphen
-        String numberPart = value.substring(6);          // Last four numbers
-        
-        // Count actual characters (excluding underscores)
-        int firstPartLetters = firstPart.replace("_", "").length();
-        int secondPartLetters = secondPart.replace("_", "").length();
-        int numberPartDigits = numberPart.replace("_", "").length();
-        
-        // Validate minimum requirements
-        boolean isValid = firstPartLetters >= 1 &&      // At least one letter in first part
-                        secondPartLetters >= 1 &&        // At least one letter in second part
-                        numberPartDigits >= 1;           // At least one number in last part
-        
-        // Visual feedback
-        if (isValid) {
-            field.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
-        } else {
-            field.setBorder(BorderFactory.createLineBorder(Color.RED));
+        // Basic format validation
+        if (value.length() < 5) { // At least: XX-X1
+            return false;
         }
-        
-        return isValid;
+
+        // Check if contains hyphen at correct position
+        int hyphenPos = value.indexOf('-');
+        if (hyphenPos == -1 || hyphenPos > 3) {
+            return false;
+        }
+
+        // Split parts
+        String[] parts = value.split("-");
+        if (parts.length != 2) {
+            return false;
+        }
+
+        // Validate first part (1-3 letters)
+        String firstPart = parts[0];
+        if (firstPart.length() < 1 || firstPart.length() > 3 || !firstPart.matches("[A-Z]+")) {
+            return false;
+        }
+
+        // Validate second part (letters followed by numbers)
+        String secondPart = parts[1];
+        if (!secondPart.matches("[A-Z]+[0-9]+")) {
+            return false;
+        }
+
+        return true;
     }
 
     private JFormattedTextField createWertField() {
