@@ -13,17 +13,17 @@ public class FahrtenbuchServiceImpl implements FahrtenbuchService {
     }
 
     @Override
-    public void addFahrt(String kennzeichen, FahrtenbuchEintrag eintrag) {
+    public void addEintrag(String kennzeichen, FahrtenbuchEintrag eintrag) {
         dataStore.addFahrtenbuchEintrag(kennzeichen, eintrag);
-    }
-
-    @Override
-    public List<FahrtenbuchEintrag> getFahrtenForFahrzeug(String kennzeichen) {
-        return dataStore.getFahrtenForFahrzeug(kennzeichen);
     }
 
     @Override
     public List<FahrtenbuchEintrag> getEintraegeForFahrzeug(String kennzeichen) {
         return dataStore.getFahrtenForFahrzeug(kennzeichen);
+    }
+
+    @Override
+    public void deleteEintraegeForFahrzeug(String kennzeichen) {
+        // Implementation if needed
     }
 }

@@ -135,82 +135,85 @@ public class FuhrparkUI extends JFrame {
         int selectedRow = fahrzeugTable.getSelectedRow();
         if (selectedRow >= 0) {
             Fahrzeug fahrzeug = tableModel.getRow(selectedRow);
-            List<FahrtenbuchEintrag> fahrten = 
-                fahrtenbuchService.getFahrtenForFahrzeug(fahrzeug.getKennzeichen());
-            
-            JDialog dialog = new JDialog(this, "Fahrtenbuch - " + fahrzeug.getKennzeichen(), true);
-            dialog.setLayout(new BorderLayout(5, 5));
-            
-            // Fahrtenliste
-            DefaultListModel<String> listModel = new DefaultListModel<>();
-            for (FahrtenbuchEintrag fahrt : fahrten) {
-                listModel.addElement(String.format("%s: %s -> %s (%s km)",
-                    fahrt.getDatumFormatted(),
-                    fahrt.getStart(),
-                    fahrt.getZiel(),
-                    fahrt.getKilometer()));
-            }
-            JList<String> fahrtList = new JList<>(listModel);
-            
-            // Neue Fahrt Panel
-            JPanel inputPanel = new JPanel(new GridLayout(6, 2, 5, 5));
-            JTextField startField = new JTextField();
-            JTextField zielField = new JTextField();
-            JTextField kilometerField = new JTextField();
-            JTextField fahrerField = new JTextField();
-            
-            inputPanel.add(new JLabel("Start:"));
-            inputPanel.add(startField);
-            inputPanel.add(new JLabel("Ziel:"));
-            inputPanel.add(zielField);
-            inputPanel.add(new JLabel("Kilometer:"));
-            inputPanel.add(kilometerField);
-            inputPanel.add(new JLabel("Fahrer:"));
-            inputPanel.add(fahrerField);
-            
-            JButton addButton = new JButton("Fahrt hinzufügen");
-            addButton.addActionListener(e -> {
-                try {
-                    FahrtenbuchEintrag eintrag = new FahrtenbuchEintrag(
-                        LocalDate.now(),
-                        startField.getText(),
-                        zielField.getText(),
-                        Double.parseDouble(kilometerField.getText()),
-                        fahrzeug.getKennzeichen()
-                    );
-                    eintrag.setFahrer(fahrerField.getText());
-                    
-                    addFahrt(fahrzeug.getKennzeichen(), eintrag);
-                    listModel.addElement(String.format("%s: %s -> %s (%s km)",
-                        eintrag.getDatumFormatted(),
-                        eintrag.getStart(),
-                        eintrag.getZiel(),
-                        eintrag.getKilometer()));
-                    
-                    startField.setText("");
-                    zielField.setText("");
-                    kilometerField.setText("");
-                    fahrerField.setText("");
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(dialog,
-                        "Bitte geben Sie eine gültige Kilometerzahl ein.",
-                        "Eingabefehler",
-                        JOptionPane.ERROR_MESSAGE);
-                }
-            });
-            
-            dialog.add(new JScrollPane(fahrtList), BorderLayout.CENTER);
-            dialog.add(inputPanel, BorderLayout.SOUTH);
-            dialog.add(addButton, BorderLayout.EAST);
-            
-            dialog.setSize(400, 500);
-            dialog.setLocationRelativeTo(this);
-            dialog.setVisible(true);
+            showFahrtenbuch(fahrzeug.getKennzeichen());
         }
     }
 
-    private void addFahrt(String kennzeichen, FahrtenbuchEintrag eintrag) {
-        fahrtenbuchService.addFahrt(kennzeichen, eintrag);
+    private void showFahrtenbuch(String kennzeichen) {
+        List<FahrtenbuchEintrag> eintraege = fahrtenbuchService.getEintraegeForFahrzeug(kennzeichen);
+        
+        JDialog dialog = new JDialog(this, "Fahrtenbuch - " + kennzeichen, true);
+        dialog.setLayout(new BorderLayout(5, 5));
+        
+        // Fahrtenliste
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for (FahrtenbuchEintrag fahrt : eintraege) {
+            listModel.addElement(String.format("%s: %s -> %s (%s km)",
+                fahrt.getDatumFormatted(),
+                fahrt.getStart(),
+                fahrt.getZiel(),
+                fahrt.getKilometer()));
+        }
+        JList<String> fahrtList = new JList<>(listModel);
+        
+        // Neue Fahrt Panel
+        JPanel inputPanel = new JPanel(new GridLayout(6, 2, 5, 5));
+        JTextField startField = new JTextField();
+        JTextField zielField = new JTextField();
+        JTextField kilometerField = new JTextField();
+        JTextField fahrerField = new JTextField();
+        
+        inputPanel.add(new JLabel("Start:"));
+        inputPanel.add(startField);
+        inputPanel.add(new JLabel("Ziel:"));
+        inputPanel.add(zielField);
+        inputPanel.add(new JLabel("Kilometer:"));
+        inputPanel.add(kilometerField);
+        inputPanel.add(new JLabel("Fahrer:"));
+        inputPanel.add(fahrerField);
+        
+        JButton addButton = new JButton("Fahrt hinzufügen");
+        addButton.addActionListener(e -> {
+            try {
+                FahrtenbuchEintrag eintrag = new FahrtenbuchEintrag(
+                    LocalDate.now(),
+                    startField.getText(),
+                    zielField.getText(),
+                    Double.parseDouble(kilometerField.getText()),
+                    kennzeichen
+                );
+                eintrag.setFahrer(fahrerField.getText());
+                
+                addFahrtenbuchEintrag(kennzeichen, eintrag);
+                listModel.addElement(String.format("%s: %s -> %s (%s km)",
+                    eintrag.getDatumFormatted(),
+                    eintrag.getStart(),
+                    eintrag.getZiel(),
+                    eintrag.getKilometer()));
+                
+                startField.setText("");
+                zielField.setText("");
+                kilometerField.setText("");
+                fahrerField.setText("");
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(dialog,
+                    "Bitte geben Sie eine gültige Kilometerzahl ein.",
+                    "Eingabefehler",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
+        dialog.add(new JScrollPane(fahrtList), BorderLayout.CENTER);
+        dialog.add(inputPanel, BorderLayout.SOUTH);
+        dialog.add(addButton, BorderLayout.EAST);
+        
+        dialog.setSize(400, 500);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    private void addFahrtenbuchEintrag(String kennzeichen, FahrtenbuchEintrag eintrag) {
+        fahrtenbuchService.addEintrag(kennzeichen, eintrag);
     }
 
     public static void main(String[] args) {
