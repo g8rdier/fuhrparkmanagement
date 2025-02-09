@@ -80,7 +80,7 @@ public class FahrzeugTableModel extends AbstractTableModel {
         return fahrzeuge.get(row);
     }
 
-    public void updateFahrzeuges(List<Fahrzeug> fahrzeuge) {
+    public void updateFahrzeuge(List<Fahrzeug> fahrzeuge) {
         setData(fahrzeuge);
     }
 } 
