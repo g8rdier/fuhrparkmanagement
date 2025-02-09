@@ -116,37 +116,26 @@ public class FahrzeugDialog extends JDialog {
     }
 
     private JFormattedTextField createWertField() {
-        DecimalFormat format = (DecimalFormat) NumberFormat.getInstance(Locale.GERMANY);
-        format.setMinimumFractionDigits(2);
+        NumberFormat format = NumberFormat.getCurrencyInstance(Locale.GERMANY);
         format.setMaximumFractionDigits(2);
+        format.setMinimumFractionDigits(2);
         format.setGroupingUsed(true);
-        
-        NumberFormatter formatter = new NumberFormatter(format) {
-            @Override
-            public Object stringToValue(String text) throws ParseException {
-                if (text.isEmpty()) return 0.0;
-                text = text.replace("€", "").trim();
-                return super.stringToValue(text);
-            }
-            
-            @Override
-            public String valueToString(Object value) throws ParseException {
-                String str = super.valueToString(value);
-                if (!str.isEmpty()) {
-                    return str + " €";
-                }
-                return "0,00 €";
-            }
-        };
-        
-        formatter.setValueClass(Double.class);
-        formatter.setMinimum(0.0);
-        formatter.setAllowsInvalid(false);
-        
-        JFormattedTextField field = new JFormattedTextField(formatter);
+
+        JFormattedTextField field = new JFormattedTextField(format);
         field.setValue(0.0);
-        field.setColumns(12);
-        
+        field.setColumns(10);
+
+        // Add input verification
+        field.addPropertyChangeListener("value", evt -> {
+            Object value = field.getValue();
+            if (value instanceof Number) {
+                double numValue = ((Number) value).doubleValue();
+                if (numValue > 10000000) {  // 10 million limit
+                    field.setValue(10000000.0);
+                }
+            }
+        });
+
         return field;
     }
 
