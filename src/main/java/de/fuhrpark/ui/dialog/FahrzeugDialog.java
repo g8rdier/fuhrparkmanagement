@@ -61,12 +61,9 @@ public class FahrzeugDialog extends JDialog {
 
     private JFormattedTextField createKennzeichenField() {
         try {
-            // Change from UUU-UU#### to LLLLLL#### where L allows letters only
-            MaskFormatter formatter = new MaskFormatter("LLL-LL####");
+            MaskFormatter formatter = new MaskFormatter("UUU-UU####");
             formatter.setPlaceholderCharacter('_');
-            
-            // Separate valid characters for letters and numbers
-            formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
             
             final JFormattedTextField field = new JFormattedTextField(formatter);
             field.setColumns(10);
