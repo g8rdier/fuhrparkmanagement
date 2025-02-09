@@ -109,7 +109,7 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void refreshTable() {
-        tableModel.setFahrzeuge(manager.getFahrzeuge());
+        tableModel.setFahrzeuge(manager.getAlleFahrzeuge());
     }
 
     private void addNewFahrzeug() {
@@ -118,7 +118,9 @@ public class FuhrparkUI extends JFrame {
         
         Fahrzeug fahrzeug = dialog.getResult();
         if (fahrzeug != null) {
-            manager.createFahrzeug(fahrzeug);
+            manager.addFahrzeug(fahrzeug.getKennzeichen(), fahrzeug.getMarke(), 
+                              fahrzeug.getModell(), fahrzeug.getTyp().toString(), 
+                              fahrzeug.getPreis());
             refreshTable();
         }
     }
