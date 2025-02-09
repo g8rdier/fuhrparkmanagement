@@ -1,24 +1,11 @@
 package de.fuhrpark.ui;
 
-import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.impl.PKW;
-import de.fuhrpark.model.impl.LKW;
-import de.fuhrpark.model.enums.FahrzeugTyp;
-import de.fuhrpark.persistence.repository.impl.FileDataStore;
 import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.service.base.FahrzeugService;
-import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
-import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.ui.dialog.FahrzeugDialog;
-import de.fuhrpark.ui.dialog.FahrzeugEditDialog;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
-
 import javax.swing.*;
-import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.List;
 
 public class FuhrparkUI extends JFrame {
     private final FahrzeugFactory fahrzeugFactory;
@@ -34,7 +21,21 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void initComponents() {
-        // ... layout code ...
+        setLayout(new BorderLayout());
+
+        // Create toolbar with add button
+        JToolBar toolbar = new JToolBar();
+        JButton addButton = new JButton("Fahrzeug hinzufügen");
+        addButton.addActionListener(e -> addFahrzeug());
+        toolbar.add(addButton);
+        add(toolbar, BorderLayout.NORTH);
+
+        // Add table in a scroll pane
+        JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Set preferred size
+        setPreferredSize(new Dimension(800, 600));
     }
 
     private void addFahrzeug() {
@@ -60,51 +61,5 @@ public class FuhrparkUI extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
-
-    private void editFahrzeug(ActionEvent e) {
-        int selectedRow = fahrzeugTable.getSelectedRow();
-        if (selectedRow >= 0) {
-            selectedRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
-            Fahrzeug fahrzeug = tableModel.getFahrzeug(selectedRow);
-            FahrzeugDialog dialog = new FahrzeugDialog(this, fahrzeug);
-            dialog.setVisible(true);
-            if (dialog.isConfirmed()) {
-                tableModel.fireTableRowsUpdated(selectedRow, selectedRow);
-            }
-        }
-    }
-
-    private void deleteFahrzeug(ActionEvent e) {
-        int selectedRow = fahrzeugTable.getSelectedRow();
-        if (selectedRow >= 0) {
-            selectedRow = fahrzeugTable.convertRowIndexToModel(selectedRow);
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "Möchten Sie das ausgewählte Fahrzeug wirklich löschen?",
-                "Fahrzeug löschen",
-                JOptionPane.YES_NO_OPTION);
-            
-            if (confirm == JOptionPane.YES_OPTION) {
-                tableModel.removeFahrzeug(selectedRow);
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                // Create components with proper error handling
-                FileDataStore dataStore = new FileDataStore();
-                dataStore.load();
-                
-                new FuhrparkUI(dataStore).setVisible(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, 
-                    "Fehler beim Starten der Anwendung: " + e.getMessage(),
-                    "Fehler",
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        });
     }
 } 
