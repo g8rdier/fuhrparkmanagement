@@ -10,6 +10,10 @@ public class FahrzeugFactoryImpl implements FahrzeugFactory {
     
     @Override
     public Fahrzeug createFahrzeug(FahrzeugTyp typ, String kennzeichen, String marke, String modell, double preis) {
+        if (typ == null) {
+            throw new IllegalArgumentException("Fahrzeugtyp darf nicht null sein");
+        }
+        
         return switch (typ) {
             case PKW -> new PKW(kennzeichen, marke, modell, preis);
             case LKW -> new LKW(kennzeichen, marke, modell, preis);

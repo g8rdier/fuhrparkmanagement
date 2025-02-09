@@ -1,10 +1,7 @@
 package de.fuhrpark.service.base;
 
-import de.fuhrpark.model.base.AbstractFahrzeug;
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.enums.FahrzeugTyp;
-import de.fuhrpark.model.impl.LKW;
-import de.fuhrpark.model.impl.PKW;
 
 public interface FahrzeugFactory {
     /**
