@@ -1,12 +1,8 @@
 package de.fuhrpark;
 
 import de.fuhrpark.ui.FuhrparkUI;
-import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.persistence.repository.DataStore;
-import de.fuhrpark.service.base.FahrzeugService;
-import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.service.impl.FahrzeugServiceImpl;
-import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
+import de.fuhrpark.persistence.repository.impl.FileDataStore;
 
 public class App {
     public static void main(String[] args) {
@@ -17,8 +13,9 @@ public class App {
                 javax.swing.UIManager.setLookAndFeel(
                     javax.swing.UIManager.getSystemLookAndFeelClassName());
                 
-                // Initialize dependencies
-                DataStore dataStore = new DataStore();
+                // Initialize FileDataStore and load existing data
+                FileDataStore dataStore = new FileDataStore();
+                dataStore.load();
                 
                 // Create the UI with DataStore
                 FuhrparkUI ui = new FuhrparkUI(dataStore);
