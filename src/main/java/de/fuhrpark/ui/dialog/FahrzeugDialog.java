@@ -36,16 +36,22 @@ public class FahrzeugDialog extends JDialog {
     public FahrzeugDialog(JFrame owner, Fahrzeug fahrzeug) {
         super(owner, "Fahrzeug bearbeiten", true);
         
+        // Initialize components
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.typComboBox.setSelectedItem(fahrzeug.getTyp());
-        this.typComboBox.setEnabled(false);  // Type can't be changed for existing vehicles
+        this.typComboBox.setEnabled(false);  // Type can't be changed
         
         this.markeField = new JTextField(fahrzeug.getMarke(), 20);
-        this.modellField = new JTextField(fahrzeug.getModell(), 20);
+        this.markeField.setEnabled(false);   // Brand can't be changed
+        this.markeField.setDisabledTextColor(Color.GRAY);
         
+        this.modellField = new JTextField(fahrzeug.getModell(), 20);
+        this.modellField.setEnabled(false);  // Model can't be changed
+        this.modellField.setDisabledTextColor(Color.GRAY);
+        
+        // These fields remain editable
         this.kennzeichenField = createKennzeichenField();
         this.kennzeichenField.setText(fahrzeug.getKennzeichen());
-        this.kennzeichenField.setEnabled(false);  // License plate can't be changed
         
         this.wertField = createWertField();
         this.wertField.setValue(fahrzeug.getPreis());
