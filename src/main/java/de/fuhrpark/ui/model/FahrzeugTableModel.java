@@ -2,15 +2,28 @@ package de.fuhrpark.ui.model;
 
 import javax.swing.table.AbstractTableModel;
 import de.fuhrpark.model.base.Fahrzeug;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class FahrzeugTableModel extends AbstractTableModel {
-    private final String[] columnNames = {"Typ", "Kennzeichen", "Marke", "Modell", "Preis"};
-    private List<Fahrzeug> fahrzeuge = new ArrayList<>();
+    private final List<Fahrzeug> fahrzeuge;
+    private final String[] columnNames = {"Typ", "Kennzeichen", "Marke", "Modell", "Aktueller Wert"};
+    private final DecimalFormat currencyFormat;
+
+    public FahrzeugTableModel() {
+        this.fahrzeuge = new ArrayList<>();
+        this.currencyFormat = (DecimalFormat) NumberFormat.getInstance(Locale.GERMANY);
+        this.currencyFormat.setMinimumFractionDigits(2);
+        this.currencyFormat.setMaximumFractionDigits(2);
+        this.currencyFormat.setGroupingUsed(true);
+    }
 
     public void setFahrzeuge(List<Fahrzeug> fahrzeuge) {
-        this.fahrzeuge = new ArrayList<>(fahrzeuge);
+        this.fahrzeuge.clear();
+        this.fahrzeuge.addAll(fahrzeuge);
         fireTableDataChanged();
     }
 
@@ -33,20 +46,18 @@ public class FahrzeugTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         Fahrzeug fahrzeug = fahrzeuge.get(rowIndex);
         return switch (columnIndex) {
-            case 0 -> fahrzeug.getClass().getSimpleName();
+            case 0 -> fahrzeug.getTyp();
             case 1 -> fahrzeug.getKennzeichen();
             case 2 -> fahrzeug.getMarke();
             case 3 -> fahrzeug.getModell();
-            case 4 -> fahrzeug.getPreis();
+            case 4 -> currencyFormat.format(fahrzeug.getPreis()) + " €";
             default -> null;
         };
     }
 
     public void addFahrzeug(Fahrzeug fahrzeug) {
-        if (fahrzeug != null) {
-            fahrzeuge.add(fahrzeug);
-            fireTableRowsInserted(fahrzeuge.size() - 1, fahrzeuge.size() - 1);
-        }
+        fahrzeuge.add(fahrzeug);
+        fireTableRowsInserted(fahrzeuge.size() - 1, fahrzeuge.size() - 1);
     }
 
     public void updateFahrzeug(int row, Fahrzeug fahrzeug) {
