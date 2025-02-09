@@ -6,6 +6,7 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
 import javax.swing.text.MaskFormatter;
 
@@ -75,11 +76,12 @@ public class FahrzeugDialog extends JDialog {
     }
 
     private JFormattedTextField createPreisField() {
-        NumberFormat format = NumberFormat.getInstance(Locale.GERMANY);
+        DecimalFormat format = (DecimalFormat) NumberFormat.getInstance(Locale.GERMANY);
         format.setMinimumFractionDigits(2);
         format.setMaximumFractionDigits(2);
+        
+        // Use DecimalFormat's built-in grouping settings
         format.setGroupingUsed(true);
-        format.setGroupingSize(3);
         
         NumberFormatter formatter = new NumberFormatter(format) {
             @Override
@@ -108,7 +110,6 @@ public class FahrzeugDialog extends JDialog {
         field.setValue(0.0);
         field.setColumns(12);
         
-        // Add listener to update aktueller wert when price changes
         field.addPropertyChangeListener("value", evt -> updateAktuellerWert());
         
         return field;
