@@ -14,6 +14,7 @@ import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import de.fuhrpark.ui.dialog.FahrzeugDialog;
 import de.fuhrpark.ui.dialog.FahrzeugEditDialog;
+import de.fuhrpark.persistence.repository.FileDataStore;
 
 import javax.swing.*;
 import java.awt.*;
@@ -231,7 +232,8 @@ public class FuhrparkUI extends JFrame {
         SwingUtilities.invokeLater(() -> {
             try {
                 // Create components with proper error handling
-                DataStore dataStore = new DataStore();
+                FileDataStore dataStore = new FileDataStore();
+                dataStore.load();
                 
                 new FuhrparkUI(dataStore).setVisible(true);
             } catch (Exception e) {

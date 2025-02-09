@@ -6,8 +6,6 @@ import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.persistence.repository.DataStore;
-import de.fuhrpark.service.impl.FahrzeugServiceImpl;
-import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 
 import java.util.List;
 

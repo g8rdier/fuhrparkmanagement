@@ -1,7 +1,6 @@
 package de.fuhrpark;
 
 import de.fuhrpark.ui.FuhrparkUI;
-import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.persistence.repository.impl.FileDataStore;
 
 public class App {
