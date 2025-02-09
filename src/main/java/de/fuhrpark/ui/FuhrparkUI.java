@@ -87,22 +87,20 @@ public class FuhrparkUI extends JFrame {
                 String kennzeichen = dialog.getKennzeichen();
                 double wert = dialog.getWert();
 
-                // Create the appropriate vehicle type
-                if ("PKW".equals(typ)) {
-                    fahrzeug = new PKW(kennzeichen, marke, modell, wert);
-                } else {
-                    fahrzeug = new LKW(kennzeichen, marke, modell, wert);
-                }
+                fahrzeug = "PKW".equals(typ) 
+                    ? new PKW(kennzeichen, marke, modell, wert)
+                    : new LKW(kennzeichen, marke, modell, wert);
 
                 tableModel.addFahrzeug(fahrzeug);
+                tableModel.fireTableDataChanged();
                 
                 int newRow = tableModel.getRowCount() - 1;
                 if (newRow >= 0) {
                     fahrzeugTable.setRowSelectionInterval(newRow, newRow);
                 }
-            } catch (Exception ex) {
+            } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
-                    "Fehler beim Hinzufügen des Fahrzeugs: " + ex.getMessage(),
+                    "Fehler beim Hinzufügen des Fahrzeugs: " + e.getMessage(),
                     "Fehler",
                     JOptionPane.ERROR_MESSAGE);
             }

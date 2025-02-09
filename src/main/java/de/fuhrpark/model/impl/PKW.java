@@ -43,8 +43,8 @@ public class PKW extends Fahrzeug {
     }
 
     @Override
-    public FahrzeugTyp getTyp() {
-        return FahrzeugTyp.PKW;
+    public String getTyp() {
+        return "PKW";
     }
 
     public int getSitzplaetze() { return sitzplaetze; }

@@ -15,32 +15,16 @@ public class LKW extends Fahrzeug {
     /**
      * Konstruktor für einen LKW
      */
-    public LKW(String marke, String modell, String kennzeichen, double preis) {
-        super(kennzeichen, marke, modell, preis);
+    public LKW(String kennzeichen, String marke, String modell, double wert) {
+        super(kennzeichen, marke, modell, wert);
         this.ladekapazitaet = 40.0; // Default value in tons
         this.hatAnhaengerkupplung = true;
-        this.wert = preis;
+        this.wert = wert;
     }
 
     @Override
-    public void setMarke(String marke) {
-        super.setMarke(marke);
-    }
-
-    @Override
-    public void setModell(String modell) {
-        super.setModell(modell);
-    }
-
-    @Override
-    public void setPreis(double preis) {
-        super.setPreis(preis);
-        this.wert = preis;
-    }
-
-    @Override
-    public FahrzeugTyp getTyp() {
-        return FahrzeugTyp.LKW;
+    public String getTyp() {
+        return "LKW";
     }
 
     public double getLadekapazitaet() { return ladekapazitaet; }
@@ -48,7 +32,7 @@ public class LKW extends Fahrzeug {
 
     @Override
     public double berechneAktuellenWert() {
-        return getPreis() * 0.85;
+        return getWert() * 0.85;
     }
 
     @Override
