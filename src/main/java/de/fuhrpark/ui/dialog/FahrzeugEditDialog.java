@@ -5,8 +5,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class FahrzeugEditDialog extends JDialog {
-    private final JTextField markeField;
-    private final JTextField modellField;
+    private final JTextField kennzeichenField;
+    private final JLabel markeLabel;
+    private final JLabel modellLabel;
+    private final JLabel typLabel;
     private final JTextField preisField;
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
@@ -15,9 +17,12 @@ public class FahrzeugEditDialog extends JDialog {
         super(owner, "Fahrzeug bearbeiten", true);
         this.fahrzeug = fahrzeug;
         
-        markeField = new JTextField(20);
-        modellField = new JTextField(20);
-        preisField = new JTextField(20);
+        // Initialize components
+        this.kennzeichenField = new JTextField(20);
+        this.markeLabel = new JLabel();
+        this.modellLabel = new JLabel();
+        this.typLabel = new JLabel();
+        this.preisField = new JTextField(20);
 
         initComponents();
         loadFahrzeugData();
@@ -25,8 +30,10 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private void loadFahrzeugData() {
-        markeField.setText(fahrzeug.getMarke());
-        modellField.setText(fahrzeug.getModell());
+        kennzeichenField.setText(fahrzeug.getKennzeichen());
+        markeLabel.setText(fahrzeug.getMarke());
+        modellLabel.setText(fahrzeug.getModell());
+        typLabel.setText(fahrzeug.getClass().getSimpleName());
         preisField.setText(String.valueOf(fahrzeug.getPreis()));
     }
 
@@ -36,13 +43,11 @@ public class FahrzeugEditDialog extends JDialog {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
         
-        // Read-only fields
-        addFormField(panel, "Kennzeichen:", new JLabel(fahrzeug.getKennzeichen()), gbc, 0);
-        addFormField(panel, "Typ:", new JLabel(fahrzeug.getClass().getSimpleName()), gbc, 1);
-        
-        // Editable fields
-        addFormField(panel, "Marke: *", markeField, gbc, 2);
-        addFormField(panel, "Modell:", modellField, gbc, 3);
+        // Add components in order
+        addFormField(panel, "Kennzeichen:", kennzeichenField, gbc, 0);
+        addFormField(panel, "Typ:", typLabel, gbc, 1);
+        addFormField(panel, "Marke:", markeLabel, gbc, 2);
+        addFormField(panel, "Modell:", modellLabel, gbc, 3);
         addFormField(panel, "Preis (€): *", preisField, gbc, 4);
 
         // Buttons
@@ -88,8 +93,7 @@ public class FahrzeugEditDialog extends JDialog {
         }
         
         try {
-            fahrzeug.setMarke(markeField.getText().trim());
-            fahrzeug.setModell(modellField.getText().trim());
+            fahrzeug.setKennzeichen(kennzeichenField.getText().trim());
             fahrzeug.setPreis(Double.parseDouble(preisField.getText().trim()));
             return true;
         } catch (Exception e) {
@@ -99,12 +103,22 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private boolean validateInputs() {
-        if (markeField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie eine Marke ein.");
+        if (kennzeichenField.getText().trim().isEmpty()) {
+            showError("Bitte geben Sie ein Kennzeichen ein.");
             return false;
         }
         if (preisField.getText().trim().isEmpty()) {
             showError("Bitte geben Sie einen Kaufpreis ein.");
+            return false;
+        }
+        try {
+            double preis = Double.parseDouble(preisField.getText().trim());
+            if (preis <= 0) {
+                showError("Der Preis muss größer als 0 sein.");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            showError("Bitte geben Sie einen gültigen Preis ein.");
             return false;
         }
         return true;
