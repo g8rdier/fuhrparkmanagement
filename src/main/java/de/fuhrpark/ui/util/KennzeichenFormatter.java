@@ -19,51 +19,45 @@ public class KennzeichenFormatter extends PlainDocument {
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) 
                     throws BadLocationException {
                 String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
-                String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
-                newText = newText.toUpperCase();
+                String newText = currentText.substring(0, offset) + text.toUpperCase() + currentText.substring(offset + length);
 
                 // Handle hyphen insertion
-                if (newText.length() >= 2 && !newText.contains("-")) {
-                    int hyphenPos = findHyphenPosition(newText);
-                    if (hyphenPos > 0) {
-                        newText = newText.substring(0, hyphenPos) + "-" + newText.substring(hyphenPos);
+                if (!newText.contains("-")) {
+                    String[] parts = newText.split("(?<=\\D)(?=\\d)|(?<=\\D)(?=\\D{3})");
+                    if (parts.length > 1) {
+                        newText = parts[0] + "-" + parts[1];
                     }
                 }
 
-                // Split into parts
-                String[] parts = newText.split("-", 2);
-                String beforeHyphen = parts[0];
-                String afterHyphen = parts.length > 1 ? parts[1] : "";
-
-                // Validate parts
-                if (!beforeHyphen.matches("^[A-Z]{0,3}$")) {
+                // Validate format
+                if (newText.length() > 8) { // Max 8 characters total
                     return;
                 }
 
-                // After hyphen: 1-2 letters followed by 1-4 numbers
+                String[] parts = newText.split("-", -1);
+                String prefix = parts[0]; // District code
+                String suffix = parts.length > 1 ? parts[1] : ""; // Letters + numbers
+
+                // Validate district code (1-3 letters)
+                if (!prefix.matches("^[A-Z]{0,3}$")) {
+                    return;
+                }
+
+                // Validate suffix (1-2 letters followed by 1-4 numbers)
                 if (parts.length > 1) {
-                    String letters = afterHyphen.replaceAll("[0-9]", "");
-                    String numbers = afterHyphen.replaceAll("[A-Z]", "");
-                    
+                    String letters = suffix.replaceAll("[0-9]", "");
+                    String numbers = suffix.replaceAll("[A-Z]", "");
+
                     if (letters.length() > 2 || !letters.matches("^[A-Z]*$")) {
                         return;
                     }
-                    
-                    if (numbers.length() > 4 || !numbers.matches("^[1-9][0-9]*$")) {
+
+                    if (numbers.length() > 4 || (numbers.length() > 0 && !numbers.matches("^[1-9][0-9]*$"))) {
                         return;
                     }
                 }
 
                 super.replace(fb, 0, fb.getDocument().getLength(), newText, attrs);
-            }
-
-            private int findHyphenPosition(String text) {
-                for (int i = 1; i <= Math.min(3, text.length()); i++) {
-                    if (i == text.length() || !Character.isLetter(text.charAt(i))) {
-                        return i;
-                    }
-                }
-                return -1;
             }
         });
     }
