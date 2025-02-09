@@ -83,7 +83,7 @@ public class FahrzeugDialog extends JDialog {
         }
     }
 
-    private void validateKennzeichen(JFormattedTextField field) {
+    private boolean validateKennzeichen(JFormattedTextField field) {
         String value = field.getText();
         
         // Split into the three parts
@@ -91,20 +91,24 @@ public class FahrzeugDialog extends JDialog {
         String secondPart = value.substring(4, 6);       // Two letters after hyphen
         String numberPart = value.substring(6);          // Last four numbers
         
-        // Check minimum requirements:
-        // - At least one letter in first part
-        boolean firstPartValid = firstPart.replace("_", "").length() >= 1;
-        // - At least one letter in second part
-        boolean secondPartValid = secondPart.replace("_", "").length() >= 1;
-        // - At least one number in last part
-        boolean numberPartValid = numberPart.replace("_", "").length() >= 1;
+        // Count actual characters (excluding underscores)
+        int firstPartLetters = firstPart.replace("_", "").length();
+        int secondPartLetters = secondPart.replace("_", "").length();
+        int numberPartDigits = numberPart.replace("_", "").length();
         
-        // Set visual feedback
-        if (firstPartValid && secondPartValid && numberPartValid) {
+        // Validate minimum requirements
+        boolean isValid = firstPartLetters >= 1 &&      // At least one letter in first part
+                        secondPartLetters >= 1 &&        // At least one letter in second part
+                        numberPartDigits >= 1;           // At least one number in last part
+        
+        // Visual feedback
+        if (isValid) {
             field.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
         } else {
             field.setBorder(BorderFactory.createLineBorder(Color.RED));
         }
+        
+        return isValid;
     }
 
     private JFormattedTextField createWertField() {
@@ -283,7 +287,7 @@ public class FahrzeugDialog extends JDialog {
 
     public String getKennzeichen() {
         String raw = kennzeichenField.getText();
-        // Only clean up the underscores, keep partial input
+        // Keep partial input, just remove underscores
         return raw.replace("_", "").trim();
     }
 
