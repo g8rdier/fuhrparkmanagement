@@ -15,8 +15,7 @@ public class FahrzeugDialog extends JDialog {
     private final JTextField markeField;
     private final JTextField modellField;
     private final JFormattedTextField kennzeichenField;
-    private final JFormattedTextField preisField;
-    private final JLabel aktuellerWertLabel;
+    private final JFormattedTextField wertField;
     private boolean confirmed = false;
 
     // Constructor for new vehicle
@@ -28,8 +27,7 @@ public class FahrzeugDialog extends JDialog {
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
         this.kennzeichenField = createKennzeichenField();
-        this.preisField = createPreisField();
-        this.aktuellerWertLabel = new JLabel("0,00 €");
+        this.wertField = createWertField();
         
         initComponents();
         setupListeners();
@@ -43,9 +41,8 @@ public class FahrzeugDialog extends JDialog {
         this.modellField = new JTextField(fahrzeug.getModell(), 20);
         this.kennzeichenField = createKennzeichenField();
         this.kennzeichenField.setText(fahrzeug.getKennzeichen());
-        this.preisField = createPreisField();
-        this.preisField.setValue(fahrzeug.getPreis());
-        this.aktuellerWertLabel = new JLabel(String.format(Locale.GERMANY, "%.2f €", fahrzeug.berechneAktuellenWert()));
+        this.wertField = createWertField();
+        this.wertField.setValue(fahrzeug.getPreis());
         
         // Disable type selection and license plate for existing vehicles
         this.typComboBox.setSelectedItem(fahrzeug.getTyp());
@@ -53,7 +50,6 @@ public class FahrzeugDialog extends JDialog {
         this.kennzeichenField.setEnabled(false);
         
         initComponents();
-        setupWertCalculation();
     }
 
     private JFormattedTextField createKennzeichenField() {
@@ -75,19 +71,16 @@ public class FahrzeugDialog extends JDialog {
         }
     }
 
-    private JFormattedTextField createPreisField() {
+    private JFormattedTextField createWertField() {
         DecimalFormat format = (DecimalFormat) NumberFormat.getInstance(Locale.GERMANY);
         format.setMinimumFractionDigits(2);
         format.setMaximumFractionDigits(2);
-        
-        // Use DecimalFormat's built-in grouping settings
         format.setGroupingUsed(true);
         
         NumberFormatter formatter = new NumberFormatter(format) {
             @Override
             public Object stringToValue(String text) throws ParseException {
                 if (text.isEmpty()) return 0.0;
-                // Remove € symbol and trim
                 text = text.replace("€", "").trim();
                 return super.stringToValue(text);
             }
@@ -109,8 +102,6 @@ public class FahrzeugDialog extends JDialog {
         JFormattedTextField field = new JFormattedTextField(formatter);
         field.setValue(0.0);
         field.setColumns(12);
-        
-        field.addPropertyChangeListener("value", evt -> updateAktuellerWert());
         
         return field;
     }
@@ -154,32 +145,10 @@ public class FahrzeugDialog extends JDialog {
             DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.GERMANY);
             df.setMinimumFractionDigits(2);
             df.setMaximumFractionDigits(2);
-            aktuellerWertLabel.setText(df.format(wert) + " €");
+            wertField.setText(df.format(wert) + " €");
         } catch (Exception e) {
-            aktuellerWertLabel.setText("0,00 €");
+            wertField.setText("0,00 €");
         }
-    }
-
-    private void setupWertCalculation() {
-        preisField.addPropertyChangeListener("value", evt -> {
-            try {
-                double preis = getPreis();
-                double wert = "PKW".equals(getSelectedType()) ? preis * 0.9 : preis * 0.85;
-                aktuellerWertLabel.setText(String.format(Locale.GERMANY, "%.2f €", wert));
-            } catch (Exception e) {
-                aktuellerWertLabel.setText("0,00 €");
-            }
-        });
-
-        typComboBox.addActionListener(e -> {
-            try {
-                double preis = getPreis();
-                double wert = "PKW".equals(getSelectedType()) ? preis * 0.9 : preis * 0.85;
-                aktuellerWertLabel.setText(String.format(Locale.GERMANY, "%.2f €", wert));
-            } catch (Exception ex) {
-                aktuellerWertLabel.setText("0,00 €");
-            }
-        });
     }
 
     private void initComponents() {
@@ -213,17 +182,11 @@ public class FahrzeugDialog extends JDialog {
         gbc.gridx = 1;
         add(kennzeichenField, gbc);
 
-        // Preis
-        gbc.gridx = 0; gbc.gridy = 4;
-        add(new JLabel("Preis:"), gbc);
-        gbc.gridx = 1;
-        add(preisField, gbc);
-
         // Aktueller Wert
-        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.gridx = 0; gbc.gridy = 4;
         add(new JLabel("Aktueller Wert:"), gbc);
         gbc.gridx = 1;
-        add(aktuellerWertLabel, gbc);
+        add(wertField, gbc);
 
         // Buttons
         JPanel buttonPanel = new JPanel();
@@ -239,7 +202,7 @@ public class FahrzeugDialog extends JDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        gbc.gridx = 0; gbc.gridy = 6;
+        gbc.gridx = 0; gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         add(buttonPanel, gbc);
@@ -263,7 +226,7 @@ public class FahrzeugDialog extends JDialog {
             return false;
         }
         try {
-            Number preis = (Number) preisField.getValue();
+            Number preis = (Number) wertField.getValue();
             if (preis.doubleValue() <= 0) {
                 showError("Der Preis muss größer als 0 sein.");
                 return false;
@@ -303,7 +266,7 @@ public class FahrzeugDialog extends JDialog {
     }
 
     public double getPreis() {
-        Object value = preisField.getValue();
+        Object value = wertField.getValue();
         return (value instanceof Double) ? (Double) value : 0.0;
     }
 
