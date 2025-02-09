@@ -1,37 +1,37 @@
 package de.fuhrpark.service.impl;
 
 import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.service.base.FahrzeugService;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FahrzeugServiceImpl implements FahrzeugService {
-    private final Map<String, Fahrzeug> fahrzeuge = new HashMap<>();
+    private final DataStore dataStore;
 
-    @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
-        return new ArrayList<>(fahrzeuge.values());
-    }
-
-    @Override
-    public Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen) {
-        return fahrzeuge.get(kennzeichen);
+    public FahrzeugServiceImpl(DataStore dataStore) {
+        if (dataStore == null) {
+            throw new IllegalArgumentException("DataStore darf nicht null sein");
+        }
+        this.dataStore = dataStore;
     }
 
     @Override
     public void speichereFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+        dataStore.speichereFahrzeug(fahrzeug);
+    }
+
+    @Override
+    public Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen) {
+        return dataStore.findeFahrzeugNachKennzeichen(kennzeichen);
+    }
+
+    @Override
+    public List<Fahrzeug> getAlleFahrzeuge() {
+        return dataStore.getAlleFahrzeuge();
     }
 
     @Override
     public void loescheFahrzeug(String kennzeichen) {
-        fahrzeuge.remove(kennzeichen);
-    }
-
-    @Override
-    public void aktualisiereFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+        dataStore.loescheFahrzeug(kennzeichen);
     }
 } 
