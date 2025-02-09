@@ -42,8 +42,9 @@ public class FuhrparkManager {
         return fahrzeugService.getAlleFahrzeuge();
     }
 
-    public void addFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.speichereFahrzeug(fahrzeug);
+    public void addFahrzeug(FahrzeugTyp typ, String kennzeichen, String marke, String modell, double preis) {
+        Fahrzeug fahrzeug = fahrzeugFactory.createFahrzeug(typ, kennzeichen, marke, modell, preis);
+        fahrzeugService.addFahrzeug(fahrzeug);
     }
 
     /**
@@ -72,14 +73,14 @@ public class FuhrparkManager {
     }
 
     public void deleteFahrzeug(String kennzeichen) {
-        fahrzeugService.loescheFahrzeug(kennzeichen);
+        fahrzeugService.deleteFahrzeug(kennzeichen);
     }
 
-    public Fahrzeug findeFahrzeug(String kennzeichen) {
-        return fahrzeugService.findeFahrzeugNachKennzeichen(kennzeichen);
+    public Fahrzeug getFahrzeug(String kennzeichen) {
+        return fahrzeugService.getFahrzeug(kennzeichen);
     }
 
     public void updateFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeugService.aktualisiereFahrzeug(fahrzeug);
+        fahrzeugService.updateFahrzeug(fahrzeug);
     }
 }

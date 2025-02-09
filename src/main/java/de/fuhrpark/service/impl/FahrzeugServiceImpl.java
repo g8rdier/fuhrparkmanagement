@@ -16,19 +16,18 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     }
 
     @Override
-    public void speichereFahrzeug(Fahrzeug fahrzeug) {
-        dataStore.speichereFahrzeug(fahrzeug);
+    public void addFahrzeug(Fahrzeug fahrzeug) {
+        dataStore.addFahrzeug(fahrzeug);
     }
 
     @Override
-    public void aktualisiereFahrzeug(Fahrzeug fahrzeug) {
-        // Since we're using a map in DataStore, this is essentially the same operation
-        dataStore.speichereFahrzeug(fahrzeug);
+    public void updateFahrzeug(Fahrzeug fahrzeug) {
+        dataStore.updateFahrzeug(fahrzeug);
     }
 
     @Override
-    public Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen) {
-        return dataStore.findeFahrzeugNachKennzeichen(kennzeichen);
+    public Fahrzeug getFahrzeug(String kennzeichen) {
+        return dataStore.getFahrzeug(kennzeichen);
     }
 
     @Override
@@ -37,7 +36,7 @@ public class FahrzeugServiceImpl implements FahrzeugService {
     }
 
     @Override
-    public void loescheFahrzeug(String kennzeichen) {
-        dataStore.loescheFahrzeug(kennzeichen);
+    public void deleteFahrzeug(String kennzeichen) {
+        dataStore.deleteFahrzeug(kennzeichen);
     }
 } 

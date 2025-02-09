@@ -1,70 +1,42 @@
 package de.fuhrpark.persistence.repository.impl;
 
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.persistence.repository.DataStore;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.*;
-import java.nio.file.*;
 
 public class FileDataStore implements DataStore {
-    private final Map<String, Fahrzeug> fahrzeuge;
-    private final Map<String, List<FahrtenbuchEintrag>> fahrtenbuecher;
     private static final String DATA_FILE = "fuhrpark_data.ser";
+    private Map<String, Fahrzeug> fahrzeuge;
 
     public FileDataStore() {
         this.fahrzeuge = new HashMap<>();
-        this.fahrtenbuecher = new HashMap<>();
-    }
-
-    public void save() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream(DATA_FILE))) {
-            oos.writeObject(fahrzeuge);
-            oos.writeObject(fahrtenbuecher);
-        } catch (IOException e) {
-            System.err.println("Error saving data: " + e.getMessage());
-        }
-    }
-
-    public void load() {
-        if (!Files.exists(Paths.get(DATA_FILE))) {
-            return; // No file to load yet
-        }
-        
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(DATA_FILE))) {
-            @SuppressWarnings("unchecked")
-            Map<String, Fahrzeug> loadedFahrzeuge = 
-                (Map<String, Fahrzeug>) ois.readObject();
-            @SuppressWarnings("unchecked")
-            Map<String, List<FahrtenbuchEintrag>> loadedFahrtenbuecher = 
-                (Map<String, List<FahrtenbuchEintrag>>) ois.readObject();
-            
-            fahrzeuge.clear();
-            fahrzeuge.putAll(loadedFahrzeuge);
-            fahrtenbuecher.clear();
-            fahrtenbuecher.putAll(loadedFahrtenbuecher);
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error loading data: " + e.getMessage());
-        }
+        load();
     }
 
     @Override
-    public void speichereFahrzeug(Fahrzeug fahrzeug) {
+    public void addFahrzeug(Fahrzeug fahrzeug) {
         fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+        save();
     }
 
     @Override
-    public void aktualisiereFahrzeug(Fahrzeug fahrzeug) {
+    public void updateFahrzeug(Fahrzeug fahrzeug) {
         fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
+        save();
     }
 
     @Override
-    public Fahrzeug findeFahrzeugNachKennzeichen(String kennzeichen) {
+    public void deleteFahrzeug(String kennzeichen) {
+        fahrzeuge.remove(kennzeichen);
+        save();
+    }
+
+    @Override
+    public Fahrzeug getFahrzeug(String kennzeichen) {
         return fahrzeuge.get(kennzeichen);
     }
 
@@ -74,17 +46,29 @@ public class FileDataStore implements DataStore {
     }
 
     @Override
-    public void loescheFahrzeug(String kennzeichen) {
-        fahrzeuge.remove(kennzeichen);
+    public void save() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(DATA_FILE))) {
+            oos.writeObject(fahrzeuge);
+        } catch (IOException e) {
+            throw new RuntimeException("Fehler beim Speichern der Daten: " + e.getMessage(), e);
+        }
     }
 
     @Override
-    public List<FahrtenbuchEintrag> getFahrtenForFahrzeug(String kennzeichen) {
-        return fahrtenbuecher.getOrDefault(kennzeichen, new ArrayList<>());
-    }
+    @SuppressWarnings("unchecked")
+    public void load() {
+        File file = new File(DATA_FILE);
+        if (!file.exists()) {
+            this.fahrzeuge = new HashMap<>();
+            return;
+        }
 
-    @Override
-    public void addFahrtenbuchEintrag(String kennzeichen, FahrtenbuchEintrag eintrag) {
-        fahrtenbuecher.computeIfAbsent(kennzeichen, k -> new ArrayList<>()).add(eintrag);
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(DATA_FILE))) {
+            this.fahrzeuge = (Map<String, Fahrzeug>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Fehler beim Laden der Daten: " + e.getMessage(), e);
+        }
     }
 } 
