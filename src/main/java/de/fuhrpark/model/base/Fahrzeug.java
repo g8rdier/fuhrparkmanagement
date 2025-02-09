@@ -17,4 +17,6 @@ public interface Fahrzeug extends Serializable {
     double getPreis();
     void setPreis(double preis);
     double berechneAktuellenWert();
+    double getWert();
+    void setWert(double wert);
 }

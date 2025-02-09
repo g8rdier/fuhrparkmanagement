@@ -21,12 +21,10 @@ public class FahrzeugDialog extends JDialog {
     private final JFormattedTextField kennzeichenField;
     private final JFormattedTextField wertField;
     private boolean confirmed = false;
-    private final FuhrparkManager manager;
 
     // Constructor for new vehicle
     public FahrzeugDialog(JFrame owner) {
         super(owner, "Fahrzeug hinzufügen", true);
-        this.manager = null;
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
@@ -38,7 +36,6 @@ public class FahrzeugDialog extends JDialog {
     // Constructor for editing existing vehicle
     public FahrzeugDialog(JFrame owner, Fahrzeug fahrzeug) {
         super(owner, "Fahrzeug bearbeiten", true);
-        this.manager = null;
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
