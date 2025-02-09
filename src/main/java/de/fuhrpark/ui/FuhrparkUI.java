@@ -5,6 +5,7 @@ import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.ui.dialog.FahrzeugDialog;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class FuhrparkUI extends JFrame {
@@ -13,37 +14,113 @@ public class FuhrparkUI extends JFrame {
     private final FahrzeugTableModel tableModel;
 
     public FuhrparkUI(FahrzeugFactory fahrzeugFactory) {
-        super("Fuhrpark Verwaltung");
+        super("Fuhrpark Manager");
+        
+        // Set modern look and feel
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         this.fahrzeugFactory = fahrzeugFactory;
         this.tableModel = new FahrzeugTableModel();
-        this.fahrzeugTable = new JTable(tableModel);
+        this.fahrzeugTable = createTable();
+        
         initComponents();
+        setupFrame();
+    }
+
+    private JTable createTable() {
+        JTable table = new JTable(tableModel);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setRowHeight(25);  // Larger rows
+        table.getTableHeader().setReorderingAllowed(false);
+        table.setShowGrid(false);  // Modern look without grid
+        table.setIntercellSpacing(new Dimension(0, 0));
+        
+        // Alternate row colors
+        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column);
+                
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(245, 245, 250));
+                }
+                
+                return c;
+            }
+        });
+        
+        return table;
     }
 
     private void initComponents() {
-        setLayout(new BorderLayout());
-
-        // Create toolbar with buttons
+        setLayout(new BorderLayout(10, 10));  // Add spacing
+        
+        // Create modern toolbar
         JToolBar toolbar = new JToolBar();
-        JButton addButton = new JButton("Fahrzeug hinzufügen");
-        JButton editButton = new JButton("Fahrzeug bearbeiten");
-        JButton deleteButton = new JButton("Fahrzeug löschen");
+        toolbar.setFloatable(false);
+        toolbar.setBorder(new EmptyBorder(5, 5, 5, 5));
+        toolbar.setBackground(new Color(240, 240, 240));
+
+        // Create modern buttons
+        JButton addButton = createStyledButton("Fahrzeug hinzufügen", "➕");
+        JButton editButton = createStyledButton("Fahrzeug bearbeiten", "✎");
+        JButton deleteButton = createStyledButton("Fahrzeug löschen", "🗑");
         
         addButton.addActionListener(e -> addFahrzeug());
         editButton.addActionListener(e -> editFahrzeug());
         deleteButton.addActionListener(e -> deleteFahrzeug());
         
+        toolbar.add(Box.createHorizontalStrut(5));
         toolbar.add(addButton);
+        toolbar.add(Box.createHorizontalStrut(5));
         toolbar.add(editButton);
+        toolbar.add(Box.createHorizontalStrut(5));
         toolbar.add(deleteButton);
+        
         add(toolbar, BorderLayout.NORTH);
 
-        // Add table in a scroll pane
+        // Add table in a scroll pane with modern styling
         JScrollPane scrollPane = new JScrollPane(fahrzeugTable);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        scrollPane.getViewport().setBackground(Color.WHITE);
         add(scrollPane, BorderLayout.CENTER);
+    }
 
-        // Set preferred size
-        setPreferredSize(new Dimension(800, 600));
+    private JButton createStyledButton(String text, String icon) {
+        JButton button = new JButton(icon + " " + text);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1, true),
+            BorderFactory.createEmptyBorder(8, 15, 8, 15)
+        ));
+        button.setBackground(new Color(250, 250, 250));
+        
+        // Hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(240, 240, 240));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(250, 250, 250));
+            }
+        });
+        
+        return button;
+    }
+
+    private void setupFrame() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(900, 600));
+        pack();
+        setLocationRelativeTo(null);
+        setMinimumSize(new Dimension(600, 400));
     }
 
     private void addFahrzeug() {
