@@ -6,6 +6,7 @@ import de.fuhrpark.ui.dialog.FahrzeugDialog;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 public class FuhrparkUI extends JFrame {
@@ -39,21 +40,26 @@ public class FuhrparkUI extends JFrame {
         table.setShowGrid(false);  // Modern look without grid
         table.setIntercellSpacing(new Dimension(0, 0));
         
-        // Alternate row colors
-        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+        // Fix the cell renderer implementation
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
                     boolean isSelected, boolean hasFocus, int row, int column) {
-                Component c = super.getTableCellRendererComponent(
+                JLabel label = (JLabel) super.getTableCellRendererComponent(
                     table, value, isSelected, hasFocus, row, column);
                 
                 if (!isSelected) {
-                    c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(245, 245, 250));
+                    label.setBackground(row % 2 == 0 ? Color.WHITE : new Color(245, 245, 250));
                 }
                 
-                return c;
+                return label;
             }
-        });
+        };
+        
+        // Apply the renderer to all columns
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(renderer);
+        }
         
         return table;
     }
