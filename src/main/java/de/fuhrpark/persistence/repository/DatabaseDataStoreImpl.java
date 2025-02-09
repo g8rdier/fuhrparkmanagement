@@ -5,7 +5,6 @@ import de.fuhrpark.model.impl.PKW;
 import de.fuhrpark.model.impl.LKW;
 import de.fuhrpark.model.FahrtenbuchEintrag;
 import de.fuhrpark.model.enums.FahrzeugTyp;
-import de.fuhrpark.persistence.repository.DataStore;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

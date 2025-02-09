@@ -11,7 +11,7 @@ public class FahrzeugEditDialog extends JDialog {
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
 
-    public FahrzeugEditDialog(JFrame parent, Fahrzeug fahrzeug) {
+    public FahrzeugEditDialog(Frame parent, Fahrzeug fahrzeug) {
         super(parent, "Fahrzeug bearbeiten", true);
         this.fahrzeug = fahrzeug;
         
@@ -19,6 +19,7 @@ public class FahrzeugEditDialog extends JDialog {
         modellField = new JTextField(20);
         preisField = new JTextField(20);
 
+        setLayout(new BorderLayout(10, 10));
         initComponents();
         loadFahrzeugData();
     }
@@ -30,21 +31,19 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private void initComponents() {
-        setLayout(new BorderLayout(10, 10));
-        
-        JPanel inputPanel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
-
+        gbc.anchor = GridBagConstraints.WEST;
+        
         // Read-only fields
-        addFormField(inputPanel, "Kennzeichen:", new JLabel(fahrzeug.getKennzeichen()), gbc, 0);
-        addFormField(inputPanel, "Typ:", new JLabel(fahrzeug.getClass().getSimpleName()), gbc, 1);
+        addFormField(panel, "Kennzeichen:", new JLabel(fahrzeug.getKennzeichen()), gbc, 0);
+        addFormField(panel, "Typ:", new JLabel(fahrzeug.getClass().getSimpleName()), gbc, 1);
         
         // Editable fields
-        addFormField(inputPanel, "Marke: *", markeField, gbc, 2);
-        addFormField(inputPanel, "Modell:", modellField, gbc, 3);
-        addFormField(inputPanel, "Preis (€): *", preisField, gbc, 4);
+        addFormField(panel, "Marke: *", markeField, gbc, 2);
+        addFormField(panel, "Modell:", modellField, gbc, 3);
+        addFormField(panel, "Preis (€): *", preisField, gbc, 4);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -62,7 +61,7 @@ public class FahrzeugEditDialog extends JDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        add(inputPanel, BorderLayout.CENTER);
+        add(panel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
