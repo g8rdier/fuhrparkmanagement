@@ -1,9 +1,9 @@
 package de.fuhrpark.ui;
 
 import de.fuhrpark.manager.FuhrparkManager;
-import de.fuhrpark.model.PKW;
-import de.fuhrpark.model.LKW;
-import de.fuhrpark.model.base.Fahrzeug;
+import de.fuhrpark.model.fahrzeug.PKW;
+import de.fuhrpark.model.fahrzeug.LKW;
+import de.fuhrpark.model.fahrzeug.Fahrzeug;
 import de.fuhrpark.persistence.repository.impl.FileDataStore;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.service.base.FahrzeugService;
@@ -125,7 +125,7 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void addFahrzeug() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this);
+        FahrzeugDialog dialog = new FahrzeugDialog((JFrame) SwingUtilities.getWindowAncestor(this));
         dialog.setVisible(true);
 
         if (dialog.isConfirmed()) {
@@ -137,18 +137,16 @@ public class FuhrparkUI extends JFrame {
                 String kennzeichen = dialog.getKennzeichen();
                 double wert = dialog.getWert();
 
-                // Create the appropriate vehicle type with proper class references
+                // Create the appropriate vehicle type
                 if ("PKW".equals(typ)) {
                     fahrzeug = new PKW(kennzeichen, marke, modell, wert);
                 } else {
                     fahrzeug = new LKW(kennzeichen, marke, modell, wert);
                 }
 
-                // Add to model and update table
                 tableModel.addFahrzeug(fahrzeug);
                 tableModel.fireTableDataChanged();
                 
-                // Optional: Select the newly added vehicle
                 int newRow = tableModel.getRowCount() - 1;
                 if (newRow >= 0) {
                     fahrzeugTable.setRowSelectionInterval(newRow, newRow);
