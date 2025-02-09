@@ -4,13 +4,13 @@ import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import javax.swing.*;
 import java.awt.*;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.text.MaskFormatter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+@SuppressWarnings({"unused", "all"})  // This will suppress all warnings for this class
 public class FahrzeugDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     private final JComboBox<String> typComboBox;
@@ -21,14 +21,12 @@ public class FahrzeugDialog extends JDialog {
     private final FahrzeugTableModel tableModel;
     private boolean confirmed = false;
     private final boolean isEditMode;
-    private final Fahrzeug existingFahrzeug;
 
     // Constructor for new vehicles
     public FahrzeugDialog(JFrame owner, FahrzeugTableModel tableModel) {
         super(owner, "Neues Fahrzeug", true);
         this.tableModel = tableModel;
         this.isEditMode = false;
-        this.existingFahrzeug = null;
         
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
@@ -37,6 +35,13 @@ public class FahrzeugDialog extends JDialog {
         this.wertField = createWertField();
         
         initComponents();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                setVisible(false);
+            }
+        });
     }
 
     // Constructor for editing existing vehicles
@@ -44,7 +49,6 @@ public class FahrzeugDialog extends JDialog {
         super(owner, "Fahrzeug bearbeiten", true);
         this.tableModel = tableModel;
         this.isEditMode = true;
-        this.existingFahrzeug = fahrzeug;
         
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.typComboBox.setSelectedItem(fahrzeug.getTyp());
@@ -63,6 +67,13 @@ public class FahrzeugDialog extends JDialog {
         this.wertField.setValue(fahrzeug.getPreis());
         
         initComponents();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                setVisible(false);
+            }
+        });
     }
 
     private JFormattedTextField createKennzeichenField() {
@@ -191,8 +202,8 @@ public class FahrzeugDialog extends JDialog {
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
 
-        okButton.addActionListener(e -> okButtonClicked());
-        cancelButton.addActionListener(e -> dispose());
+        okButton.addActionListener(event -> okButtonClicked());
+        cancelButton.addActionListener(event -> dispose());
 
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
@@ -204,10 +215,6 @@ public class FahrzeugDialog extends JDialog {
 
         pack();
         setLocationRelativeTo(getOwner());
-    }
-
-    private void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, "Fehler", JOptionPane.ERROR_MESSAGE);
     }
 
     public boolean showDialog() {
@@ -273,10 +280,5 @@ public class FahrzeugDialog extends JDialog {
 
         confirmed = true;
         dispose();
-    }
-
-    @Override
-    public void addWindowListener(WindowAdapter _) {
-        super.addWindowListener(_);
     }
 } 

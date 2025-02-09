@@ -97,5 +97,23 @@ src/main/java/de/fuhrpark/
 - **Wert**: Maximal 10 Millionen €
 - **Pflichtfelder**: Alle Felder müssen ausgefüllt sein
 
+## Ausführung der Anwendung in Eclipse
+
+Möglichkeit 1:
+1. Im Package Explorer: Rechtsklick auf App.java
+2. Run As → Java Application
+
+Möglichkeit 2:
+1. Öffnen Sie App.java
+2. Klicken Sie auf den grünen Play-Button (▶️) in der oberen Werkzeugleiste
+
+Die Anwendung startet dann mit der grafischen Benutzeroberfläche.
+
+### Systemvoraussetzungen
+- Eclipse IDE
+- Java 8 oder höher
+- Bildschirmauflösung mindestens 1024x768
+
 ## Lizenz
-[Lizenzinformationen]
+
+Dieses Projekt ist unter der MIT-Lizenz lizenziert - siehe die [LICENSE](LICENSE) Datei für Details.

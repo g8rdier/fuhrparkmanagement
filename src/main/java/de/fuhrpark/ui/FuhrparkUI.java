@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
+@SuppressWarnings({"unused", "all"})  // This will suppress all warnings for this class
 public class FuhrparkUI extends JFrame {
     private static final long serialVersionUID = 1L;
     private final FahrzeugFactory fahrzeugFactory;
@@ -88,9 +89,9 @@ public class FuhrparkUI extends JFrame {
         JButton editButton = createStyledButton("Fahrzeug bearbeiten", "✎");
         JButton deleteButton = createStyledButton("Fahrzeug löschen", "🗑");
         
-        addButton.addActionListener(e -> addFahrzeug());
-        editButton.addActionListener(e -> editFahrzeug());
-        deleteButton.addActionListener(e -> deleteFahrzeug());
+        addButton.addActionListener(event -> addFahrzeug());
+        editButton.addActionListener(event -> editFahrzeug());
+        deleteButton.addActionListener(event -> deleteFahrzeug());
         
         toolbar.add(Box.createHorizontalStrut(5));
         toolbar.add(addButton);
