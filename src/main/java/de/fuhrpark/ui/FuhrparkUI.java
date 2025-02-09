@@ -9,6 +9,7 @@ import de.fuhrpark.service.base.FahrtenbuchService;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
 import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.service.impl.FahrtenbuchServiceImpl;
+import de.fuhrpark.persistence.repository.DataStore;
 import de.fuhrpark.manager.FuhrparkManager;
 import de.fuhrpark.ui.model.FahrzeugTableModel;
 import de.fuhrpark.ui.dialog.FahrzeugDialog;
@@ -24,33 +25,30 @@ import java.util.List;
 public class FuhrparkUI extends JFrame {
     private final FuhrparkManager manager;
     private final FahrzeugService fahrzeugService;
-    private final FahrzeugFactory fahrzeugFactory;
     private final FahrtenbuchService fahrtenbuchService;
     private final FahrzeugTableModel tableModel;
+    private final JTable fahrzeugTable;
     
     // UI Components
-    private final JTable fahrzeugTable;
     private final JComboBox<FahrzeugTyp> fahrzeugTypComboBox;
     private final JTextField kennzeichenField;
     private final JTextField markeField;
     private final JTextField modellField;
     private final JTextField preisField;
 
-    public FuhrparkUI(FuhrparkManager manager, FahrzeugService fahrzeugService, 
-                     FahrtenbuchService fahrtenbuchService) {
+    public FuhrparkUI(FuhrparkManager manager, FahrzeugService fahrzeugService) {
         super("Fuhrpark Verwaltung");
         this.manager = manager;
         this.fahrzeugService = fahrzeugService;
-        this.fahrzeugFactory = new FahrzeugFactoryImpl();
-        this.fahrtenbuchService = fahrtenbuchService;
+        this.fahrtenbuchService = new FahrtenbuchServiceImpl(manager.getDataStore());
         this.tableModel = new FahrzeugTableModel();
+        this.fahrzeugTable = new JTable(tableModel);
         
         // Setup UI
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         
         // Initialize components
-        fahrzeugTable = new JTable(tableModel);
         fahrzeugTypComboBox = new JComboBox<>(FahrzeugTyp.values());
         kennzeichenField = new JTextField(10);
         markeField = new JTextField(10);
@@ -111,17 +109,16 @@ public class FuhrparkUI extends JFrame {
     }
 
     private void refreshTable() {
-        List<Fahrzeug> fahrzeuge = fahrzeugService.getAlleFahrzeuge();
-        tableModel.setData(fahrzeuge);
+        tableModel.setFahrzeuge(manager.getAlleFahrzeuge());
     }
 
     private void addNewFahrzeug() {
-        FahrzeugDialog dialog = new FahrzeugDialog(this, manager.getFahrzeugFactory());
+        FahrzeugDialog dialog = new FahrzeugDialog(this, manager);
         dialog.setVisible(true);
         
         Fahrzeug fahrzeug = dialog.getResult();
         if (fahrzeug != null) {
-            manager.speichereFahrzeug(fahrzeug);
+            manager.addFahrzeug(fahrzeug);
             refreshTable();
         }
     }
@@ -238,19 +235,14 @@ public class FuhrparkUI extends JFrame {
         fahrtenbuchService.addFahrt(kennzeichen, eintrag);
     }
 
-    private void initFahrtenbuchService() {
-        this.fahrtenbuchService = new FahrtenbuchServiceImpl(manager.getDataStore());
-    }
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
                 // Create components with proper error handling
                 FahrzeugService service = new FahrzeugServiceImpl();
-                FahrtenbuchService fahrtenbuchService = new FahrtenbuchServiceImpl();
                 FuhrparkManager manager = new FuhrparkManager(service, new FahrzeugFactoryImpl());
                 
-                new FuhrparkUI(manager, service, fahrtenbuchService).setVisible(true);
+                new FuhrparkUI(manager, service).setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, 

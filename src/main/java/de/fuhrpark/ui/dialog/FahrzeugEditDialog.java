@@ -11,8 +11,8 @@ public class FahrzeugEditDialog extends JDialog {
     private boolean confirmed = false;
     private final Fahrzeug fahrzeug;
 
-    public FahrzeugEditDialog(JFrame owner, Fahrzeug fahrzeug) {
-        super(owner, "Fahrzeug bearbeiten", true);
+    public FahrzeugEditDialog(Window owner, Fahrzeug fahrzeug) {
+        super(owner, "Fahrzeug bearbeiten", ModalityType.APPLICATION_MODAL);
         this.fahrzeug = fahrzeug;
         
         markeField = new JTextField(20);
