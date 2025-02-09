@@ -6,16 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FahrzeugTableModel extends AbstractTableModel {
-    private List<Fahrzeug> fahrzeuge = new ArrayList<>();
     private final String[] columnNames = {"Typ", "Kennzeichen", "Marke", "Modell", "Preis"};
+    private List<Fahrzeug> fahrzeuge = new ArrayList<>();
 
-    public void setData(List<Fahrzeug> fahrzeuge) {
+    public void setFahrzeuge(List<Fahrzeug> fahrzeuge) {
         this.fahrzeuge = new ArrayList<>(fahrzeuge);
         fireTableDataChanged();
-    }
-
-    public Fahrzeug getRow(int rowIndex) {
-        return fahrzeuge.get(rowIndex);
     }
 
     @Override
@@ -37,7 +33,7 @@ public class FahrzeugTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         Fahrzeug fahrzeug = fahrzeuge.get(rowIndex);
         return switch (columnIndex) {
-            case 0 -> fahrzeug.getTyp();
+            case 0 -> fahrzeug.getClass().getSimpleName();
             case 1 -> fahrzeug.getKennzeichen();
             case 2 -> fahrzeug.getMarke();
             case 3 -> fahrzeug.getModell();
@@ -81,6 +77,6 @@ public class FahrzeugTableModel extends AbstractTableModel {
     }
 
     public void updateFahrzeuge(List<Fahrzeug> fahrzeuge) {
-        setData(fahrzeuge);
+        setFahrzeuge(fahrzeuge);
     }
 } 
