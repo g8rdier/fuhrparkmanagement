@@ -61,14 +61,16 @@ public class FahrzeugDialog extends JDialog {
 
     private JFormattedTextField createKennzeichenField() {
         try {
-            MaskFormatter formatter = new MaskFormatter("UUU-UU####");
+            // Change from UUU-UU#### to LLLLLL#### where L allows letters only
+            MaskFormatter formatter = new MaskFormatter("LLL-LL####");
             formatter.setPlaceholderCharacter('_');
-            formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+            
+            // Separate valid characters for letters and numbers
+            formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
             
             final JFormattedTextField field = new JFormattedTextField(formatter);
             field.setColumns(10);
             
-            // Add focus listener to validate minimum requirements
             field.addFocusListener(new java.awt.event.FocusAdapter() {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent evt) {
