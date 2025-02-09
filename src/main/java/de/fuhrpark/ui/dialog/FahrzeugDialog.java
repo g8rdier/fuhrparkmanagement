@@ -6,12 +6,13 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Locale;
+import javax.swing.text.MaskFormatter;
 
 public class FahrzeugDialog extends JDialog {
     private final JComboBox<String> typComboBox;
     private final JTextField markeField;
     private final JTextField modellField;
-    private final JTextField kennzeichenField;
+    private final JFormattedTextField kennzeichenField;
     private final JFormattedTextField preisField;
     private final JLabel aktuellerWertLabel;
     private boolean confirmed = false;
@@ -29,6 +30,7 @@ public class FahrzeugDialog extends JDialog {
         this.aktuellerWertLabel = new JLabel("0,00 €");
         
         initComponents();
+        setupListeners();
     }
 
     // Constructor for editing existing vehicle
@@ -52,53 +54,21 @@ public class FahrzeugDialog extends JDialog {
         setupWertCalculation();
     }
 
-    private JTextField createKennzeichenField() {
-        JTextField field = new JTextField(10);
-        field.setDocument(new PlainDocument() {
-            @Override
-            public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
-                if (str == null) return;
-
-                String text = getText(0, getLength());
-                String newText = text.substring(0, offset) + str + text.substring(offset);
-                
-                if (isValidKennzeichenInput(newText)) {
-                    // Format while typing
-                    if (offset == 3 && !newText.contains("-")) {
-                        super.insertString(offset, "-", attr);
-                        offset++;
-                    }
-                    super.insertString(offset, str.toUpperCase(), attr);
-                }
-            }
-
-            private boolean isValidKennzeichenInput(String input) {
-                // Remove the hyphen for validation
-                String normalized = input.replace("-", "");
-                
-                // Max length check (3 letters + 2 letters + 4 numbers = 9, plus 1 for hyphen = 10)
-                if (normalized.length() > 9) return false;
-
-                // Split into parts
-                String firstPart = normalized.substring(0, Math.min(3, normalized.length()));
-                String secondPart = normalized.length() > 3 ? 
-                    normalized.substring(3, Math.min(5, normalized.length())) : "";
-                String numberPart = normalized.length() > 5 ? normalized.substring(5) : "";
-
-                // Validate first part (1-3 letters)
-                if (!firstPart.isEmpty() && !firstPart.matches("[A-Z]{1,3}")) return false;
-
-                // Validate second part (1-2 letters)
-                if (!secondPart.isEmpty() && !secondPart.matches("[A-Z]{1,2}")) return false;
-
-                // Validate number part (1-4 numbers)
-                if (!numberPart.isEmpty() && !numberPart.matches("[0-9]{1,4}")) return false;
-
-                return true;
-            }
-        });
-
-        return field;
+    private JFormattedTextField createKennzeichenField() {
+        try {
+            // Format: XXX-XX9999 where X is letter and 9 is number
+            MaskFormatter formatter = new MaskFormatter("UUU-UU####");
+            formatter.setPlaceholderCharacter('_');
+            formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+            
+            final JFormattedTextField field = new JFormattedTextField(formatter);
+            field.setColumns(10);
+            
+            return field;
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+            return new JFormattedTextField();
+        }
     }
 
     private JFormattedTextField createPreisField() {
@@ -111,6 +81,40 @@ public class FahrzeugDialog extends JDialog {
         JFormattedTextField field = new JFormattedTextField(formatter);
         field.setValue(0.0);
         return field;
+    }
+
+    private void setupListeners() {
+        // Add validation listener for kennzeichen
+        kennzeichenField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                validateKennzeichen();
+            }
+        });
+
+        // Add listener for typ to update aktueller wert
+        typComboBox.addActionListener(e -> updateAktuellerWert());
+    }
+
+    private void validateKennzeichen() {
+        String value = kennzeichenField.getText();
+        String firstPart = value.substring(0, 3);
+        String secondPart = value.substring(4, 6);
+        String numberPart = value.substring(6);
+        
+        boolean isValid = !firstPart.replace("_", "").isEmpty() && 
+                         !secondPart.replace("_", "").isEmpty() && 
+                         !numberPart.replace("_", "").isEmpty();
+        
+        kennzeichenField.setBorder(isValid 
+            ? UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border")
+            : BorderFactory.createLineBorder(Color.RED));
+    }
+
+    private void updateAktuellerWert() {
+        String typ = (String) typComboBox.getSelectedItem();
+        double faktor = "PKW".equals(typ) ? 0.9 : 0.85;
+        aktuellerWertLabel.setText(String.format("%.2f €", 0.0 * faktor));
     }
 
     private void setupWertCalculation() {
@@ -245,7 +249,8 @@ public class FahrzeugDialog extends JDialog {
     }
 
     public String getKennzeichen() {
-        return kennzeichenField.getText().replace("_", "").trim();
+        String raw = kennzeichenField.getText();
+        return raw.replace("_", "").trim();
     }
 
     public double getPreis() {
