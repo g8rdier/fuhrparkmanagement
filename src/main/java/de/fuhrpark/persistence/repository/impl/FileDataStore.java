@@ -18,13 +18,15 @@ public class FileDataStore implements DataStore {
     }
 
     @Override
-    public void save() {
+    public void save() throws Exception {
         // TODO: Implement actual file saving
+        // For now, just a stub implementation
     }
 
     @Override
-    public void load() {
+    public void load() throws Exception {
         // TODO: Implement actual file loading
+        // For now, just a stub implementation
     }
 
     @Override
