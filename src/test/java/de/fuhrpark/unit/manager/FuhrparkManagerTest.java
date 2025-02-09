@@ -84,16 +84,16 @@ public class FuhrparkManagerTest {
     @Test
     public void testGetFahrzeug() {
         // Arrange
-        String kennzeichen = "B-TEST 123";
-        PKW expectedPKW = new PKW(kennzeichen, "Test", "Test", 10000.0);
-        when(fahrzeugService.getFahrzeug(kennzeichen)).thenReturn(expectedPKW);
+        String kennzeichen = "B-AB123";
+        Fahrzeug expectedFahrzeug = mock(Fahrzeug.class);
+        when(fahrzeugService.getFahrzeug(kennzeichen)).thenReturn(expectedFahrzeug);
 
         // Act
         Fahrzeug result = manager.getFahrzeug(kennzeichen);
 
         // Assert
         assertNotNull(result);
-        assertEquals(kennzeichen, result.getKennzeichen());
+        assertEquals(expectedFahrzeug, result);
         verify(fahrzeugService).getFahrzeug(kennzeichen);
     }
 }

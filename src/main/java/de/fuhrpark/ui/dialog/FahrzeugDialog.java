@@ -24,15 +24,9 @@ public class FahrzeugDialog extends JDialog {
         super(owner, "Fahrzeug hinzufügen", true);
         this.manager = manager;
         
-        try {
-            this.kennzeichenField = new JTextField(12);
-            kennzeichenField.setDocument(new KennzeichenFormatter());
-        } catch (Exception e) {
-            throw new RuntimeException("Could not initialize KennzeichenFormatter", e);
-        }
-        
-        // Initialize all fields first
+        // Initialize components
         this.typComboBox = new JComboBox<>(FahrzeugTyp.values());
+        this.kennzeichenField = new JFormattedTextField(new KennzeichenFormatter());
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
         this.preisField = new JTextField(20);

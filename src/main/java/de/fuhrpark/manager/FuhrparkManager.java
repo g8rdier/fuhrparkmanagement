@@ -35,5 +35,9 @@ public class FuhrparkManager {
     public void deleteFahrzeug(String kennzeichen) {
         fahrzeugService.deleteFahrzeug(kennzeichen);
     }
+
+    public Fahrzeug getFahrzeug(String kennzeichen) {
+        return fahrzeugService.getFahrzeug(kennzeichen);
+    }
 }
 
