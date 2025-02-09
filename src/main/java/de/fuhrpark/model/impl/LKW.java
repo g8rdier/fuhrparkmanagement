@@ -1,7 +1,6 @@
 package de.fuhrpark.model.impl;
 
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.enums.FahrzeugTyp;
 
 /**
  * Repräsentiert einen LKW im Fuhrpark.
@@ -15,16 +14,11 @@ public class LKW extends Fahrzeug {
     /**
      * Konstruktor für einen LKW
      */
-    public LKW(String kennzeichen, String marke, String modell, double wert) {
-        super(kennzeichen, marke, modell, wert);
+    public LKW(String kennzeichen, String marke, String modell, double preis) {
+        super(kennzeichen, marke, modell, preis, "LKW");
         this.ladekapazitaet = 40.0; // Default value in tons
         this.hatAnhaengerkupplung = true;
-        this.wert = wert;
-    }
-
-    @Override
-    public String getTyp() {
-        return "LKW";
+        this.wert = preis;
     }
 
     public double getLadekapazitaet() { return ladekapazitaet; }
@@ -32,16 +26,16 @@ public class LKW extends Fahrzeug {
 
     @Override
     public double berechneAktuellenWert() {
-        return getWert() * 0.85;
+        return getPreis() * 0.85;
     }
 
     @Override
-    public double getWert() {
+    public double getPreis() {
         return wert;
     }
 
     @Override
-    public void setWert(double wert) {
-        this.wert = wert;
+    public void setPreis(double preis) {
+        this.wert = preis;
     }
 } 

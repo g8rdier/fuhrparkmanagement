@@ -2,9 +2,9 @@
 package de.fuhrpark.manager;
 
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.enums.FahrzeugTyp;
-import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.service.base.FahrzeugService;
+import de.fuhrpark.model.impl.PKW;
+import de.fuhrpark.model.impl.LKW;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,32 +12,37 @@ import java.util.List;
  * Implementiert Dependency Injection für Services.
  */
 public class FuhrparkManager {
-    private final FahrzeugService fahrzeugService;
-    private final FahrzeugFactory fahrzeugFactory;
+    private final List<Fahrzeug> fahrzeuge;
 
-    /**
-     * Konstruktor mit Dependency Injection
-     */
-    public FuhrparkManager(FahrzeugService fahrzeugService, FahrzeugFactory fahrzeugFactory) {
-        this.fahrzeugService = fahrzeugService;
-        this.fahrzeugFactory = fahrzeugFactory;
+    public FuhrparkManager() {
+        this.fahrzeuge = new ArrayList<>();
     }
 
-    public void addFahrzeug(FahrzeugTyp typ, String kennzeichen, String marke, String modell, double preis) {
-        Fahrzeug fahrzeug = fahrzeugFactory.createFahrzeug(typ, kennzeichen, marke, modell, preis);
-        fahrzeugService.addFahrzeug(fahrzeug);
+    public void addFahrzeug(Fahrzeug fahrzeug) {
+        fahrzeuge.add(fahrzeug);
     }
 
     public List<Fahrzeug> getAlleFahrzeuge() {
-        return fahrzeugService.getAlleFahrzeuge();
+        return new ArrayList<>(fahrzeuge);
+    }
+
+    public Fahrzeug createFahrzeug(String typ, String kennzeichen, String marke, String modell, double preis) {
+        return switch (typ) {
+            case "PKW" -> new PKW(kennzeichen, marke, modell, preis);
+            case "LKW" -> new LKW(kennzeichen, marke, modell, preis);
+            default -> throw new IllegalArgumentException("Unbekannter Fahrzeugtyp: " + typ);
+        };
     }
 
     public void deleteFahrzeug(String kennzeichen) {
-        fahrzeugService.deleteFahrzeug(kennzeichen);
+        fahrzeuge.removeIf(fahrzeug -> fahrzeug.getKennzeichen().equals(kennzeichen));
     }
 
     public Fahrzeug getFahrzeug(String kennzeichen) {
-        return fahrzeugService.getFahrzeug(kennzeichen);
+        return fahrzeuge.stream()
+                .filter(fahrzeug -> fahrzeug.getKennzeichen().equals(kennzeichen))
+                .findFirst()
+                .orElse(null);
     }
 }
 

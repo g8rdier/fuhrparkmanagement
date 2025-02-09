@@ -85,11 +85,11 @@ public class FuhrparkUI extends JFrame {
                 String marke = dialog.getMarke();
                 String modell = dialog.getModell();
                 String kennzeichen = dialog.getKennzeichen();
-                double wert = dialog.getWert();
+                double preis = dialog.getPreis();
 
                 fahrzeug = "PKW".equals(typ) 
-                    ? new PKW(kennzeichen, marke, modell, wert)
-                    : new LKW(kennzeichen, marke, modell, wert);
+                    ? new PKW(kennzeichen, marke, modell, preis)
+                    : new LKW(kennzeichen, marke, modell, preis);
 
                 tableModel.addFahrzeug(fahrzeug);
                 tableModel.fireTableDataChanged();
