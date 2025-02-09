@@ -7,24 +7,50 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.io.*;
+import java.nio.file.*;
 
 public class FileDataStore implements DataStore {
     private final Map<String, Fahrzeug> fahrzeuge;
     private final Map<String, List<FahrtenbuchEintrag>> fahrtenbuecher;
+    private static final String DATA_FILE = "fuhrpark_data.ser";
 
     public FileDataStore() {
         this.fahrzeuge = new HashMap<>();
         this.fahrtenbuecher = new HashMap<>();
     }
 
-    @Override
     public void save() {
-        // TODO: Implement actual file saving
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(DATA_FILE))) {
+            oos.writeObject(fahrzeuge);
+            oos.writeObject(fahrtenbuecher);
+        } catch (IOException e) {
+            System.err.println("Error saving data: " + e.getMessage());
+        }
     }
 
-    @Override
     public void load() {
-        // TODO: Implement actual file loading
+        if (!Files.exists(Paths.get(DATA_FILE))) {
+            return; // No file to load yet
+        }
+        
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(DATA_FILE))) {
+            @SuppressWarnings("unchecked")
+            Map<String, Fahrzeug> loadedFahrzeuge = 
+                (Map<String, Fahrzeug>) ois.readObject();
+            @SuppressWarnings("unchecked")
+            Map<String, List<FahrtenbuchEintrag>> loadedFahrtenbuecher = 
+                (Map<String, List<FahrtenbuchEintrag>>) ois.readObject();
+            
+            fahrzeuge.clear();
+            fahrzeuge.putAll(loadedFahrzeuge);
+            fahrtenbuecher.clear();
+            fahrtenbuecher.putAll(loadedFahrtenbuecher);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error loading data: " + e.getMessage());
+        }
     }
 
     @Override
