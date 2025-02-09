@@ -5,7 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class FahrzeugEditDialog extends JDialog {
-    private final JTextField kennzeichenField;
+    private final JLabel kennzeichenLabel;
     private final JLabel markeLabel;
     private final JLabel modellLabel;
     private final JLabel typLabel;
@@ -18,7 +18,7 @@ public class FahrzeugEditDialog extends JDialog {
         this.fahrzeug = fahrzeug;
         
         // Initialize components
-        this.kennzeichenField = new JTextField(20);
+        this.kennzeichenLabel = new JLabel();
         this.markeLabel = new JLabel();
         this.modellLabel = new JLabel();
         this.typLabel = new JLabel();
@@ -30,7 +30,7 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private void loadFahrzeugData() {
-        kennzeichenField.setText(fahrzeug.getKennzeichen());
+        kennzeichenLabel.setText(fahrzeug.getKennzeichen());
         markeLabel.setText(fahrzeug.getMarke());
         modellLabel.setText(fahrzeug.getModell());
         typLabel.setText(fahrzeug.getClass().getSimpleName());
@@ -44,7 +44,7 @@ public class FahrzeugEditDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
         
         // Add components in order
-        addFormField(panel, "Kennzeichen:", kennzeichenField, gbc, 0);
+        addFormField(panel, "Kennzeichen:", kennzeichenLabel, gbc, 0);
         addFormField(panel, "Typ:", typLabel, gbc, 1);
         addFormField(panel, "Marke:", markeLabel, gbc, 2);
         addFormField(panel, "Modell:", modellLabel, gbc, 3);
@@ -93,7 +93,6 @@ public class FahrzeugEditDialog extends JDialog {
         }
         
         try {
-            fahrzeug.setKennzeichen(kennzeichenField.getText().trim());
             fahrzeug.setPreis(Double.parseDouble(preisField.getText().trim()));
             return true;
         } catch (Exception e) {
@@ -103,10 +102,6 @@ public class FahrzeugEditDialog extends JDialog {
     }
 
     private boolean validateInputs() {
-        if (kennzeichenField.getText().trim().isEmpty()) {
-            showError("Bitte geben Sie ein Kennzeichen ein.");
-            return false;
-        }
         if (preisField.getText().trim().isEmpty()) {
             showError("Bitte geben Sie einen Kaufpreis ein.");
             return false;
