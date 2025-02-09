@@ -2,16 +2,18 @@ package de.fuhrpark.ui.dialog;
 
 import de.fuhrpark.model.base.Fahrzeug;
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
-import javax.swing.text.NumberFormatter;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 public class FahrzeugDialog extends JDialog {
     private final JComboBox<String> typComboBox;
     private final JTextField markeField;
     private final JTextField modellField;
-    private final JTextField kennzeichenField;
+    private final JFormattedTextField kennzeichenField;
     private final JFormattedTextField preisField;
+    private final JLabel aktuellerWertLabel;
     private boolean confirmed = false;
 
     // Constructor for new vehicle
@@ -20,9 +22,11 @@ public class FahrzeugDialog extends JDialog {
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(20);
         this.modellField = new JTextField(20);
-        this.kennzeichenField = new JTextField(20);
+        this.kennzeichenField = createKennzeichenField();
         this.preisField = createPreisField();
+        this.aktuellerWertLabel = new JLabel("0,00 €");
         initComponents();
+        setupWertCalculation();
     }
 
     // Constructor for editing existing vehicle
@@ -31,9 +35,11 @@ public class FahrzeugDialog extends JDialog {
         this.typComboBox = new JComboBox<>(new String[]{"PKW", "LKW"});
         this.markeField = new JTextField(fahrzeug.getMarke(), 20);
         this.modellField = new JTextField(fahrzeug.getModell(), 20);
-        this.kennzeichenField = new JTextField(fahrzeug.getKennzeichen(), 20);
+        this.kennzeichenField = createKennzeichenField();
+        this.kennzeichenField.setText(fahrzeug.getKennzeichen());
         this.preisField = createPreisField();
         this.preisField.setValue(fahrzeug.getPreis());
+        this.aktuellerWertLabel = new JLabel(String.format(Locale.GERMANY, "%.2f €", fahrzeug.berechneAktuellenWert()));
         
         // Disable type selection and license plate for existing vehicles
         this.typComboBox.setSelectedItem(fahrzeug.getTyp());
@@ -41,49 +47,94 @@ public class FahrzeugDialog extends JDialog {
         this.kennzeichenField.setEnabled(false);
         
         initComponents();
+        setupWertCalculation();
+    }
+
+    private JFormattedTextField createKennzeichenField() {
+        MaskFormatter formatter = null;
+        try {
+            formatter = new MaskFormatter("U-UU ####");
+            formatter.setPlaceholderCharacter('_');
+            formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+        return new JFormattedTextField(formatter);
+    }
+
+    private JFormattedTextField createPreisField() {
+        NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMANY);
+        format.setMinimumFractionDigits(2);
+        format.setMaximumFractionDigits(2);
+        NumberFormatter formatter = new NumberFormatter(format);
+        formatter.setValueClass(Double.class);
+        formatter.setMinimum(0.0);
+        JFormattedTextField field = new JFormattedTextField(formatter);
+        field.setValue(0.0);
+        return field;
+    }
+
+    private void setupWertCalculation() {
+        preisField.addPropertyChangeListener("value", evt -> {
+            try {
+                double preis = getPreis();
+                double wert = "PKW".equals(getSelectedType()) ? preis * 0.9 : preis * 0.85;
+                aktuellerWertLabel.setText(String.format(Locale.GERMANY, "%.2f €", wert));
+            } catch (Exception e) {
+                aktuellerWertLabel.setText("0,00 €");
+            }
+        });
+
+        typComboBox.addActionListener(e -> {
+            try {
+                double preis = getPreis();
+                double wert = "PKW".equals(getSelectedType()) ? preis * 0.9 : preis * 0.85;
+                aktuellerWertLabel.setText(String.format(Locale.GERMANY, "%.2f €", wert));
+            } catch (Exception ex) {
+                aktuellerWertLabel.setText("0,00 €");
+            }
+        });
     }
 
     private void initComponents() {
-        setLayout(new BorderLayout());
-        JPanel panel = new JPanel(new GridBagLayout());
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Add components in correct order
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Typ:"), gbc);
+        // Add components with proper layout
+        gbc.gridx = 0; gbc.gridy = 0;
+        add(new JLabel("Typ:"), gbc);
         gbc.gridx = 1;
-        panel.add(typComboBox, gbc);
+        add(typComboBox, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Marke:"), gbc);
+        gbc.gridx = 0; gbc.gridy = 1;
+        add(new JLabel("Kennzeichen:"), gbc);
         gbc.gridx = 1;
-        panel.add(markeField, gbc);
+        add(kennzeichenField, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(new JLabel("Modell:"), gbc);
+        gbc.gridx = 0; gbc.gridy = 2;
+        add(new JLabel("Marke:"), gbc);
         gbc.gridx = 1;
-        panel.add(modellField, gbc);
+        add(markeField, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        panel.add(new JLabel("Kennzeichen:"), gbc);
+        gbc.gridx = 0; gbc.gridy = 3;
+        add(new JLabel("Modell:"), gbc);
         gbc.gridx = 1;
-        panel.add(kennzeichenField, gbc);
+        add(modellField, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        panel.add(new JLabel("Aktueller Preis (€):"), gbc);
+        gbc.gridx = 0; gbc.gridy = 4;
+        add(new JLabel("Preis:"), gbc);
         gbc.gridx = 1;
-        panel.add(preisField, gbc);
+        add(preisField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 5;
+        add(new JLabel("Aktueller Wert:"), gbc);
+        gbc.gridx = 1;
+        add(aktuellerWertLabel, gbc);
 
         // Buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonPanel = new JPanel();
         JButton okButton = new JButton("OK");
         JButton cancelButton = new JButton("Abbrechen");
 
@@ -98,20 +149,13 @@ public class FahrzeugDialog extends JDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        add(panel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        gbc.gridx = 0; gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(buttonPanel, gbc);
 
         pack();
         setLocationRelativeTo(getOwner());
-    }
-
-    private JFormattedTextField createPreisField() {
-        NumberFormat format = NumberFormat.getNumberInstance();
-        format.setMinimumFractionDigits(2);
-        NumberFormatter formatter = new NumberFormatter(format);
-        formatter.setValueClass(Double.class);
-        formatter.setMinimum(0.0);
-        return new JFormattedTextField(formatter);
     }
 
     private boolean validateInputs() {
@@ -164,7 +208,7 @@ public class FahrzeugDialog extends JDialog {
     }
 
     public String getKennzeichen() {
-        return kennzeichenField.getText().trim();
+        return kennzeichenField.getText().replace("_", "").trim();
     }
 
     public double getPreis() {
