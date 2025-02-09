@@ -1,19 +1,10 @@
 package de.fuhrpark.ui.dialog;
 
 import de.fuhrpark.model.base.Fahrzeug;
-import de.fuhrpark.model.enums.FahrzeugTyp;
-import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.ui.util.KennzeichenFormatter;
-import de.fuhrpark.manager.FuhrparkManager;
-
 import javax.swing.*;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.text.ParseException;
-import java.text.NumberFormat;
-import java.util.Locale;
 import javax.swing.text.NumberFormatter;
+import java.text.NumberFormat;
 
 public class FahrzeugDialog extends JDialog {
     private final JComboBox<String> typComboBox;

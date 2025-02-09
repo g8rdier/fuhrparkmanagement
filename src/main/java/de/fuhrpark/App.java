@@ -1,38 +1,28 @@
 package de.fuhrpark;
 
-import de.fuhrpark.persistence.repository.impl.FileDataStore;
-import de.fuhrpark.service.base.FahrzeugFactory;
-import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.impl.FahrzeugFactoryImpl;
-import de.fuhrpark.service.impl.FahrzeugServiceImpl;
 import de.fuhrpark.ui.FuhrparkUI;
+import de.fuhrpark.persistence.FileDataStore;
 
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 public class App {
     public static void main(String[] args) {
-        try {
-            // Set system look and feel
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            
-            // Initialize components
-            FileDataStore dataStore = new FileDataStore();
-            FahrzeugService fahrzeugService = new FahrzeugServiceImpl(dataStore);
-            FahrzeugFactory fahrzeugFactory = new FahrzeugFactoryImpl();
-
-            // Load saved data
-            dataStore.load();
-
-            // Start UI in Event Dispatch Thread
-            SwingUtilities.invokeLater(() -> {
-                FuhrparkUI ui = new FuhrparkUI(dataStore);
+        SwingUtilities.invokeLater(() -> {
+            try {
+                FileDataStore dataStore = new FileDataStore("fahrzeuge.json");
+                FahrzeugFactoryImpl factory = new FahrzeugFactoryImpl();
+                FuhrparkUI ui = new FuhrparkUI(factory);
+                ui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                ui.pack();
+                ui.setLocationRelativeTo(null);
                 ui.setVisible(true);
-            });
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null,
+                    "Fehler beim Starten der Anwendung: " + e.getMessage(),
+                    "Fehler",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 }
