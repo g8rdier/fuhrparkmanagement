@@ -2,7 +2,6 @@ package de.fuhrpark.ui;
 
 import de.fuhrpark.model.base.Fahrzeug;
 import de.fuhrpark.model.FahrtenbuchEintrag;
-import de.fuhrpark.model.enums.FahrzeugTyp;
 import de.fuhrpark.service.base.FahrzeugService;
 import de.fuhrpark.service.base.FahrzeugFactory;
 import de.fuhrpark.service.base.FahrtenbuchService;
@@ -27,13 +26,6 @@ public class FuhrparkUI extends JFrame {
     private final FahrzeugTableModel tableModel;
     private final JTable fahrzeugTable;
     
-    // UI Components
-    private JComboBox<FahrzeugTyp> fahrzeugTypComboBox;
-    private JTextField kennzeichenField;
-    private JTextField markeField;
-    private JTextField modellField;
-    private JTextField preisField;
-
     public FuhrparkUI(DataStore dataStore) {
         super("Fuhrpark Verwaltung");
         
@@ -48,11 +40,6 @@ public class FuhrparkUI extends JFrame {
         // Initialize UI components
         this.tableModel = new FahrzeugTableModel();
         this.fahrzeugTable = new JTable(tableModel);
-        this.fahrzeugTypComboBox = new JComboBox<>(FahrzeugTyp.values());
-        this.kennzeichenField = new JTextField();
-        this.markeField = new JTextField();
-        this.modellField = new JTextField();
-        this.preisField = new JTextField();
 
         initializeUI();
         updateTableData();
