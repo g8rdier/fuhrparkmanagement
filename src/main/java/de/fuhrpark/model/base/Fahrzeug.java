@@ -1,6 +1,10 @@
 package de.fuhrpark.model.base;
 
-public class Fahrzeug {
+import java.io.Serializable;
+
+public class Fahrzeug implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private final String kennzeichen;
     private String marke;
     private String modell;

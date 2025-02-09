@@ -8,67 +8,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FileDataStore implements DataStore {
-    private static final String DATA_FILE = "fuhrpark_data.ser";
-    private Map<String, Fahrzeug> fahrzeuge;
+public class FileDataStore<T> {
+    private final String filePath;
 
-    public FileDataStore() {
-        this.fahrzeuge = new HashMap<>();
-        load();
+    public FileDataStore(String filePath) {
+        this.filePath = filePath;
     }
 
-    @Override
-    public void addFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
-        save();
-    }
-
-    @Override
-    public void updateFahrzeug(Fahrzeug fahrzeug) {
-        fahrzeuge.put(fahrzeug.getKennzeichen(), fahrzeug);
-        save();
-    }
-
-    @Override
-    public void deleteFahrzeug(String kennzeichen) {
-        fahrzeuge.remove(kennzeichen);
-        save();
-    }
-
-    @Override
-    public Fahrzeug getFahrzeug(String kennzeichen) {
-        return fahrzeuge.get(kennzeichen);
-    }
-
-    @Override
-    public List<Fahrzeug> getAlleFahrzeuge() {
-        return new ArrayList<>(fahrzeuge.values());
-    }
-
-    @Override
-    public void save() {
+    public void save(List<T> items) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
-                new FileOutputStream(DATA_FILE))) {
-            oos.writeObject(fahrzeuge);
+                new FileOutputStream(filePath))) {
+            oos.writeObject(new ArrayList<>(items));
         } catch (IOException e) {
-            throw new RuntimeException("Fehler beim Speichern der Daten: " + e.getMessage(), e);
+            throw new RuntimeException("Error saving data: " + e.getMessage(), e);
         }
     }
 
-    @Override
     @SuppressWarnings("unchecked")
-    public void load() {
-        File file = new File(DATA_FILE);
+    public List<T> load() {
+        File file = new File(filePath);
         if (!file.exists()) {
-            this.fahrzeuge = new HashMap<>();
-            return;
+            return new ArrayList<>();
         }
 
         try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(DATA_FILE))) {
-            this.fahrzeuge = (Map<String, Fahrzeug>) ois.readObject();
+                new FileInputStream(file))) {
+            return (List<T>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Fehler beim Laden der Daten: " + e.getMessage(), e);
+            throw new RuntimeException("Error loading data: " + e.getMessage(), e);
         }
     }
 } 

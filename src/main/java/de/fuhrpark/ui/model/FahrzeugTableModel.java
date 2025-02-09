@@ -13,9 +13,11 @@ public class FahrzeugTableModel extends AbstractTableModel {
     private final List<Fahrzeug> fahrzeuge;
     private final String[] columnNames = {"Typ", "Kennzeichen", "Marke", "Modell", "Aktueller Wert"};
     private final DecimalFormat currencyFormat;
+    private final FahrzeugPersistence persistence;
 
     public FahrzeugTableModel() {
-        this.fahrzeuge = new ArrayList<>(FahrzeugPersistence.loadFahrzeuge());
+        this.persistence = new FahrzeugPersistence();
+        this.fahrzeuge = new ArrayList<>(persistence.loadFahrzeuge());
         this.currencyFormat = (DecimalFormat) NumberFormat.getInstance(Locale.GERMANY);
         this.currencyFormat.setMinimumFractionDigits(2);
         this.currencyFormat.setMaximumFractionDigits(2);
@@ -91,6 +93,12 @@ public class FahrzeugTableModel extends AbstractTableModel {
     }
 
     public void saveData() {
-        FahrzeugPersistence.saveFahrzeuge(fahrzeuge);
+        persistence.saveFahrzeuge(fahrzeuge);
+    }
+
+    @Override
+    public void fireTableDataChanged() {
+        super.fireTableDataChanged();
+        saveData(); // Auto-save when data changes
     }
 } 
