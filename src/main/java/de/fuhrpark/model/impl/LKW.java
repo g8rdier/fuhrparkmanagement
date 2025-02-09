@@ -16,8 +16,8 @@ public class LKW extends AbstractFahrzeug {
      */
     public LKW(String marke, String modell, String kennzeichen, double preis) {
         super(marke, modell, kennzeichen, preis);
-        this.ladekapazitaet = 0.0;
-        this.hatAnhaengerkupplung = false;
+        this.ladekapazitaet = 40.0; // Default value in tons
+        this.hatAnhaengerkupplung = true;
     }
 
     @Override
@@ -45,7 +45,6 @@ public class LKW extends AbstractFahrzeug {
 
     @Override
     public double berechneAktuellenWert() {
-        // Simple depreciation calculation for LKW
-        return getPreis() * 0.85; // 15% depreciation
+        return getPreis() * 0.85;
     }
 } 
