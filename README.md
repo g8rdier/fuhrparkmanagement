@@ -14,7 +14,7 @@ Das System basiert auf einer mehrschichtigen Architektur, die eine klare Trennun
 
 ### Die Modellschicht
 
-Die Modellschicht bildet das Herzstück der Anwendung und implementiert die grundlegende Geschäftslogik des Fuhrpark-Verwaltungssystems. Im Zentrum steht die abstrakte Klasse "Fahrzeug", die als Basisklasse für alle Fahrzeugtypen dient. Diese Klasse definiert die fundamentalen Eigenschaften und Verhaltensweisen, die allen Fahrzeugen gemeinsam sind.
+Die Modellschicht bildet das Herzstück der Anwendung und implementiert die grundlegende Geschäftslogik des Fuhrpark-Verwaltungssystems. Im Zentrum steht die abstrakte Klasse "Fahrzeug", die als Oberklasse für alle Fahrzeugtypen dient. Diese Klasse definiert die fundamentalen Eigenschaften und Verhaltensweisen, die allen Fahrzeugen gemeinsam sind.
 
 Die Fahrzeug-Klasse verfügt über mehrere wichtige Attribute:
 - Das Kennzeichen ist als unveränderliche (finale) Eigenschaft implementiert, da es als eindeutiger Identifikator eines Fahrzeugs dient.
@@ -22,7 +22,7 @@ Die Fahrzeug-Klasse verfügt über mehrere wichtige Attribute:
 - Der Preis wird als Gleitkommazahl gespeichert und kann ebenfalls angepasst werden.
 - Der Fahrzeugtyp ist wie das Kennzeichen unveränderlich und wird bei der Erstellung festgelegt.
 
-Von der Basisklasse Fahrzeug werden zwei spezialisierte Klassen abgeleitet: PKW und LKW. Diese Klassen erweitern die Grundfunktionalität um spezifische Eigenschaften und Verhaltensweisen:
+Von der Oberklasse Fahrzeug werden zwei spezialisierte Klassen abgeleitet: PKW und LKW. Diese Klassen erweitern die Grundfunktionalität um spezifische Eigenschaften und Verhaltensweisen:
 
 Die PKW-Klasse fügt folgende Eigenschaften hinzu:
 - Eine feste Anzahl von Sitzplätzen, die standardmäßig auf 5 gesetzt ist
