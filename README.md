@@ -1,4 +1,4 @@
-# Benutzerhandbuch: Fuhrpark-Verwaltungssystem
+# Fuhrpark-Verwaltung
 
 ## Einführung
 
@@ -17,19 +17,22 @@ Das System basiert auf einer mehrschichtigen Architektur, die eine klare Trennun
 Die Modellschicht bildet das Herzstück der Anwendung und implementiert die grundlegende Geschäftslogik des Fuhrpark-Verwaltungssystems. Im Zentrum steht die abstrakte Klasse "Fahrzeug", die als Oberklasse für alle Fahrzeugtypen dient. Diese Klasse definiert die fundamentalen Eigenschaften und Verhaltensweisen, die allen Fahrzeugen gemeinsam sind.
 
 Die Fahrzeug-Klasse verfügt über mehrere wichtige Attribute:
-- Das Kennzeichen ist als unveränderliche (finale) Eigenschaft implementiert, da es als eindeutiger Identifikator eines Fahrzeugs dient.
-- Die Marke und das Modell sind als veränderliche Eigenschaften angelegt, um mögliche Korrekturen zu ermöglichen.
-- Der Preis wird als Gleitkommazahl gespeichert und kann ebenfalls angepasst werden.
-- Der Fahrzeugtyp ist wie das Kennzeichen unveränderlich und wird bei der Erstellung festgelegt.
+
+- Das Kennzeichen ist als unveränderliche (finale) Eigenschaft implementiert, da es als eindeutiger Identifikator eines Fahrzeugs dient
+- Die Marke und das Modell sind als veränderliche Eigenschaften angelegt, um mögliche Korrekturen zu ermöglichen
+- Der Preis wird als Gleitkommazahl gespeichert und kann ebenfalls angepasst werden
+- Der Fahrzeugtyp ist wie das Kennzeichen unveränderlich und wird bei der Erstellung festgelegt
 
 Von der Oberklasse Fahrzeug werden zwei spezialisierte Klassen abgeleitet: PKW und LKW. Diese Klassen erweitern die Grundfunktionalität um spezifische Eigenschaften und Verhaltensweisen:
 
 Die PKW-Klasse fügt folgende Eigenschaften hinzu:
+
 - Eine feste Anzahl von Sitzplätzen, die standardmäßig auf 5 gesetzt ist
 - Eine Information über das Vorhandensein einer Klimaanlage
 - Eine angepasste Implementierung der Werteberechnung, die den spezifischen Wertverlust von PKWs berücksichtigt
 
 Die LKW-Klasse erweitert das Basisfahrzeug um:
+
 - Eine Ladekapazität, die standardmäßig auf 40 Tonnen gesetzt ist
 - Eine Information über das Vorhandensein einer Anhängerkupplung
 - Eine eigene Implementierung der Werteberechnung, die den typischen Wertverlust von LKWs abbildet
@@ -53,16 +56,19 @@ Die FahrzeugFactoryImpl-Klasse implementiert das FahrzeugFactory-Interface und e
 Die Benutzeroberfläche wurde mit Java Swing implementiert und besteht aus mehreren eng zusammenarbeitenden Komponenten:
 
 Die FuhrparkUI-Klasse bildet das Hauptfenster der Anwendung. Sie enthält:
+
 - Eine Tabelle zur Anzeige aller Fahrzeuge
 - Eine Werkzeugleiste mit Schaltflächen für die wichtigsten Aktionen
 - Eine moderne und benutzerfreundliche Gestaltung mit Hover-Effekten
 
 Der FahrzeugDialog dient der Eingabe und Bearbeitung von Fahrzeugdaten. Er bietet:
+
 - Formatierte Eingabefelder für alle relevanten Fahrzeugeigenschaften
 - Eine umfangreiche Validierung aller Eingaben
 - Kontextabhängige Anpassung je nachdem, ob ein neues Fahrzeug angelegt oder ein bestehendes bearbeitet wird
 
 Das FahrzeugTableModel verwaltet die Daten der Fahrzeugtabelle und bietet:
+
 - Automatische Aktualisierung der Anzeige bei Änderungen
 - Formatierung der Währungsbeträge gemäß den deutschen Konventionen
 - Automatische Speicherung aller Änderungen
@@ -73,36 +79,36 @@ Das FahrzeugTableModel verwaltet die Daten der Fahrzeugtabelle und bietet:
 
 Das Hinzufügen eines neuen Fahrzeugs erfolgt über einen mehrstufigen Prozess:
 
-1. Der Benutzer klickt auf die Schaltfläche "Fahrzeug hinzufügen" in der Werkzeugleiste.
-2. Es öffnet sich der FahrzeugDialog im Erstellungsmodus.
-3. Der Benutzer wählt zunächst den gewünschten Fahrzeugtyp (PKW oder LKW) aus.
+1. Der Benutzer klickt auf die Schaltfläche "Fahrzeug hinzufügen" in der Werkzeugleiste
+2. Es öffnet sich der FahrzeugDialog im Erstellungsmodus
+3. Der Benutzer wählt zunächst den gewünschten Fahrzeugtyp (PKW oder LKW) aus
 4. Anschließend werden folgende Daten eingegeben:
    - Ein Kennzeichen im Format XXX-XX1234, wobei X für Buchstaben und 1234 für Ziffern stehen
    - Die Marke des Fahrzeugs
    - Das Modell des Fahrzeugs
    - Der Anschaffungspreis in Euro (maximal 10 Millionen Euro)
-5. Nach Bestätigung mit "OK" wird das neue Fahrzeug erstellt und in der Tabelle angezeigt.
+5. Nach Bestätigung mit "OK" wird das neue Fahrzeug erstellt und in der Tabelle angezeigt
 
 ### Fahrzeuge bearbeiten
 
 Die Bearbeitung bestehender Fahrzeuge erfolgt wie folgt:
 
-1. Der Benutzer wählt das zu bearbeitende Fahrzeug in der Tabelle aus.
-2. Durch Klick auf "Fahrzeug bearbeiten" öffnet sich der FahrzeugDialog im Bearbeitungsmodus.
-3. Die bestehenden Daten werden in den entsprechenden Feldern angezeigt.
+1. Der Benutzer wählt das zu bearbeitende Fahrzeug in der Tabelle aus
+2. Durch Klick auf "Fahrzeug bearbeiten" öffnet sich der FahrzeugDialog im Bearbeitungsmodus
+3. Die bestehenden Daten werden in den entsprechenden Feldern angezeigt
 4. Der Benutzer kann folgende Eigenschaften ändern:
    - Den Preis des Fahrzeugs
-   - Optional: Marke und Modell (falls Korrekturen erforderlich sind)
-5. Nach Bestätigung werden die Änderungen gespeichert und die Anzeige aktualisiert.
+   - Das Kennzeichen des Fahrzeugs
+5. Nach Bestätigung werden die Änderungen gespeichert und die Anzeige aktualisiert
 
 ### Fahrzeuge löschen
 
 Das Löschen von Fahrzeugen ist wie folgt implementiert:
 
-1. Der Benutzer wählt das zu löschende Fahrzeug in der Tabelle aus.
-2. Nach Klick auf "Fahrzeug löschen" erscheint eine Sicherheitsabfrage.
-3. Bei Bestätigung wird das Fahrzeug aus dem System entfernt.
-4. Die Änderung wird automatisch gespeichert und die Tabelle aktualisiert.
+1. Der Benutzer wählt das zu löschende Fahrzeug in der Tabelle aus
+2. Nach Klick auf "Fahrzeug löschen" erscheint eine Sicherheitsabfrage
+3. Bei Bestätigung wird das Fahrzeug aus dem System entfernt
+4. Die Änderung wird automatisch gespeichert und die Tabelle aktualisiert
 
 ## Installation und Systemvoraussetzungen
 
